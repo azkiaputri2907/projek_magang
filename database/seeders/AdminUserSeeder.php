@@ -13,8 +13,8 @@ class AdminUserSeeder extends Seeder
     {
         DB::table('users')->insert([
             'name' => 'Administrator',
-            'email' => 'admin@disdik.test',
-            'password' => Hash::make('password'), // Ganti 'password' dengan password kuat
+            'email' => 'azkia@admin.com',
+            'password' => Hash::make('kiakia1'), // Ganti 'password' dengan password kuat
             'created_at' => now(),
             'updated_at' => now(),
         ]);

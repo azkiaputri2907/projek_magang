@@ -5,6 +5,8 @@ use App\Http\Controllers\PengunjungController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminPengunjungController;
+use App\Http\Controllers\AdminSkmController;
+
 
 // --- Rute Pengunjung (Sesuai Blade yang Dibuat) ---
 
@@ -54,11 +56,17 @@ Route::prefix('admin')->group(function () {
         Route::get('/skm', [AdminController::class, 'dataSkmDemografi'])->name('admin.skm');
         Route::get('/skm/pertanyaan', [AdminController::class, 'dataSkmPertanyaan'])->name('admin.skm.pertanyaan');
 
-        // === DATA SKM ===
-        Route::get('/admin/skm/{id}/edit', [AdminController::class, 'editSkm'])->name('admin.skm.edit');
-        Route::put('/admin/skm/{id}', [AdminController::class, 'updateSkm'])->name('admin.skm.update');
-        Route::delete('/admin/skm/{id}', [AdminController::class, 'deleteSkm'])->name('admin.skm.delete');
-
+// === DATA SKM: EDIT & DELETE (Menggunakan AdminSkmController) ===
+        // Untuk Edit/Update
+        Route::get('/skm/{id}/edit', [AdminSkmController::class, 'edit'])->name('admin.skm.edit'); 
+        Route::put('/skm/{id}', [AdminSkmController::class, 'update'])->name('admin.skm.update');
+        // Untuk Hapus
+        Route::delete('/skm/{id}', [AdminSkmController::class, 'destroy'])->name('admin.skm.delete');
+        
+        // Anda juga perlu mengarahkan rute edit/delete di dataSkmPertanyaan ke controller baru ini:
+        Route::get('/skm/jawaban/{id}/edit', [AdminSkmController::class, 'edit'])->name('admin.skm.jawaban.edit'); 
+        Route::put('/skm/jawaban/{id}', [AdminSkmController::class, 'update'])->name('admin.skm.jawaban.update'); 
+        Route::delete('/skm/jawaban/{id}', [AdminSkmController::class, 'destroy'])->name('admin.skm.jawaban.delete');
 
         Route::get('/laporan', [AdminController::class, 'laporan'])->name('admin.laporan');
         // Rute unduh Laporan ke Google Sheets

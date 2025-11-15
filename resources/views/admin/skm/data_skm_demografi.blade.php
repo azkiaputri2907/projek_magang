@@ -352,7 +352,7 @@ body {
         <button id="btnDelete"
                 class="btn-action btn-hapus disabled"
                 style="pointer-events:none; opacity:0.5;"
-                onclick="return confirm('Yakin hapus datanya?')">
+                onclick="return confirm('Yakin mau hapus data yang dipilih?')">
             Hapus
         </button>
     </form>
