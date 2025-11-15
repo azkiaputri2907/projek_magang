@@ -271,9 +271,12 @@ body {
     </a>
 
     <div class="sidebar-footer">
-        <a href="{{ url('/admin/logout') }}">
-            <i class="fas fa-sign-out-alt"></i> Keluar
-        </a>
+        <form action="{{ route('admin.logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="btn-item btn-keluar">
+                <i class="fas fa-sign-out-alt"></i> Keluar
+            </button>
+        </form>    
     </div>
 </div>
 <div id="sidebar-overlay"></div>

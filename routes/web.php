@@ -69,8 +69,10 @@ Route::prefix('admin')->group(function () {
         Route::delete('/skm/jawaban/{id}', [AdminSkmController::class, 'destroy'])->name('admin.skm.jawaban.delete');
 
         Route::get('/laporan', [AdminController::class, 'laporan'])->name('admin.laporan');
-        // Rute unduh Laporan ke Google Sheets
-        Route::get('/laporan/unduh/pengunjung', [AdminController::class, 'downloadPengunjung'])->name('admin.download.pengunjung');
-        Route::get('/laporan/unduh/skm', [AdminController::class, 'downloadSkm'])->name('admin.download.skm');
-    });
+        // DOWNLOAD GOOGLE SHEETS
+        Route::get('/laporan/download-pengunjung', [AdminController::class, 'downloadPengunjung'])
+            ->name('laporan.download_pengunjung');
+
+        Route::get('/laporan/download-skm', [AdminController::class, 'downloadSkm'])
+            ->name('laporan.download_skm');    });
 });

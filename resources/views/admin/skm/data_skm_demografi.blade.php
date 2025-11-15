@@ -280,7 +280,6 @@ body {
     <a href="{{ url('/admin/skm') }}" class="sidebar-link {{ Request::is('admin/skm') ? 'active' : '' }}">
         <i class="fas fa-file-alt"></i> Data SKM
     </a>
-    </a>
         <a href="{{ url('/admin/skm/pertanyaan') }}" class="sidebar-link {{ Request::is('admin/skm/pertanyaan') ? 'active' : '' }}">
         <i class="fas fa-file-alt"></i> Data SKM Pertanyaan
     </a>
@@ -289,9 +288,12 @@ body {
     </a>
 
     <div class="sidebar-footer">
-        <a href="{{ url('/admin/logout') }}">
-            <i class="fas fa-sign-out-alt"></i> Keluar
-        </a>
+        <form action="{{ route('admin.logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="btn-item btn-keluar">
+                <i class="fas fa-sign-out-alt"></i> Keluar
+            </button>
+        </form>    
     </div>
 </div>
 <div id="sidebar-overlay"></div>
