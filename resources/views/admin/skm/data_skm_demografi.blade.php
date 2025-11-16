@@ -23,7 +23,7 @@ body {
 }
 .logo-header img { height: 55px; }
 
-/* SIDEBAR */
+/* === SIDEBAR === */
 #sidebar {
     position: fixed;
     top: 0;
@@ -35,6 +35,10 @@ body {
     z-index: 1000;
     transition: left 0.3s ease;
     padding: 20px 0;
+    border-radius: 0 20px 20px 0;
+
+    display: flex;          /* biar bisa dorong footer ke bawah */
+    flex-direction: column; /* vertikal */
 }
 #sidebar.active { left: 0; }
 #sidebar-overlay {
@@ -48,22 +52,38 @@ body {
 
 .sidebar-profile {
     display: flex;
-    align-items: center;
+    flex-direction: column;     /* susun vertikal */
+    justify-content: center;
+    align-items: center;        /* center horizontal */
     padding: 0 15px 20px 15px;
     border-bottom: 1px solid #eee;
     margin-bottom: 10px;
+    text-align: center;         /* biar teksnya center */
 }
+
 .sidebar-profile img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    width: 60px; 
+    height: 60px;
+    border-radius: 50%; 
     object-fit: cover;
-    margin-right: 10px;
+    margin: 0 0 10px 0;         /* jarak ke nama */
 }
+
+.sidebar-profile div {
+    font-size: 14px;
+    color: #333;
+}
+
+.sidebar-profile div span {
+    display: block;
+    font-size: 12px;
+    color: #666;
+}
+
+
 .sidebar-link {
     display: flex;
     align-items: center;
-    gap: 12px;         /* <<< TAMBAHKAN INI */
     padding: 12px 15px;
     text-decoration: none;
     color: #333;
@@ -71,16 +91,23 @@ body {
     margin: 5px 0;
     transition: background 0.2s ease;
 }
+.sidebar-link:hover {
+    background-color: rgba(220,53,69,0.05);
+}
+.sidebar-link i { margin-right: 10px; }
 
 .sidebar-link.active {
-    background-color: rgba(220,53,69,0.1);
-    border-left: 4px solid #dc3545;
+    background-color: rgba(195, 222, 255, 0.909);
+    border-left: 4px solid #CFDDF7;
     font-weight: bold;
-    border-radius: 0 5px 5px 0;
+    border-radius: 0 8px 8px 0;   /* sudut kiri lurus, kanan rounded */
+    margin-left: 0;              /* tempelin ke kiri */
+    margin-right: 20px;          /* kasih spasi kanan */
+    padding-left: 20px;          /* sedikit masuk ke dalam */
 }
-
 .sidebar-footer {
     padding: 15px;
+    margin-top: auto; 
 }
 .sidebar-footer a {
     display: flex;
@@ -89,7 +116,7 @@ body {
     padding: 10px;
     text-decoration: none;
     color: #fff;
-    background-color: #dc3545;
+    background-color: #a5ceff;
     font-weight: bold;
     border-radius: 5px;
     font-size: 14px;
@@ -275,9 +302,9 @@ body {
 <!-- === SIDEBAR === -->
 <div id="sidebar">
     <div class="sidebar-profile">
-        <img src="{{ asset('images/avatar_admin.png') }}" alt="Avatar">
+        <img src="{{ asset('images/avatar_admin.jpg') }}" alt="Avatar">
         <div>
-            Jamilatul Azkia Putri
+            {{ Auth::user()->name ?? 'Admin' }}
             <span>Admin</span>
         </div>
     </div>

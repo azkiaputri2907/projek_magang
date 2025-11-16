@@ -12,9 +12,9 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         DB::table('users')->insert([
-            'name' => 'Administrator',
-            'email' => 'azkia@admin.com',
-            'password' => Hash::make('kiakia1'), // Ganti 'password' dengan password kuat
+            'name' => 'Jamilatul Azkia Putri',
+            'email' => 'admintamu@disdik.com',
+            'password' => Hash::make('admindisdik123'), // Ganti 'password' dengan password kuat
             'created_at' => now(),
             'updated_at' => now(),
         ]);
