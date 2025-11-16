@@ -6,11 +6,6 @@
 
 @section('content')
 <style>
-/* Catatan: Karena menggunakan @extends('layouts.app'), diasumsikan sebagian besar gaya
-   terutama untuk sidebar, overlay, menu-icon, dan logo-header sudah ada di layouts.app,
-   atau terdefinisikan secara global. Gaya di bawah ini mencakup yang spesifik untuk halaman laporan
-   dan memastikannya konsisten dengan struktur dashboard-card. */
-
 body {
     background-color: #DFEDFE;
     font-family: 'Poppins', sans-serif;
@@ -19,7 +14,7 @@ body {
     min-height: 100vh;
 }
 
-/* LOGO (Diambil dari kode kedua) */
+/* LOGO */
 .logo-header {
     position: absolute;
     top: 25px;
@@ -30,7 +25,7 @@ body {
 }
 .logo-header img { height: 55px; }
 
-/* === SIDEBAR (Diambil dari kode kedua) === */
+/* SIDEBAR */
 #sidebar {
     position: fixed;
     top: 0;
@@ -67,12 +62,10 @@ body {
     object-fit: cover;
     margin-right: 10px;
 }
-.sidebar-profile div { font-size: 14px; color: #333; }
-.sidebar-profile div span { display: block; font-size: 12px; color: #666; }
-
 .sidebar-link {
     display: flex;
     align-items: center;
+    gap: 12px;         /* <<< TAMBAHKAN INI */
     padding: 12px 15px;
     text-decoration: none;
     color: #333;
@@ -80,10 +73,6 @@ body {
     margin: 5px 0;
     transition: background 0.2s ease;
 }
-.sidebar-link:hover {
-    background-color: rgba(220,53,69,0.05);
-}
-.sidebar-link i { margin-right: 10px; }
 
 .sidebar-link.active {
     background-color: rgba(220,53,69,0.1);
@@ -91,45 +80,18 @@ body {
     font-weight: bold;
     border-radius: 0 5px 5px 0;
 }
-
 .sidebar-footer {
     padding: 15px;
 }
-.sidebar-footer a {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    text-decoration: none;
-    color: #fff;
-    background-color: #dc3545;
-    font-weight: bold;
-    border-radius: 5px;
-    font-size: 14px;
-}
-/* MENU ICON (Diambil dari kode kedua) */
-.menu-icon {
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 22px;
-    height: 18px;
-}
-.menu-icon span {
-    height: 3px;
-    background: #333;
-    border-radius: 2px;
-}
 
 
-/* CONTENT AREA (Menyesuaikan dengan container-dashboard dari kode kedua) */
+/* CONTAINER */
 .container-dashboard {
     display: flex;
     justify-content: center;
     width: 95%;
     max-width: 1300px;
-    margin: 20px auto; /* Mengubah margin-top 90px menjadi auto dan menambahkan margin-top 20px agar responsif */
+    margin: 20px auto;
 }
 
 .dashboard-card {
@@ -138,7 +100,6 @@ body {
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     width: 100%;
-    /* min-height: 700px; */ /* Dihapus atau disesuaikan */
 }
 
 .dashboard-left {
@@ -162,13 +123,29 @@ body {
     gap: 15px;
 }
 
+
+/* MENU ICON */
+.menu-icon {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 22px;
+    height: 18px;
+}
+.menu-icon span {
+    height: 3px;
+    background: #333;
+    border-radius: 2px;
+}
+
 .report-content {
     display: flex;
     justify-content: space-around;
     align-items: center;
     gap: 40px;
     padding: 20px 0;
-    flex-wrap: wrap; /* Untuk responsivitas jika perlu */
+    flex-wrap: wrap;
 }
 
 .report-chart {
@@ -177,19 +154,49 @@ body {
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    width: 260px;
+    height: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.report-chart p {
-    font-size: 18px;
+/* FIX DONUT BIAR NGGAK GEPENG */
+.chart-wrapper {
+    width: 220px;
+    height: 220px;
+    position: relative;
+}
+.chart-wrapper canvas {
+    position: absolute;
+    inset: 0;
+}
+
+
+/* BUTTON */
+/* === BUTTONS === */
+.button-wrapper {
+    display: flex;
+    gap: 15px;
+}
+.btn-item {
+    flex: 1;
     font-weight: 600;
-    margin-top: 15px;
-    color: #003366;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
 }
-
-canvas {
-    width: 200px !important;
-    height: 200px !important;
-}
+.btn-item:hover { transform: translateY(-1px); }
+.btn-laporan { background-color: #dfefff; color: #444; }
+.btn-keluar { background-color: #EF4444; color: #fff; }
 
 .btn-unduh {
     display: inline-block;
@@ -200,13 +207,12 @@ canvas {
     border-radius: 8px;
     font-weight: 600;
     text-decoration: none;
-    transition: background-color 0.2s;
 }
 .btn-unduh:hover {
     background-color: #15a098;
 }
 
-/* RIGHT PANEL (Diambil dari kode kedua) */
+/* RIGHT PANEL */
 .dashboard-right {
     flex: 0.9;
     background-color: #C9E1FF;
@@ -237,17 +243,18 @@ canvas {
     font-size: 2rem;
     font-weight: 800;
     margin-top: 40px;
-    text-align: center;
 }
 .dashboard-right h1 span { color: #30E3BC; }
 
 </style>
 
+{{-- === LOGO === --}}
 <div class="logo-header">
     <img src="{{ asset('images/LOGO_KEMENTRIAN.png') }}" alt="Logo Kementrian">
-    <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Pemkab Banjar">
+    <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
 </div>
 
+<!-- === SIDEBAR === -->
 <div id="sidebar">
     <div class="sidebar-profile">
         <img src="{{ asset('images/avatar_admin.png') }}" alt="Avatar">
@@ -266,7 +273,7 @@ canvas {
     <a href="{{ url('/admin/skm') }}" class="sidebar-link {{ Request::is('admin/skm') ? 'active' : '' }}">
         <i class="fas fa-file-alt"></i> Data SKM
     </a>
-    <a href="{{ url('/admin/skm/pertanyaan') }}" class="sidebar-link {{ Request::is('admin/skm/pertanyaan') ? 'active' : '' }}">
+        <a href="{{ url('/admin/skm/pertanyaan') }}" class="sidebar-link {{ Request::is('admin/skm/pertanyaan') ? 'active' : '' }}">
         <i class="fas fa-file-alt"></i> Data SKM Pertanyaan
     </a>
     <a href="{{ url('/admin/laporan') }}" class="sidebar-link {{ Request::is('admin/laporan') ? 'active' : '' }}">
@@ -296,19 +303,25 @@ canvas {
             </div>
 
             <div class="report-content">
+
                 <div class="report-chart">
-                    <canvas id="chartPengunjung"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="chartPengunjung"></canvas>
+                    </div>
                     <p>Data Pengunjung</p>
                     <a href="{{ route('laporan.download_pengunjung') }}" class="btn-unduh">Unduh</a>
                 </div>
 
                 <div class="report-chart">
-                    <canvas id="chartSkm"></canvas>
+                    <div class="chart-wrapper">
+                        <canvas id="chartSkm"></canvas>
+                    </div>
                     <p>Data SKM</p>
                     <a href="{{ route('laporan.download_skm') }}" class="btn-unduh">Unduh</a>
                 </div>
+
             </div>
-            </div>
+        </div>
 
         <div class="dashboard-right">
             <h1>Laporan <span>Disdik</span></h1>
@@ -329,62 +342,55 @@ document.addEventListener("DOMContentLoaded", function() {
         sidebar.classList.toggle('active');
         overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
     });
-
     overlay.addEventListener('click', () => {
         sidebar.classList.remove('active');
         overlay.style.display = 'none';
     });
+
 });
 </script>
 
 <script>
-    // Pastikan variabel $totalPengunjung dan $totalSkm dilewatkan dari controller
-    const donutColors = ['#30AADD', '#00917C', '#F9D923', '#F05454'];
+const donutColors = ['#30AADD', '#00917C', '#F9D923', '#F05454'];
 
-    const totalPengunjung = {{ $totalPengunjung ?? 0 }}; // Tambahkan default value jika belum didefinisikan
-    const totalSkm = {{ $totalSkm ?? 0 }}; // Tambahkan default value jika belum didefinisikan
+const totalPengunjung = {{ $totalPengunjung ?? 0 }};
+const totalSkm = {{ $totalSkm ?? 0 }};
 
-    // Chart Pengunjung
-    new Chart(document.getElementById('chartPengunjung'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Total Pengunjung'],
-            datasets: [{
-                data: [totalPengunjung],
-                backgroundColor: donutColors[0], // Gunakan satu warna saja karena hanya ada satu data
-                borderWidth: 0
-            }]
-        },
-        options: { 
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { 
-                legend: { display: false },
-                tooltip: { callbacks: { label: (context) => `Total: ${context.parsed}` } }
-            }, 
-            cutout: '70%' 
-        }
-    });
-    
-    // Chart SKM
-    new Chart(document.getElementById('chartSkm'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Total SKM'],
-            datasets: [{
-                data: [totalSkm],
-                backgroundColor: donutColors[1], // Gunakan warna lain
-                borderWidth: 0
-            }]
-        },
-        options: { 
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { 
-                legend: { display: false },
-                tooltip: { callbacks: { label: (context) => `Total: ${context.parsed}` } }
-            }, 
-            cutout: '70%' 
-        }
-    });
+new Chart(document.getElementById('chartPengunjung'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Total Pengunjung'],
+        datasets: [{
+            data: [totalPengunjung],
+            backgroundColor: donutColors[0],
+            borderWidth: 0
+        }]
+    },
+    options: { 
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        cutout: '70%' 
+    }
+});
+
+new Chart(document.getElementById('chartSkm'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Total SKM'],
+        datasets: [{
+            data: [totalSkm],
+            backgroundColor: donutColors[1],
+            borderWidth: 0
+        }]
+    },
+    options: { 
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        cutout: '70%' 
+    }
+});
 </script>
+
+@endsection

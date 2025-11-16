@@ -208,6 +208,25 @@ body {
 .btn-edit { background: #20c997; color: #fff; }
 .btn-hapus { background: #dc3545; color: #fff; }
 
+.btn-item {
+    flex: 1;
+    font-weight: 600;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+.btn-item:hover { transform: translateY(-1px); }
+.btn-laporan { background-color: #dfefff; color: #444; }
+.btn-keluar { background-color: #EF4444; color: #fff; }
+
 /* RIGHT PANEL */
 .dashboard-right {
     flex: 0.9;
@@ -267,7 +286,6 @@ body {
     </a>
     <a href="{{ url('/admin/skm') }}" class="sidebar-link {{ Request::is('admin/skm') ? 'active' : '' }}">
         <i class="fas fa-file-alt"></i> Data SKM
-    </a>
     </a>
         <a href="{{ url('/admin/skm/pertanyaan') }}" class="sidebar-link {{ Request::is('admin/skm/pertanyaan') ? 'active' : '' }}">
         <i class="fas fa-file-alt"></i> Data SKM Pertanyaan
