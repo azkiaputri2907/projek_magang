@@ -309,7 +309,10 @@ body {
                         <canvas id="chartPengunjung"></canvas>
                     </div>
                     <p>Data Pengunjung</p>
-                    <a href="{{ route('laporan.download_pengunjung') }}" class="btn-unduh">Unduh</a>
+                        <a href="https://docs.google.com/spreadsheets/d/1XKirvKDNNnwcauLTxHebHCcHbAdEHLZdL5caoB3HiVE/export?format=xlsx" 
+                        class="btn-unduh" target="_blank">
+                        Unduh
+                        </a>
                 </div>
 
                 <div class="report-chart">
@@ -317,7 +320,10 @@ body {
                         <canvas id="chartSkm"></canvas>
                     </div>
                     <p>Data SKM</p>
-                    <a href="{{ route('laporan.download_skm') }}" class="btn-unduh">Unduh</a>
+                        <a href="https://docs.google.com/spreadsheets/d/1iTmYnrKDmx3lmoIjoEqeAkSlHE0aePXF56SGFqfl6J0/export?format=xlsx" 
+                        class="btn-unduh" target="_blank">
+                        Unduh
+                        </a>
                 </div>
 
             </div>
