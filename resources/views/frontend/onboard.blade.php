@@ -96,7 +96,7 @@
     }
 
     .subtitle {
-        font-size: 13px;
+        font-size: 12px;
         color: #6c757d;
         margin-bottom: 30px;
         max-width: 80%;
@@ -141,7 +141,7 @@
     {{-- KONTEN UTAMA --}}
     <div class="main-content">
         <div class="illustration-box">
-            <img src="{{ asset('images/Tessa.jpg') }}" alt="Ilustrasi Selamat Datang">
+            <img src="{{ asset('images/Tessa.png') }}" alt="Ilustrasi Selamat Datang">
         </div>
 
         <h1 class="title">Selamat Datang di Dinas Pendidikan Kab. Banjar</h1>

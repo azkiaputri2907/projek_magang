@@ -66,7 +66,7 @@
             font-weight: 600;
             padding: 8px 24px;
             border: none;
-            border-radius: 10px;
+            border-radius: 20px;
             cursor: pointer;
             font-size: 0.95rem;
             box-shadow: 0 3px 8px rgba(48, 227, 188, 0.4);
@@ -78,6 +78,15 @@
             background-color: #27C4A1;
             transform: translateY(-2px);
         }
+
+            .logo-header {
+        top: 10px;
+        right: 10px;
+    }
+
+    .logo-header img {
+        height: 40px;
+    }
     </style>
 </head>
 <body>

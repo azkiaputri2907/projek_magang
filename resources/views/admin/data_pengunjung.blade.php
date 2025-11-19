@@ -4,24 +4,33 @@
 
 @section('content')
 <style>
+/* ======================== GLOBAL ======================== */
 body {
     background-color: #DFEDFE;
     font-family: 'Poppins', sans-serif;
     margin: 0;
-    padding-top: 50px;
+    /* Mengubah body agar konten tidak sepenuhnya centered, memberi ruang untuk header/sidebar */
+    padding-top: 0rem; 
     min-height: 100vh;
+    overflow-x: hidden;
 }
+
+/* LOGO */
 .logo-header {
     position: absolute;
-    top: 25px;
-    right: 45px;
+    top: 18px;
+    right: 25px;
     display: flex;
+    align-items: center;
     gap: 10px;
     z-index: 100;
 }
-.logo-header img { height: 55px; }
 
-/* === SIDEBAR === */
+.logo-header img {
+    height: 50px;
+}
+
+/* SIDEBAR - Pertahankan Gaya Asli dari file Admin */
 #sidebar {
     position: fixed;
     top: 0;
@@ -34,11 +43,14 @@ body {
     transition: left 0.3s ease;
     padding: 20px 0;
     border-radius: 0 20px 20px 0;
-
-    display: flex;          /* biar bisa dorong footer ke bawah */
-    flex-direction: column; /* vertikal */
+    display: flex;
+    flex-direction: column;
 }
-#sidebar.active { left: 0; }
+
+#sidebar.active { 
+    left: 0; 
+}
+
 #sidebar-overlay {
     position: fixed;
     inset: 0;
@@ -46,39 +58,43 @@ body {
     z-index: 999;
     display: none;
 }
-#sidebar.active + #sidebar-overlay { display: block; }
 
+#sidebar.active + #sidebar-overlay { 
+    display: block; 
+}
+
+/* PROFILE DI SIDEBAR */
 .sidebar-profile {
     display: flex;
-    flex-direction: column;     /* susun vertikal */
-    justify-content: center;
-    align-items: center;        /* center horizontal */
+    flex-direction: column;
+    align-items: center;
     padding: 0 15px 20px 15px;
     border-bottom: 1px solid #eee;
     margin-bottom: 10px;
-    text-align: center;         /* biar teksnya center */
+    text-align: center;
 }
 
 .sidebar-profile img {
     width: 60px; 
     height: 60px;
-    border-radius: 50%; 
+    border-radius: 50%;
     object-fit: cover;
-    margin: 0 0 10px 0;         /* jarak ke nama */
+    margin-bottom: 10px;
 }
 
-.sidebar-profile div {
-    font-size: 14px;
-    color: #333;
+.sidebar-profile div { 
+    font-size: 14px; 
+    color: #333; 
 }
 
-.sidebar-profile div span {
-    display: block;
-    font-size: 12px;
-    color: #666;
+.sidebar-profile div span { 
+    display: block; 
+    font-size: 12px; 
+    color: #666; 
 }
 
 
+/* MENU LINK */
 .sidebar-link {
     display: flex;
     align-items: center;
@@ -89,72 +105,138 @@ body {
     margin: 5px 0;
     transition: background 0.2s ease;
 }
-.sidebar-link:hover {
-    background-color: rgba(220,53,69,0.05);
+
+.sidebar-link i { 
+    margin-right: 10px; 
 }
-.sidebar-link i { margin-right: 10px; }
+
+.sidebar-link:hover { 
+    background-color: rgba(220,53,69,0.05); 
+}
 
 .sidebar-link.active {
     background-color: rgba(195, 222, 255, 0.909);
     border-left: 4px solid #CFDDF7;
     font-weight: bold;
-    border-radius: 0 8px 8px 0;   /* sudut kiri lurus, kanan rounded */
-    margin-left: 0;              /* tempelin ke kiri */
-    margin-right: 20px;          /* kasih spasi kanan */
-    padding-left: 20px;          /* sedikit masuk ke dalam */
+    border-radius: 0 8px 8px 0;
+    margin-left: 0;
+    margin-right: 20px;
+    padding-left: 20px;
 }
+
+
+/* FOOTER / LOGOUT */
 .sidebar-footer {
     padding: 15px;
-    margin-top: auto; 
+    margin-top: auto;
+    margin-bottom: 40px;
 }
-.sidebar-footer a {
+
+.sidebar-footer form button {
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 10px;
-    text-decoration: none;
+    background-color: #EF4444;
     color: #fff;
-    background-color: #a5ceff;
-    font-weight: bold;
+    border: none;
     border-radius: 5px;
-    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-/* === DASHBOARD === */
+
+/* === DASHBOARD CONTENT - Mengadopsi container-bukutamu/bukutamu-card === */
 .container-dashboard {
     display: flex;
     justify-content: center;
+    align-items: flex-start;
     width: 95%;
     max-width: 1300px;
-    margin-top: 20px;
+    margin: 0 auto;
+    /* PENYESUAIAN MAKSIMAL: Mengurangi padding-top menjadi margin-top 5px */
+    padding-top: 0; 
+    margin-top: 5px; 
+    padding-bottom: 20px;
 }
+
 .dashboard-card {
     display: flex;
-    background: #fff;
+    background-color: #fff;
     border-radius: 20px;
+    overflow: hidden;
     box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    height: 580px; 
     width: 100%;
-    min-height: 700px;
 }
-.dashboard-left {
-    flex: 2.2;
-    padding: 20px 30px;
+
+/* ================= LEFT PANEL (GAMBAR) - Mengadopsi bukutamu-left ================= */
+.dashboard-left-image {
+    flex: 0.9;
+    background-image: url('{{ asset("images/admin1.jpg") }}'); /* Menggunakan gambar admin */
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    padding: 80px 40px 40px;
+}
+
+.dashboard-left-image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.35) 10%, transparent 60%);
+    z-index: 1;
+}
+
+.dashboard-left-image h1 {
+    position: relative;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #fff;
+    margin-top: 40px;
+    margin-bottom: 30px;
+    z-index: 2;
+    text-shadow: 0 3px 8px rgba(0,0,0,0.55);
+    text-align: center;
+}
+
+.dashboard-left-image h1 span {
+    color: #30E3BC;
+}
+
+/* ================= RIGHT PANEL (KONTEN) - Mengadopsi bukutamu-right ================= */
+.dashboard-right-content {
+    flex: 2.1;
+    padding: 40px 50px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    position: relative;
+    gap: 20px; /* Tambahkan gap */
 }
+
+/* Title Card (Diubah agar mirip h1 Buku Tamu tapi tetap mempertahankan menu) */
 .title-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 10px 20px;
-    font-size: 1.5rem;
+    background: transparent; 
+    border-radius: 0; 
+    padding: 0; 
+    font-size: 2rem; /* Sedikit lebih kecil dari h1 */
     font-weight: 800;
-    color: #007BFF;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    color: #003366; /* Mengadopsi warna h1 */
+    margin-bottom: 15px; 
     display: flex;
     align-items: center;
     gap: 15px;
 }
+
+.title-card span {
+    color: #30E3BC; 
+}
+
 .menu-icon {
     cursor: pointer;
     display: flex;
@@ -162,129 +244,199 @@ body {
     justify-content: space-between;
     width: 22px;
     height: 18px;
+    min-width: 22px;
 }
 .menu-icon span {
     height: 3px;
-    background: #333;
+    background: #003366;
     border-radius: 2px;
 }
 
-/* === TABLE === */
+
+/* === TABLE SECTION (Data Card) - Mengadopsi tabel-section === */
+.data-table-section {
+    flex-grow: 1; /* Pastikan mengambil ruang yang tersedia */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Mengganti date-box dengan filter/search (jika ada, saat ini tidak ada filter) */
+.filter-box {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+/* Struktur Tabel */
 .data-card {
     background: #fff;
     border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    padding: 0; /* Menghapus padding agar header/row bisa diatur terpisah */
+    box-shadow: 0 6px 15px rgba(0,0,0,0.05); /* Mengurangi shadow */
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    font-size: 0.8rem;
+    flex-grow: 1;
+    border: 1px solid #eee; /* Tambahkan border tipis */
+    overflow: hidden;
 }
+
 .data-table-header, .data-table-row {
     display: flex;
-    padding: 8px;
-    align-items: center;
+    padding: 8px 10px;
 }
 .data-table-header {
-    font-weight: 600;
-    border-bottom: 2px solid #eee;
+    font-weight: 700; /* Mengadopsi font-weight 700 */
+    border-bottom: 2px solid #007BFF; /* Mengadopsi warna border */
     color: #333;
+    font-size: .9rem; 
+    background-color: #f8f9fa; /* Latar belakang untuk header */
 }
 .data-table-row {
-    border-bottom: 1px dashed #ddd;
+    border-bottom: 1px solid #ddd; /* Mengubah dari dashed */
     color: #444;
+    font-size: .85rem;
 }
-.data-table-header > span, .data-table-row > span {
-    flex: 1;
-    text-align: left;
+.data-table-row:last-child {
+    border-bottom: none;
 }
-.checkbox-col { flex: 0.1; }
 
+/* Column Flex Properties - RAPAT KIRI DAN PROPORSI KOLOM */
+.data-table-header > span, .data-table-row > span {
+    text-align: left; /* PENTING: Untuk rata kiri */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Mencegah teks turun baris */
+}
+
+.checkbox-col { flex: 0.1; min-width: 30px; }
+/* PENTING: Penyesuaian proporsi flex agar tabel rata */
+.col-tanggal { flex: 1; min-width: 80px;} 
+.col-nama { flex: 2; min-width: 150px; } /* Ditingkatkan menjadi 2 */
+.col-instansi { flex: 1.5; min-width: 100px; }
+.col-layanan { flex: 2.5; min-width: 150px; } /* Ditingkatkan menjadi 2.5 */
+.col-keperluan { flex: 3; min-width: 200px; } /* Ditingkatkan menjadi 3 */
+.col-hp { flex: 1.2; min-width: 90px; }
+
+
+/* Wrapper untuk container yang bisa di-scroll */
+.tabel-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 6px;
+    margin-top: 5px;
+}
+
+/* Action Buttons - Diadaptasi dari .action-buttons sebelumnya */
 .action-buttons {
+    padding: 15px 10px;
     display: flex;
     justify-content: flex-end;
     gap: 10px;
-    margin-top: 15px;
+    border-top: 1px solid #eee;
 }
 .btn-action {
     padding: 10px 20px;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
+    transition: 0.2s ease;
+    text-transform: uppercase;
+    font-size: 0.85rem;
 }
-.btn-edit { background-color: #20c997; color: #fff; }
-.btn-hapus { background-color: #dc3545; color: #fff; }
-
-.btn-item {
-    flex: 1;
-    font-weight: 600;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
+.btn-edit { 
+    background-color: #20c997; /* Hijau */
+    color: #fff; 
+    box-shadow: 0 3px 8px rgba(32, 201, 151, 0.4);
 }
-.btn-item:hover { transform: translateY(-1px); }
-.btn-laporan { background-color: #dfefff; color: #444; }
-.btn-keluar { background-color: #EF4444; color: #fff; }
+.btn-edit:hover { background-color: #1a9c7b; }
 
-.dashboard-right {
-    flex: 0.9;
-    background-color: #C9E1FF;
-    background-image: url('{{ asset('images/admin1.jpg') }}');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 60px 20px 20px;
-    position: relative;
+.btn-hapus { 
+    background-color: #dc3545; /* Merah */
+    color: #fff; 
+    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.4);
+}
+.btn-hapus:hover { background-color: #c82333; }
 
-    /* TAMBAHAN INI BIAR UJUNG KANAN ATAS & BAWAH MELENGKUNG */
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
-    overflow: hidden; /* wajib biar fotonya ngikut bentuk radius */
+/* ===================================================== */
+/* ================= RESPONSIVE MODE ==================== */
+/* ===================================================== */
+@media (max-width: 992px) {
+
+    .dashboard-card { flex-direction: column; height: auto; }
+
+    /* Mengubah urutan untuk mobile: Gambar di atas */
+    .dashboard-left-image { 
+        order: 1;
+        height: 260px; 
+        padding-top: 40px; 
+        border-radius: 20px 20px 0 0; 
+    }
+
+    .dashboard-left-image h1 { font-size: 1.8rem; margin-top: 10px; }
+    
+    .dashboard-right-content {
+        order: 2;
+        padding: 30px 20px;
+    }
+
+    .title-card {
+        font-size: 1.8rem;
+    }
+    
+    .container-dashboard {
+        margin-top: 10px; /* Dikecilkan lagi untuk mobile */
+    }
+
+    .logo-header {
+        top: 10px;
+        right: 10px;
+    }
+
+    .logo-header img {
+        height: 40px;
+    }
 }
 
-.dashboard-right::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 15%, transparent 60%);
-}
-.dashboard-right h1 {
-    position: relative;
-    font-size: 2rem;
-    font-weight: 800;
-    color: #fff;
-    text-align: center;
-    z-index: 2;
-    margin-top: 40px;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
-}
-.dashboard-right h1 span { color: #30E3BC; }
+@media (max-width: 600px) {
+    .dashboard-left-image h1 {
+        font-size: 1.5rem;
+    }
+    
+    .title-card {
+        font-size: 1.5rem;
+    }
+    
+    .data-table-header span,
+    .data-table-row span {
+        font-size: .7rem; /* Lebih kecil agar muat */
+    }
 
-@media (max-width:992px) {
-    .dashboard-card { flex-direction: column; }
-    .dashboard-right { width: 100%; margin-top: 20px; }
+    .action-buttons {
+        padding: 10px;
+        gap: 5px;
+    }
+    .btn-action {
+        padding: 8px 10px;
+        font-size: 0.7rem;
+    }
+    
+    /* Radius untuk mobile */
+    .dashboard-card {
+        border-radius: 15px;
+    }
+    .dashboard-left-image {
+        border-radius: 15px 15px 0 0;
+    }
 }
 </style>
 
-<!-- Logo -->
 <div class="logo-header">
     <img src="{{ asset('images/LOGO_KEMENTRIAN.png') }}" alt="Logo Kementrian">
     <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
 </div>
 
-<!-- === SIDEBAR === -->
 <div id="sidebar">
     <div class="sidebar-profile">
         <img src="{{ asset('images/avatar_admin.jpg') }}" alt="Avatar">
@@ -317,55 +469,62 @@ body {
             <button type="submit" class="btn-item btn-keluar">
                 <i class="fas fa-sign-out-alt"></i> Keluar
             </button>
-        </form>    
+        </form>     
     </div>
 </div>
 <div id="sidebar-overlay"></div>
 
-<!-- === DASHBOARD CONTENT === -->
 <div class="container-dashboard">
     <div class="dashboard-card">
-        <div class="dashboard-left">
-            <div class="title-card">
-                <div class="menu-icon" id="menuToggle"><span></span><span></span><span></span></div>
-                Data Pengunjung
-            </div>
-
-            <div class="data-card">
-                <div class="data-table-header">
-                    <span class="checkbox-col"><input type="checkbox" id="checkAll"></span>
-                    <span>Tanggal</span>
-                    <span>Nama / NIP</span>
-                    <span>Instansi</span>
-                    <span>Layanan</span>
-                    <span>Keperluan</span>
-                    <span>No. Hp</span>
-                </div>
-
-                <form id="batchForm" method="POST" action="">
-                    @csrf
-                    @foreach($pengunjung as $item)
-                    <div class="data-table-row">
-                        <span class="checkbox-col"><input type="checkbox" name="ids[]" value="{{ $item->id }}"></span>
-                        <span>{{ $item->tanggal }}</span>
-                        <span>{{ $item->nama_nip }}</span>
-                        <span>{{ $item->instansi }}</span>
-                        <span>{{ $item->layanan }}</span>
-                        <span>{{ $item->keperluan }}</span>
-                        <span>{{ $item->no_hp }}</span>
-                    </div>
-                    @endforeach
-
-                    <div class="action-buttons">
-                        <button type="button" class="btn-action btn-edit" id="batchEdit">Edit</button>
-                        <button type="button" class="btn-action btn-hapus" id="batchDelete">Hapus</button>
-                    </div>
-                </form>
-            </div>
+        
+        <div class="dashboard-left-image">
+            <h1>Data <span>Pengunjung</span> Admin</h1>
         </div>
 
-        <div class="dashboard-right">
-            <h1>Data <span>Pengunjung!</span></h1>
+        <div class="dashboard-right-content">
+            
+            <div class="title-card">
+                <div class="menu-icon" id="menuToggle"><span></span><span></span><span></span></div>
+                Data <span>Pengunjung</span>
+            </div>
+
+            <div class="data-table-section">
+                
+                <div class="data-card">
+                    <div class="data-table-header">
+                        <span class="checkbox-col"><input type="checkbox" id="checkAll"></span>
+                        <span class="col-tanggal">Tanggal</span>
+                        <span class="col-nama">Nama / NIP</span>
+                        <span class="col-instansi">Instansi</span>
+                        <span class="col-layanan">Layanan</span>
+                        <span class="col-keperluan">Keperluan</span>
+                        <span class="col-hp">No. Hp</span>
+                    </div>
+
+                    <form id="batchForm" method="POST" action="">
+                        @csrf
+                        <div class="tabel-container">
+                            @foreach($pengunjung as $item)
+                            <div class="data-table-row">
+                                <span class="checkbox-col"><input type="checkbox" name="ids[]" value="{{ $item->id }}"></span>
+                                <span class="col-tanggal">{{ $item->tanggal }}</span>
+                                <span class="col-nama">{{ $item->nama_nip }}</span>
+                                <span class="col-instansi">{{ $item->instansi }}</span>
+                                <span class="col-layanan">{{ $item->layanan }}</span>
+                                <span class="col-keperluan">{{ $item->keperluan }}</span>
+                                <span class="col-hp">{{ $item->no_hp }}</span>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div class="action-buttons">
+                            <button type="button" class="btn-action btn-edit" id="batchEdit">Edit</button>
+                            <button type="button" class="btn-action btn-hapus" id="batchDelete">Hapus</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
         </div>
     </div>
 </div>

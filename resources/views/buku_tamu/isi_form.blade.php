@@ -16,20 +16,20 @@
         overflow-x: hidden;
     }
 
-    /* ======================== LOGO HEADER ======================== */
-    .logo-header {
-        position: absolute;
-        top: 25px;
-        right: 45px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        z-index: 100;
-    }
+/* LOGO */
+.logo-header {
+    position: absolute;
+    top: 18px;
+    right: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+}
 
-    .logo-header img {
-        height: 55px;
-    }
+.logo-header img {
+    height: 50px;
+}
 
     /* ======================== WRAPPER ======================== */
     .bukutamu-wrapper {
@@ -69,7 +69,7 @@
     }
 
     .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 15px;
     }
 
     .form-group label {
@@ -142,7 +142,7 @@
 
     .bukutamu-right h1 {
         position: relative;
-        font-size: 2.4rem;
+        font-size: 2rem;
         font-weight: 800;
         color: #fff;
         text-align: center;
@@ -157,29 +157,115 @@
         text-shadow: 0 3px 8px rgba(0, 0, 0, 0.55);
     }
 
-    /* ======================== RESPONSIVE ======================== */
-    @media (max-width: 992px) {
-        .bukutamu-wrapper {
-            flex-direction: column;
-            height: auto;
-            width: 95%;
-        }
-
-        .bukutamu-left {
-            order: 2;
-            padding: 30px 25px;
-        }
-
-        .bukutamu-right {
-            order: 1;
-            height: 300px;
-            background-position: center;
-        }
-
-        .bukutamu-left h1 {
-            font-size: 2rem;
-        }
+/* ======================== RESPONSIVE (TABLET) ======================== */
+@media (max-width: 992px) {
+    .bukutamu-wrapper {
+        flex-direction: column;
+        height: auto;
+        width: 95%;
     }
+
+    .bukutamu-left {
+        order: 2;
+        padding: 35px 25px;
+    }
+
+    .bukutamu-right {
+        order: 1;
+        height: 280px;
+        background-position: center;
+    }
+
+    .bukutamu-left h1 {
+        font-size: 1.9rem;
+    }
+
+    .logo-header {
+        top: 10px;
+        right: 10px;
+    }
+
+    .logo-header img {
+        height: 40px;
+    }
+}
+
+/* ======================== RESPONSIVE HP (LEBIH KECIL) ======================== */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    .bukutamu-wrapper {
+        border-radius: 15px;
+        width: 100%;
+    }
+
+    .bukutamu-left {
+        padding: 28px 20px;
+    }
+
+    .bukutamu-left h1 {
+        font-size: 1.6rem;
+        margin-bottom: 20px;
+        line-height: 1.2;
+    }
+
+    .form-group label {
+        font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 11px 5px;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+
+    .btn-submit {
+        width: 100%;
+        text-align: center;
+        padding: 12px 0;
+        font-size: 1rem;
+        border-radius: 10px;
+    }
+
+    .bukutamu-right {
+        height: 220px;
+        padding: 40px 20px;
+    }
+
+    .bukutamu-right h1 {
+        font-size: 1.5rem;
+        margin-top: 40px;
+    }
+}
+
+/* ======================== RESPONSIVE HP MINI (iPhone SE / Android kecil) ======================== */
+@media (max-width: 390px) {
+    .bukutamu-left {
+        padding: 20px 15px;
+    }
+
+    .bukutamu-left h1 {
+        font-size: 1.4rem;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+
+    .bukutamu-right {
+        height: 180px;
+    }
+
+    .bukutamu-right h1 {
+        font-size: 1.3rem;
+    }
+}
+
 </style>
 
 <div class="logo-header">

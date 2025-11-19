@@ -6,26 +6,30 @@
 
 @section('content')
 <style>
+/* ======================== GLOBAL ======================== */
 body {
     background-color: #DFEDFE;
     font-family: 'Poppins', sans-serif;
     margin: 0;
-    padding-top: 50px;
+    /* PENYESUAIAN: Menghapus padding-top 50px */
+    padding-top: 0rem; 
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
 /* LOGO */
 .logo-header {
     position: absolute;
-    top: 25px;
-    right: 45px;
+    top: 18px; /* Lebih ke atas */
+    right: 25px;
     display: flex;
+    align-items: center;
     gap: 10px;
     z-index: 100;
 }
-.logo-header img { height: 55px; }
+.logo-header img { height: 50px; } /* Lebih kecil */
 
-/* === SIDEBAR === */
+/* SIDEBAR - Pertahankan Gaya Asli */
 #sidebar {
     position: fixed;
     top: 0;
@@ -38,11 +42,14 @@ body {
     transition: left 0.3s ease;
     padding: 20px 0;
     border-radius: 0 20px 20px 0;
-
-    display: flex;          /* biar bisa dorong footer ke bawah */
-    flex-direction: column; /* vertikal */
+    display: flex;
+    flex-direction: column;
 }
-#sidebar.active { left: 0; }
+
+#sidebar.active { 
+    left: 0; 
+}
+
 #sidebar-overlay {
     position: fixed;
     inset: 0;
@@ -50,38 +57,43 @@ body {
     z-index: 999;
     display: none;
 }
-#sidebar.active + #sidebar-overlay { display: block; }
 
+#sidebar.active + #sidebar-overlay { 
+    display: block; 
+}
+
+/* PROFILE DI SIDEBAR */
 .sidebar-profile {
     display: flex;
-    flex-direction: column;     /* susun vertikal */
-    justify-content: center;
-    align-items: center;        /* center horizontal */
+    flex-direction: column;
+    align-items: center;
     padding: 0 15px 20px 15px;
     border-bottom: 1px solid #eee;
     margin-bottom: 10px;
-    text-align: center;         /* biar teksnya center */
+    text-align: center;
 }
 
 .sidebar-profile img {
     width: 60px; 
     height: 60px;
-    border-radius: 50%; 
+    border-radius: 50%;
     object-fit: cover;
-    margin: 0 0 10px 0;         /* jarak ke nama */
+    margin-bottom: 10px;
 }
 
-.sidebar-profile div {
-    font-size: 14px;
-    color: #333;
+.sidebar-profile div { 
+    font-size: 14px; 
+    color: #333; 
 }
 
-.sidebar-profile div span {
-    display: block;
-    font-size: 12px;
-    color: #666;
+.sidebar-profile div span { 
+    display: block; 
+    font-size: 12px; 
+    color: #666; 
 }
 
+
+/* MENU LINK */
 .sidebar-link {
     display: flex;
     align-items: center;
@@ -92,74 +104,96 @@ body {
     margin: 5px 0;
     transition: background 0.2s ease;
 }
-.sidebar-link:hover {
-    background-color: rgba(220,53,69,0.05);
+
+.sidebar-link i { 
+    margin-right: 10px; 
 }
-.sidebar-link i { margin-right: 10px; }
+
+.sidebar-link:hover { 
+    background-color: rgba(220,53,69,0.05); 
+}
 
 .sidebar-link.active {
     background-color: rgba(195, 222, 255, 0.909);
     border-left: 4px solid #CFDDF7;
     font-weight: bold;
-    border-radius: 0 8px 8px 0;   /* sudut kiri lurus, kanan rounded */
-    margin-left: 0;              /* tempelin ke kiri */
-    margin-right: 20px;          /* kasih spasi kanan */
-    padding-left: 20px;          /* sedikit masuk ke dalam */
+    border-radius: 0 8px 8px 0;
+    margin-left: 0;
+    margin-right: 20px;
+    padding-left: 20px;
 }
+
+
+/* FOOTER / LOGOUT */
 .sidebar-footer {
     padding: 15px;
-    margin-top: auto; 
+    margin-top: auto;
+    margin-bottom: 40px; 
 }
-.sidebar-footer a {
+
+.sidebar-footer form button {
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 10px;
-    text-decoration: none;
+    background-color: #EF4444;
     color: #fff;
-    background-color: #a5ceff;
-    font-weight: bold;
+    border: none;
     border-radius: 5px;
-    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-
-/* CONTAINER */
+/* === DASHBOARD MAIN LAYOUT === */
 .container-dashboard {
     display: flex;
     justify-content: center;
+    align-items: flex-start;
     width: 95%;
     max-width: 1300px;
-    margin: 20px auto;
+    margin: 0 auto;
+    /* PENYESUAIAN: Konten ditarik ke atas */
+    padding-top: 0; 
+    margin-top: 5px; 
+    padding-bottom: 20px;
 }
 
 .dashboard-card {
     display: flex;
-    background: #fff;
+    background-color: #fff;
     border-radius: 20px;
+    overflow: hidden;
     box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    min-height: 580px;
     width: 100%;
 }
 
+/* ================= LEFT PANEL (KONTEN) ================= */
 .dashboard-left {
-    flex: 2.2;
-    padding: 20px 30px;
+    flex: 2.1; /* Mengadopsi rasio konten yang lebih besar */
+    padding: 40px 50px;
     display: flex;
     flex-direction: column;
+    position: relative;
     gap: 20px;
 }
 
+/* Title Card */
 .title-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 10px 20px;
-    font-size: 1.5rem;
+    background: transparent; 
+    border-radius: 0; 
+    padding: 0; 
+    font-size: 2rem; 
     font-weight: 800;
-    color: #007BFF;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    color: #003366; 
+    margin-bottom: 15px; 
     display: flex;
     align-items: center;
     gap: 15px;
+}
+.title-card span {
+    color: #30E3BC; 
 }
 
 
@@ -171,20 +205,24 @@ body {
     justify-content: space-between;
     width: 22px;
     height: 18px;
+    min-width: 22px;
 }
 .menu-icon span {
     height: 3px;
-    background: #333;
+    background: #003366;
     border-radius: 2px;
 }
 
+
+/* REPORT CONTENT & CHARTS */
 .report-content {
     display: flex;
-    justify-content: space-around;
-    align-items: center;
+    justify-content: center; /* Diubah dari space-around ke center */
+    align-items: flex-start; /* Diubah dari center ke flex-start */
     gap: 40px;
     padding: 20px 0;
     flex-wrap: wrap;
+    flex-grow: 1;
 }
 
 .report-chart {
@@ -198,6 +236,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    border: 1px solid #eee; /* Tambah border tipis */
 }
 
 /* FIX DONUT BIAR NGGAK GEPENG */
@@ -205,53 +244,40 @@ body {
     width: 220px;
     height: 220px;
     position: relative;
+    margin-bottom: 10px;
 }
 .chart-wrapper canvas {
     position: absolute;
     inset: 0;
 }
-
-
-/* BUTTON */
-/* === BUTTONS === */
-.button-wrapper {
-    display: flex;
-    gap: 15px;
-}
-.btn-item {
-    flex: 1;
+.report-chart p {
     font-weight: 600;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
+    color: #333;
+    margin: 5px 0 0 0;
 }
-.btn-item:hover { transform: translateY(-1px); }
-.btn-laporan { background-color: #dfefff; color: #444; }
-.btn-keluar { background-color: #EF4444; color: #fff; }
 
+
+/* BUTTON UNDUH */
 .btn-unduh {
     display: inline-block;
     background-color: #1BC5BD;
     color: white;
-    padding: 10px 30px;
-    margin-top: 12px;
-    border-radius: 8px;
+    padding: 10px 25px; /* Disesuaikan */
+    margin-top: 15px; /* Disesuaikan */
+    border-radius: 10px; /* Disesuaikan */
     font-weight: 600;
     text-decoration: none;
+    box-shadow: 0 3px 8px rgba(27, 197, 189, 0.4);
+    transition: 0.2s ease;
+    text-transform: uppercase;
+    font-size: 0.85rem;
 }
 .btn-unduh:hover {
     background-color: #15a098;
 }
 
-/* RIGHT PANEL */
+
+/* RIGHT PANEL (Image) - Mengadopsi dashboard-left-image Data Pengunjung */
 .dashboard-right {
     flex: 0.9;
     background-color: #C9E1FF;
@@ -262,7 +288,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding: 60px 20px 20px;
+    padding: 80px 40px 40px; /* Padding disesuaikan */
     position: relative;
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -273,19 +299,95 @@ body {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.25) 20%, transparent 60%);
+    background: linear-gradient(to bottom, rgba(0,0,0,0.35) 10%, transparent 60%);
     z-index: 1;
 }
 .dashboard-right h1 {
     z-index: 2;
     color: white;
     text-align: center;
-    font-size: 2rem;
+    font-size: 2.2rem; /* Disesuaikan */
     font-weight: 800;
     margin-top: 40px;
+    text-shadow: 0 3px 8px rgba(0,0,0,0.55);
 }
 .dashboard-right h1 span { color: #30E3BC; }
 
+
+/* === RESPONSIVE MODE === */
+@media (max-width: 992px) {
+
+    .dashboard-card { flex-direction: column; min-height: auto; }
+
+    /* Mengubah urutan untuk mobile: Gambar di atas */
+    .dashboard-right { 
+        order: 1;
+        height: 260px; 
+        padding-top: 40px; 
+        border-radius: 20px 20px 0 0; 
+        border-bottom-right-radius: 0;
+    }
+
+    .dashboard-right h1 { font-size: 1.8rem; margin-top: 10px; }
+    
+    .dashboard-left {
+        order: 2;
+        padding: 30px 20px;
+    }
+
+    .title-card {
+        font-size: 1.8rem;
+    }
+    
+    .container-dashboard {
+        margin-top: 10px; 
+    }
+
+    .logo-header {
+        top: 10px;
+        right: 10px;
+    }
+
+    .logo-header img {
+        height: 40px;
+    }
+    
+    .report-chart {
+        width: 100%;
+        max-width: 320px; /* Batasi lebar chart di mobile */
+    }
+    
+    .report-content {
+        gap: 20px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .dashboard-right h1 {
+        font-size: 1.5rem;
+    }
+    
+    .title-card {
+        font-size: 1.5rem;
+    }
+    
+    .report-chart {
+        padding: 15px;
+    }
+    
+    .btn-unduh {
+        padding: 8px 15px;
+        font-size: 0.75rem;
+    }
+
+    .dashboard-card {
+        border-radius: 15px;
+    }
+    .dashboard-right {
+        border-radius: 15px 15px 0 0;
+    }
+}
 </style>
 
 {{-- === LOGO === --}}
@@ -294,7 +396,6 @@ body {
     <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
 </div>
 
-<!-- === SIDEBAR === -->
 <div id="sidebar">
     <div class="sidebar-profile">
         <img src="{{ asset('images/avatar_admin.jpg') }}" alt="Avatar">
@@ -327,7 +428,7 @@ body {
             <button type="submit" class="btn-item btn-keluar">
                 <i class="fas fa-sign-out-alt"></i> Keluar
             </button>
-        </form>    
+        </form>     
     </div>
 </div>
 <div id="sidebar-overlay"></div>
@@ -340,7 +441,7 @@ body {
                 <div class="menu-icon" id="menuToggle">
                     <span></span><span></span><span></span>
                 </div>
-                Laporan
+                Laporan <span>Data</span>
             </div>
 
             <div class="report-content">
@@ -417,7 +518,12 @@ new Chart(document.getElementById('chartPengunjung'), {
         responsive: true,
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
-        cutout: '70%' 
+        cutout: '70%',
+        elements: {
+            arc: {
+                borderWidth: 0
+            }
+        }
     }
 });
 
@@ -435,7 +541,12 @@ new Chart(document.getElementById('chartSkm'), {
         responsive: true,
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
-        cutout: '70%' 
+        cutout: '70%',
+        elements: {
+            arc: {
+                borderWidth: 0
+            }
+        }
     }
 });
 </script>

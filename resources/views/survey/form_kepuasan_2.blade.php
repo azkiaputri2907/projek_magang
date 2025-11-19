@@ -4,167 +4,248 @@
 
 @section('content')
 <style>
-    body {
-        background-color: #DFEDFE;
-        font-family: 'Poppins', sans-serif;
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow-x: hidden;
+/* ======================== GLOBAL ======================== */
+body {
+    background-color: #DFEDFE;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+.logo-header {
+    position: absolute;
+    top: 18px;
+    right: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+}
+
+.logo-header img {
+    height: 50px;
+}
+
+/* ======================== WRAPPER ======================== */
+.bukutamu-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    width: 95%;
+    max-width: 1300px;
+    min-height: 720px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ======================== LEFT PANEL ======================== */
+.bukutamu-left {
+    flex: 2.1;
+    padding: 60px 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.bukutamu-left h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #003366;
+    margin-bottom: 30px;
+    line-height: 1.3;
+}
+
+.bukutamu-left h1 span {
+    color: #30E3BC;
+}
+
+.question-group {
+    margin-bottom: 25px;
+}
+
+.question-group p {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.question-group select {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: 0.2s;
+}
+
+.question-group select:focus {
+    border-color: #30E3BC;
+    box-shadow: 0 0 0 3px rgba(48, 227, 188, 0.2);
+    outline: none;
+}
+
+.btn-next {
+    background-color: #30E3BC;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 13px 40px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top: 25px;
+    box-shadow: 0 5px 15px rgba(48, 227, 188, 0.3);
+    transition: 0.25s ease;
+    align-self: flex-start;
+}
+
+.btn-next:hover {
+    background-color: #27C4A1;
+    transform: translateY(-2px);
+}
+
+/* ======================== RIGHT PANEL ======================== */
+.bukutamu-right {
+    flex: 0.9;
+    background-color: #C9E1FF;
+    background-image: url('{{ asset('images/survey.png') }}');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 80px 40px 40px;
+}
+
+.bukutamu-right::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 15%, transparent 60%);
+    z-index: 1;
+}
+
+.bukutamu-right h1 {
+    position: relative;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #fff;
+    text-align: center;
+    z-index: 2;
+    margin-top: 60px;
+    line-height: 1.3;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.55);
+}
+
+.bukutamu-right h1 span {
+    color: #30E3BC;
+}
+
+/* ======================== RESPONSIVE ======================== */
+@media (max-width: 992px) {
+    .bukutamu-wrapper {
+        flex-direction: column;
+        width: 95%;
+    }
+
+    .bukutamu-left {
+        order: 2;
+        padding: 30px 25px;
+    }
+
+    .bukutamu-right {
+        order: 1;
+        height: 280px;
+        background-position: center;
     }
 
     .logo-header {
-        position: absolute;
-        top: 25px;
-        right: 45px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        z-index: 100;
+        top: 10px;
+        right: 15px;
     }
 
     .logo-header img {
-        height: 55px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
     }
 
-    .survey-wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: stretch;
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-        width: 95%;
-        max-width: 1300px;
-        min-height: 720px;
-        overflow: hidden;
-        position: relative;
+    .bukutamu-wrapper {
+        border-radius: 15px;
+        width: 100%;
     }
 
-    .survey-left {
-        flex: 2.1;
-        padding: 60px 80px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+    .bukutamu-left {
+        padding: 28px 20px;
     }
 
-    .survey-left h1 {
-        font-size: 2.4rem;
-        font-weight: 800;
-        color: #003366;
-        margin-bottom: 30px;
-        line-height: 1.3;
-    }
-
-    .survey-left h1 span {
-        color: #30E3BC;
-    }
-
-    .question-group {
-        margin-bottom: 30px;
+    .bukutamu-left h1 {
+        font-size: 1.7rem;
     }
 
     .question-group p {
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 10px;
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
 
     .question-group select {
-        width: 100%;
-        padding: 13px 14px;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        font-size: 1rem;
-        transition: 0.2s;
-        max-width: 500px;
-    }
-
-    .question-group select:focus {
-        border-color: #30E3BC;
-        box-shadow: 0 0 0 3px rgba(48, 227, 188, 0.2);
-        outline: none;
+        padding: 11px;
+        font-size: 0.9rem;
+        border-radius: 8px;
     }
 
     .btn-next {
-        background-color: #30E3BC;
-        color: white;
-        font-weight: 700;
-        font-size: 1.1rem;
-        padding: 13px 40px;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        margin-top: 25px;
-        box-shadow: 0 5px 15px rgba(48, 227, 188, 0.3);
-        transition: 0.25s ease;
-        align-self: flex-start;
+        width: 100%;
+        padding: 12px 0;
+        font-size: 1rem;
+        border-radius: 10px;
     }
 
-    .btn-next:hover {
-        background-color: #27C4A1;
-        transform: translateY(-2px);
+    .bukutamu-right {
+        height: 220px;
+        padding: 40px 20px;
     }
 
-    .survey-right {
-        flex: 0.9;
-        background-color: #C9E1FF;
-        background-image: url('{{ asset('images/survey.png') }}');
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: cover;
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        padding: 80px 40px 40px;
+    .bukutamu-right h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 390px) {
+    .bukutamu-left {
+        padding: 20px 15px;
     }
 
-    .survey-right::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to bottom, rgba(0,0,0,0.3) 15%, transparent 60%);
-        z-index: 1;
+    .bukutamu-left h1 {
+        font-size: 1.4rem;
     }
 
-    .survey-right h1 {
-        position: relative;
-        font-size: 2.4rem;
-        font-weight: 800;
-        color: #fff;
-        text-align: center;
-        z-index: 2;
-        margin-top: 60px;
-        line-height: 1.3;
-        text-shadow: 0 3px 8px rgba(0, 0, 0, 0.55);
+    .question-group select {
+        padding: 10px;
+        font-size: 0.85rem;
     }
 
-    .survey-right h1 span {
-        color: #30E3BC;
+    .bukutamu-right {
+        height: 180px;
     }
 
-    @media (max-width: 992px) {
-        .survey-wrapper {
-            flex-direction: column;
-            width: 95%;
-        }
-
-        .survey-left {
-            order: 2;
-            padding: 30px 25px;
-        }
-
-        .survey-right {
-            order: 1;
-            height: 300px;
-            background-position: center;
-        }
+    .bukutamu-right h1 {
+        font-size: 1.3rem;
     }
+}
 </style>
 
 <div class="logo-header">
@@ -172,9 +253,10 @@
     <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
 </div>
 
-<div class="survey-wrapper">
-    {{-- ================= FORM DI KIRI ================= --}}
-    <div class="survey-left">
+<div class="bukutamu-wrapper">
+
+    {{-- ================= FORM KIRI ================= --}}
+    <div class="bukutamu-left">
         <h1>Aspek <span>Pelayanan</span></h1>
 
         <form action="{{ route('survey.petugas') }}" method="GET">
@@ -241,8 +323,8 @@
         </form>
     </div>
 
-    {{-- ================= FOTO DI KANAN ================= --}}
-    <div class="survey-right">
+    {{-- ================= FOTO KANAN ================= --}}
+    <div class="bukutamu-right">
         <h1>2/3 <span>Survey</span></h1>
     </div>
 </div>

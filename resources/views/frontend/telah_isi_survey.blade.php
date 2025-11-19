@@ -15,10 +15,11 @@
             min-height: 100vh;
         }
 
+        /* ==== LOGO HEADER ==== */
         .logo-header {
             position: absolute;
-            top: 25px;
-            right: 45px;
+            top: 10px;          /* disamain */
+            right: 10px;        /* disamain */
             display: flex;
             align-items: center;
             gap: 10px;
@@ -26,9 +27,10 @@
         }
 
         .logo-header img {
-            height: 55px;
+            height: 40px;       /* kecilin sesuai kode kedua */
         }
 
+        /* ==== KONTEN UTAMA ==== */
         .container {
             flex-grow: 1;
             display: flex;
@@ -42,25 +44,22 @@
         .illustration-box img {
             width: 210px;
             max-width: 85%;
-            height: 210px; /* samain tinggi biar bisa jadi lingkaran */
-            object-fit: cover; /* biar gambar nggak gepeng */
-            border-radius: 60%; /* bikin jadi bulat */
+            height: auto;
             display: block;
             margin: 0 auto 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* opsional: biar ada bayangan lembut */
         }
 
         .title {
             font-size: 24px;
             font-weight: 700;
             color: #003366;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
 
         .subtitle {
             font-size: 14px;
             color: #555;
-            margin-bottom: 25px;
+            margin-bottom: 22px;
         }
 
         .btn-back {
@@ -69,7 +68,7 @@
             font-weight: 600;
             padding: 8px 24px;
             border: none;
-            border-radius: 10px;
+            border-radius: 20px;   /* disamain kayak btn-survey */
             cursor: pointer;
             font-size: 0.95rem;
             box-shadow: 0 3px 8px rgba(48, 227, 188, 0.4);
@@ -92,11 +91,12 @@
 
     <div class="container">
         <div class="illustration-box">
-            {{-- Ganti dengan gambar public/images/telah_isi_survey_(1).png --}}
-            <img src="{{ asset('images/telah_isi_survey_(1).jpg') }}" alt="Ilustrasi Terima Kasih Survey">
+            <img src="{{ asset('images/telah_isi_survey_(1).png') }}" alt="Ilustrasi Terima Kasih Survey">
         </div>
+
         <h1 class="title">Terima Kasih!</h1>
         <p class="subtitle">Kami menghargai waktu Anda dalam mengisi survei ini.</p>
+
         <a href="{{ url('/') }}" class="btn-back">Kembali</a>
     </div>
 

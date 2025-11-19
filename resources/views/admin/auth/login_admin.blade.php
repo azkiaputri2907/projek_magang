@@ -10,23 +10,21 @@
       background-color: #E8F2FF;
       margin: 0;
       padding: 0;
-      overflow: hidden;
     }
 
     .login-container {
       display: flex;
-      height: 100vh;
+      min-height: 100vh;
       background-color: #E8F2FF;
       align-items: center;
       justify-content: center;
       padding: 20px;
     }
 
-    /* --- Card putih utama --- */
     .login-card {
       display: flex;
       background-color: #fff;
-      border-radius: 30px;
+      border-radius: 25px;
       box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
       overflow: hidden;
       width: 90%;
@@ -34,7 +32,6 @@
       height: 500px;
     }
 
-    /* --- Bagian kiri (foto) --- */
     .illustration-side {
       flex: 1.1;
       display: flex;
@@ -49,7 +46,7 @@
       object-fit: cover;
     }
 
-    /* --- Bagian kanan (form login) --- */
+    /* FORM */
     .form-side {
       flex: 1;
       display: flex;
@@ -59,10 +56,11 @@
       position: relative;
     }
 
+    /* Logo di pojok kanan */
     .logo-header {
       position: absolute;
-      top: 18px;
-      right: 30px;
+      top: 15px;
+      right: 25px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -102,7 +100,7 @@
     input[type="email"],
     input[type="password"] {
       width: 100%;
-      padding: 10px 12px;
+      padding: 12px 14px;
       border: none;
       border-radius: 8px;
       background-color: #f1f5f9;
@@ -120,21 +118,32 @@
       right: 12px;
       top: 10px;
       cursor: pointer;
-      color: #aaa;
-      font-size: 16px;
+      font-size: 18px;
+      transition: .2s;
     }
+
+    /* Mata kebuka */
+    .eye-open {
+      content: "🙈";
+    }
+
+    /* Mata ketutup */
+    .eye-close {
+      content: "🙉";
+    }
+
 
     .btn-login {
       background-color: #30E3BC;
       color: #fff;
       border: none;
-      padding: 10px 0;
+      padding: 12px 0;
       border-radius: 10px;
       cursor: pointer;
       font-weight: 600;
       font-size: 14px;
       box-shadow: 0 3px 8px rgba(48, 227, 188, 0.4);
-      transition: 0.2s ease-in-out;
+      transition: .2s;
       margin-top: 10px;
       width: 100%;
     }
@@ -154,46 +163,73 @@
       font-size: 13px;
     }
 
-    /* --- Responsif --- */
-    @media (max-width: 900px) {
-      body {
-        overflow-y: auto;
-      }
+    /* === MOBILE RESPONSIVE === */
+/* === RESPONSIVE HP === */
+@media (max-width: 900px) {
 
-      .login-card {
-        flex-direction: column-reverse;
-        border-radius: 20px;
-        height: auto;
-      }
+  .login-card {
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 18px;
+  }
 
-      .illustration-side {
-        display: none;
-      }
+  /* Ilustrasi tetap muncul di atas */
+  .illustration-side {
+    display: block;
+    width: 100%;
+    height: 140px;
+  }
 
-      .form-side {
-        padding: 30px 25px;
-      }
+  .illustration-side img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
-      .logo-header {
-        position: static;
-        justify-content: center;
-        margin-bottom: 20px;
-      }
+  /* Logo tetap di kanan atas */
+    .logo-header {
+        top: 10px;
+        right: 10px;
     }
+
+    .logo-header img {
+        height: 40px;
+    }
+
+  .form-side {
+    padding: 20px 25px 30px;
+  }
+
+  .login-box {
+    margin-top: 10px; /* jarak mendekat ke ilustrasi */
+  }
+
+  .login-box h1 {
+    font-size: 21px;
+  }
+}
+
+
+
   </style>
 </head>
+
 <body>
   <div class="login-container">
     <div class="login-card">
+
+      <div class="logo-header">
+        <img src="{{ asset('images/LOGO_KEMENTRIAN.png') }}" alt="">
+        <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="">
+      </div>
+
       <div class="illustration-side">
         <img src="{{ asset('images/admin.jpg') }}" alt="Ilustrasi Login Admin">
       </div>
 
       <div class="form-side">
-        <div class="logo-header">
-          <img src="{{ asset('images/LOGO_KEMENTRIAN.png') }}" alt="Logo Tut Wuri Handayani">
-          <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
-        </div>
 
         <div class="login-box">
           <h1>Login Admin</h1>
@@ -207,32 +243,44 @@
 
           <form action="{{ route('admin.login') }}" method="POST">
             @csrf
-            <div class="form-group" style="margin-bottom: 15px;">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" required>
-            </div>
 
-            <div class="form-group" style="margin-bottom: 15px;">
-              <label for="password">Password</label>
-              <div class="password-group">
-                <input type="password" id="password" name="password" required>
-                <span class="eye-icon" onclick="togglePassword()">&#128065;</span>
-              </div>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="password" style="margin-top: 12px;">Password</label>
+            <div class="password-group">
+              <input type="password" id="password" name="password" required>
+              <span class="eye-icon eye-close" id="eyeIcon" onclick="togglePassword()">🙉</span>
             </div>
 
             <button type="submit" class="btn-login">Masuk</button>
           </form>
         </div>
+
       </div>
+
     </div>
   </div>
 
-  <script>
-    function togglePassword() {
-      const password = document.getElementById('password');
-      password.type = password.type === 'password' ? 'text' : 'password';
+<script>
+  function togglePassword() {
+    const password = document.getElementById("password");
+    const eye = document.getElementById("eyeIcon");
+
+    if (password.type === "password") {
+      password.type = "text";
+      eye.textContent = "🙈";     // mata buka
+      eye.classList.remove("eye-close");
+      eye.classList.add("eye-open");
+    } else {
+      password.type = "password";
+      eye.textContent = "🙉";      // mata tutup
+      eye.classList.remove("eye-open");
+      eye.classList.add("eye-close");
     }
-  </script>
+  }
+</script>
+
 
   @include('components._footer')
 </body>

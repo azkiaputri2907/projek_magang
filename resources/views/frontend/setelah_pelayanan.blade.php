@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Survey | Disdik Kab. Banjar</title>
+
     <style>
+        /* ==== LATAR BELAKANG (FULL CENTER) ==== */
         body {
             background-color: #DFEDFE;
             display: flex;
@@ -13,9 +15,11 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
 
+        /* ==== KOTAK PUTIH (SAMA VIBES DENGAN ONBOARD) ==== */
         .white-card {
             background-color: white;
             border-radius: 15px;
@@ -29,9 +33,11 @@
             flex-direction: column;
         }
 
+        /* ==== HEADER LOGO ==== */
         .header-area {
             display: flex;
             justify-content: flex-end;
+            align-items: flex-start;
             width: 100%;
             margin-bottom: 20px;
             padding: 0 5px;
@@ -42,6 +48,7 @@
             margin-left: 8px;
         }
 
+        /* ==== KONTEN UTAMA ==== */
         .main-content {
             flex-grow: 1;
             display: flex;
@@ -96,10 +103,12 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="white-card">
-        {{-- HEADER LOGO --}}
+        
+        {{-- HEADER --}}
         <div class="header-area">
             <div class="logo-container">
                 <img src="{{ asset('images/LOGO_KEMENTRIAN.png') }}" alt="Logo Kementrian">
@@ -118,6 +127,7 @@
 
             <a href="{{ url('/survey/data-diri') }}" class="btn-start">Isi Survey</a>
         </div>
+
     </div>
 
     @include('components._footer')

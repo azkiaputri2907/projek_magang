@@ -4,182 +4,262 @@
 
 @section('content')
 <style>
-    /* ======================== GLOBAL ======================== */
-    body {
-        background-color: #DFEDFE;
-        font-family: 'Poppins', sans-serif;
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow-x: hidden;
+/* ======================== GLOBAL ======================== */
+body {
+    background-color: #DFEDFE;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+/* LOGO */
+.logo-header {
+    position: absolute;
+    top: 18px;
+    right: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+}
+
+.logo-header img {
+    height: 50px; /* Match form buku tamu */
+}
+
+/* ======================== WRAPPER ======================== */
+.bukutamu-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    width: 95%;
+    max-width: 1300px;
+    min-height: 720px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ======================== LEFT PANEL (FORM) ======================== */
+.bukutamu-left {
+    flex: 2.1;
+    padding: 60px 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+}
+
+.bukutamu-left h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #003366;
+    margin-bottom: 25px;
+    line-height: 1.3;
+}
+
+.bukutamu-left h1 span {
+    color: #30E3BC;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #333;
+    font-size: 1rem;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #30E3BC;
+    box-shadow: 0 0 0 3px rgba(48, 227, 188, 0.2);
+    outline: none;
+}
+
+.btn-submit {
+    background-color: #30E3BC;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 13px 40px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top: 25px;
+    box-shadow: 0 5px 15px rgba(48, 227, 188, 0.3);
+    transition: 0.25s ease;
+    align-self: flex-start;
+}
+
+.btn-submit:hover {
+    background-color: #27C4A1;
+    transform: translateY(-2px);
+}
+
+/* ======================== RIGHT PANEL (PHOTO) ======================== */
+.bukutamu-right {
+    flex: 0.9;
+    background-color: #C9E1FF;
+    background-image: url('{{ asset('images/survey.png') }}');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 80px 40px 40px;
+}
+
+.bukutamu-right::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 15%, transparent 60%);
+    z-index: 1;
+}
+
+.bukutamu-right h1 {
+    position: relative;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    text-align: center;
+    z-index: 2;
+    margin-top: 60px;
+    line-height: 1.3;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.55), 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.bukutamu-right h1 span {
+    color: #30E3BC;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.55);
+}
+
+/* ======================== RESPONSIVE ======================== */
+@media (max-width: 992px) {
+    .bukutamu-wrapper {
+        flex-direction: column;
+        height: auto;
+        width: 95%;
     }
 
-    /* ======================== LOGO HEADER ======================== */
+    .bukutamu-left {
+        order: 2;
+        padding: 35px 25px;
+    }
+
+    .bukutamu-right {
+        order: 1;
+        height: 280px;
+        background-position: center;
+    }
+
+    .bukutamu-left h1 {
+        font-size: 1.9rem;
+    }
+
     .logo-header {
-        position: absolute;
-        top: 25px;
-        right: 45px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        z-index: 100;
+        top: 10px;
+        right: 10px;
     }
 
     .logo-header img {
-        height: 55px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
     }
 
-    /* ======================== WRAPPER ======================== */
-    .survey-wrapper {
-        display: flex;
-        justify-content: center;
-        align-items: stretch;
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-        width: 95%;
-        max-width: 1300px;
-        min-height: 720px;
-        overflow: hidden;
-        position: relative;
+    .bukutamu-wrapper {
+        border-radius: 15px;
+        width: 100%;
     }
 
-    /* ======================== LEFT PANEL (FORM) ======================== */
-    .survey-left {
-        flex: 2.1;
-        padding: 60px 80px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        position: relative;
+    .bukutamu-left {
+        padding: 28px 20px;
     }
 
-    .survey-left h1 {
-        font-size: 2.4rem;
-        font-weight: 800;
-        color: #003366;
-        margin-bottom: 25px;
-        line-height: 1.3;
-    }
-
-    .survey-left h1 span {
-        color: #30E3BC;
-    }
-
-    .form-group {
+    .bukutamu-left h1 {
+        font-size: 1.6rem;
         margin-bottom: 20px;
     }
 
     .form-group label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 6px;
-        color: #333;
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
 
     .form-group input,
     .form-group select {
+        padding: 11px 5px;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+
+    .btn-submit {
         width: 100%;
-        padding: 13px 14px;
-        border: 1px solid #ddd;
-        border-radius: 10px;
+        padding: 12px 0;
         font-size: 1rem;
-        transition: 0.2s;
+        border-radius: 10px;
     }
 
-    .form-group input:focus,
-    .form-group select:focus {
-        border-color: #30E3BC;
-        box-shadow: 0 0 0 3px rgba(48, 227, 188, 0.2);
-        outline: none;
+    .bukutamu-right {
+        height: 220px;
+        padding: 40px 20px;
     }
 
-    .btn-next {
-        background-color: #30E3BC;
-        color: white;
-        font-weight: 700;
-        font-size: 1.1rem;
-        padding: 13px 40px;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        margin-top: 25px;
-        box-shadow: 0 5px 15px rgba(48, 227, 188, 0.3);
-        transition: 0.25s ease;
-        align-self: flex-start;
+    .bukutamu-right h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 390px) {
+    .bukutamu-left {
+        padding: 20px 15px;
     }
 
-    .btn-next:hover {
-        background-color: #27C4A1;
-        transform: translateY(-2px);
+    .bukutamu-left h1 {
+        font-size: 1.4rem;
     }
 
-    /* ======================== RIGHT PANEL (PHOTO) ======================== */
-    .survey-right {
-        flex: 0.9;
-        background-color: #C9E1FF;
-        background-image: url('{{ asset('images/survey.png') }}');
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: cover;
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        padding: 80px 40px 40px;
+    .form-group input,
+    .form-group select {
+        padding: 10px;
+        font-size: 0.85rem;
     }
 
-    .survey-right::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to bottom, rgba(0,0,0,0.3) 15%, transparent 60%);
-        z-index: 1;
+    .bukutamu-right {
+        height: 180px;
     }
 
-    .survey-right h1 {
-        position: relative;
-        font-size: 2.4rem;
-        font-weight: 800;
-        color: #fff;
-        text-align: center;
-        z-index: 2;
-        margin-top: 60px;
-        line-height: 1.3;
-        text-shadow: 0 3px 8px rgba(0, 0, 0, 0.55), 0 0 15px rgba(0, 0, 0, 0.3);
+    .bukutamu-right h1 {
+        font-size: 1.3rem;
     }
-
-    .survey-right h1 span {
-        color: #30E3BC;
-        text-shadow: 0 3px 8px rgba(0, 0, 0, 0.55);
-    }
-
-    /* ======================== RESPONSIVE ======================== */
-    @media (max-width: 992px) {
-        .survey-wrapper {
-            flex-direction: column;
-            height: auto;
-            width: 95%;
-        }
-
-        .survey-left {
-            order: 2;
-            padding: 30px 25px;
-        }
-
-        .survey-right {
-            order: 1;
-            height: 300px;
-            background-position: center;
-        }
-
-        .survey-left h1 {
-            font-size: 2rem;
-        }
-    }
+}
 </style>
 
 <div class="logo-header">
@@ -187,12 +267,13 @@
     <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
 </div>
 
-<div class="survey-wrapper">
-    {{-- ================= FORM DI KIRI ================= --}}
-    <div class="survey-left">
+<div class="bukutamu-wrapper">
+    <div class="bukutamu-left">
+
         <h1>Survey Kepuasan <span>Masyarakat</span></h1>
 
         <form action="{{ route('survey.layanan') }}" method="GET">
+
             @if(session('current_pengunjung_id'))
                 <input type="hidden" name="pengunjung_id" value="{{ session('current_pengunjung_id') }}">
             @endif
@@ -219,9 +300,9 @@
                     <option value="SLTP">SLTP (SMP/MTs/Sederajat)</option>
                     <option value="SLTA">SLTA (SMA/SMK/MA/Sederajat)</option>
                     <option value="D1_D3">Diploma 1-3</option>
-                    <option value="S1_D4">S1 (Sarjana) / Diploma 4</option>
-                    <option value="S2">S2 (Pascasarjana)</option>
-                    <option value="S3">S3 (Doktoral)</option>
+                    <option value="S1_D4">S1 / D4</option>
+                    <option value="S2">S2</option>
+                    <option value="S3">S3</option>
                 </select>
             </div>
 
@@ -252,12 +333,12 @@
                 </select>
             </div>
 
-            <button type="submit" class="btn-next">Berikutnya</button>
+            <button type="submit" class="btn-submit">Berikutnya</button>
         </form>
+
     </div>
 
-    {{-- ================= FOTO DI KANAN ================= --}}
-    <div class="survey-right">
+    <div class="bukutamu-right">
         <h1>1/3 <span>Survey</span></h1>
     </div>
 </div>
