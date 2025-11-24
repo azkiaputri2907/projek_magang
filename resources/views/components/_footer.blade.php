@@ -29,6 +29,7 @@
     .footer-item {
         display: flex;
         align-items: center;
+        cursor: pointer; /* biar keliatan bisa diklik */
     }
 
     .footer-item img {
@@ -37,23 +38,37 @@
         margin-right: 5px;
     }
 </style>
+
 <div class="footer">
     <div class="footer-content">
         
-        <span class="footer-item">
+        <span class="footer-item" data-link="https://www.youtube.com/c/DisdikKabBanjar" data-name="YouTube">
             <img src="{{ asset('images/icons8-youtube-50.png') }}" alt="YouTube">
             <strong>@DisdikKabBanjar</strong>
         </span>
 
-        <span class="footer-item">
+        <span class="footer-item" data-link="https://disdik.banjarkab.go.id" data-name="Website">
             <img src="{{ asset('images/icons8-website-50.png') }}" alt="Website">
             <strong>disdik.banjarkab.go.id</strong>
         </span>
 
-        <span class="footer-item">
+        <span class="footer-item" data-link="https://instagram.com/disdik_kab.banjar" data-name="Instagram">
             <img src="{{ asset('images/icons8-instagram-50.png') }}" alt="Instagram">
             <strong>@disdik_kab.banjar</strong>
         </span>
 
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('.footer-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const name = item.getAttribute('data-name');
+            const link = item.getAttribute('data-link');
+            const confirmOpen = confirm(`Ingin membuka ${name} Disdik Kab Banjar?`);
+            if(confirmOpen) {
+                window.open(link, '_blank');
+            }
+        });
+    });
+</script>
