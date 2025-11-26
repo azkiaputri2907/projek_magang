@@ -7,9 +7,16 @@
 /* ======================== GLOBAL ======================== */
 body {
     background-color: #DFEDFE;
+    background-image: 
+        linear-gradient(135deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(225deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(45deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(315deg, rgba(255,255,255,0.18) 25%, #DFEDFE 25%);
+    background-position: 20px 0, 20px 0, 0 0, 0 0;
+    background-size: 20px 20px;
+    background-repeat: repeat;
     font-family: 'Poppins', sans-serif;
     margin: 0;
-    /* Mengubah body agar konten tidak sepenuhnya centered, memberi ruang untuk header/sidebar */
     padding-top: 0rem; 
     min-height: 100vh;
     overflow-x: hidden;
@@ -24,130 +31,12 @@ body {
     align-items: center;
     gap: 10px;
     z-index: 100;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
 
-.logo-header img {
-    height: 50px;
-}
+.logo-header img { height: 50px; }
 
-/* SIDEBAR - Pertahankan Gaya Asli dari file Admin */
-#sidebar {
-    position: fixed;
-    top: 0;
-    left: -250px;
-    height: 100%;
-    width: 250px;
-    background-color: #fff;
-    box-shadow: 2px 0 15px rgba(0,0,0,0.3);
-    z-index: 1000;
-    transition: left 0.3s ease;
-    padding: 20px 0;
-    border-radius: 0 20px 20px 0;
-    display: flex;
-    flex-direction: column;
-}
-
-#sidebar.active { 
-    left: 0; 
-}
-
-#sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 999;
-    display: none;
-}
-
-#sidebar.active + #sidebar-overlay { 
-    display: block; 
-}
-
-/* PROFILE DI SIDEBAR */
-.sidebar-profile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 15px 20px 15px;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.sidebar-profile img {
-    width: 60px; 
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
-}
-
-.sidebar-profile div { 
-    font-size: 14px; 
-    color: #333; 
-}
-
-.sidebar-profile div span { 
-    display: block; 
-    font-size: 12px; 
-    color: #666; 
-}
-
-
-/* MENU LINK */
-.sidebar-link {
-    display: flex;
-    align-items: center;
-    padding: 12px 15px;
-    text-decoration: none;
-    color: #333;
-    font-size: 14px;
-    margin: 5px 0;
-    transition: background 0.2s ease;
-}
-
-.sidebar-link i { 
-    margin-right: 10px; 
-}
-
-.sidebar-link:hover { 
-    background-color: rgba(220,53,69,0.05); 
-}
-
-.sidebar-link.active {
-    background-color: rgba(195, 222, 255, 0.909);
-    border-left: 4px solid #CFDDF7;
-    font-weight: bold;
-    border-radius: 0 8px 8px 0;
-    margin-left: 0;
-    margin-right: 20px;
-    padding-left: 20px;
-}
-
-
-/* FOOTER / LOGOUT */
-.sidebar-footer {
-    padding: 15px;
-    margin-top: auto;
-    margin-bottom: 40px;
-}
-
-.sidebar-footer form button {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    background-color: #EF4444;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-
-/* === DASHBOARD CONTENT - Mengadopsi container-bukutamu/bukutamu-card === */
+/* === DASHBOARD CONTENT (EFEK 3D CARD) === */
 .container-dashboard {
     display: flex;
     justify-content: center;
@@ -155,7 +44,6 @@ body {
     width: 95%;
     max-width: 1300px;
     margin: 0 auto;
-    /* PENYESUAIAN MAKSIMAL: Mengurangi padding-top menjadi margin-top 5px */
     padding-top: 0; 
     margin-top: 5px; 
     padding-bottom: 20px;
@@ -166,15 +54,21 @@ body {
     background-color: #fff;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    height: 580px; 
+    height: 620px; /* Sedikit lebih tinggi untuk tabel */
     width: 100%;
+    
+    /* EFEK TIMBUL: Shadow Berlapis & Border Tebal Bawah */
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.15),
+        0 5px 15px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-bottom: 6px solid #e1e8f0;
 }
 
-/* ================= LEFT PANEL (GAMBAR) - Mengadopsi bukutamu-left ================= */
+/* ================= LEFT PANEL (GAMBAR) ================= */
 .dashboard-left-image {
     flex: 0.9;
-    background-image: url('{{ asset("images/admin1.jpg") }}'); /* Menggunakan gambar admin */
+    background-image: url('{{ asset("images/admin1.jpg") }}');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -183,6 +77,10 @@ body {
     flex-direction: column;
     position: relative;
     padding: 80px 40px 40px;
+    
+    /* Bayangan pemisah */
+    box-shadow: 5px 0 15px rgba(0,0,0,0.1); 
+    z-index: 2;
 }
 
 .dashboard-left-image::after {
@@ -201,41 +99,37 @@ body {
     margin-top: 40px;
     margin-bottom: 30px;
     z-index: 2;
-    text-shadow: 0 3px 8px rgba(0,0,0,0.55);
+    text-shadow: 0 4px 8px rgba(0,0,0,0.6);
     text-align: center;
 }
 
-.dashboard-left-image h1 span {
-    color: #30E3BC;
-}
+.dashboard-left-image h1 span { color: #30E3BC; }
 
-/* ================= RIGHT PANEL (KONTEN) - Mengadopsi bukutamu-right ================= */
+/* ================= RIGHT PANEL (KONTEN) ================= */
 .dashboard-right-content {
     flex: 2.1;
     padding: 40px 50px;
     display: flex;
     flex-direction: column;
     position: relative;
-    gap: 20px; /* Tambahkan gap */
+    gap: 20px;
+    background-color: #F8FBFF;
+    z-index: 1;
 }
 
-/* Title Card (Diubah agar mirip h1 Buku Tamu tapi tetap mempertahankan menu) */
+/* Title Card */
 .title-card {
-    background: transparent; 
-    border-radius: 0; 
-    padding: 0; 
-    font-size: 2rem; /* Sedikit lebih kecil dari h1 */
+    font-size: 2rem;
     font-weight: 800;
-    color: #003366; /* Mengadopsi warna h1 */
-    margin-bottom: 15px; 
+    color: #003366;
+    margin-bottom: 5px; 
     display: flex;
     align-items: center;
     gap: 15px;
+    text-shadow: 0 2px 3px rgba(0,0,0,0.05);
 }
 
-.title-card span {
-    color: #30E3BC; 
-}
+.title-card span { color: #30E3BC; }
 
 .menu-icon {
     cursor: pointer;
@@ -252,183 +146,181 @@ body {
     border-radius: 2px;
 }
 
-
-/* === TABLE SECTION (Data Card) - Mengadopsi tabel-section === */
+/* === TABLE SECTION (Data Card) === */
 .data-table-section {
-    flex-grow: 1; /* Pastikan mengambil ruang yang tersedia */
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
-/* Mengganti date-box dengan filter/search (jika ada, saat ini tidak ada filter) */
-.filter-box {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-/* Struktur Tabel */
+/* DATA CARD (Container Tabel) */
 .data-card {
     background: #fff;
     border-radius: 15px;
-    padding: 0; /* Menghapus padding agar header/row bisa diatur terpisah */
-    box-shadow: 0 6px 15px rgba(0,0,0,0.05); /* Mengurangi shadow */
+    padding: 0;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    border: 1px solid #eee; /* Tambahkan border tipis */
     overflow: hidden;
+
+    /* Efek Timbul Inset Halus */
+    box-shadow: 
+        0 4px 6px rgba(0,0,0,0.02),
+        inset 0 0 0 1px #e0e6ed;
 }
 
-.data-table-header, .data-table-row {
-    display: flex;
-    padding: 8px 10px;
-}
+/* TABLE HEADER (Style Bar Timbul) */
 .data-table-header {
-    font-weight: 700; /* Mengadopsi font-weight 700 */
-    border-bottom: 2px solid #007BFF; /* Mengadopsi warna border */
-    color: #333;
-    font-size: .9rem; 
-    background-color: #f8f9fa; /* Latar belakang untuk header */
+    display: flex;
+    padding: 12px 10px;
+    font-weight: 700;
+    background: linear-gradient(to right, #007BFF, #0056b3); /* Gradient Biru */
+    color: #fff;
+    font-size: .9rem;
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+    z-index: 2;
 }
+
 .data-table-row {
-    border-bottom: 1px solid #ddd; /* Mengubah dari dashed */
+    display: flex;
+    padding: 10px 10px;
+    border-bottom: 1px solid #f0f0f0;
     color: #444;
     font-size: .85rem;
-}
-.data-table-row:last-child {
-    border-bottom: none;
+    transition: background 0.2s;
 }
 
-/* Column Flex Properties - RAPAT KIRI DAN PROPORSI KOLOM */
+.data-table-row:hover {
+    background-color: #f0f7ff;
+}
+
+.data-table-row:last-child { border-bottom: none; }
+
+/* Column Flex Properties */
 .data-table-header > span, .data-table-row > span {
-    text-align: left; /* PENTING: Untuk rata kiri */
+    text-align: left;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap; /* Mencegah teks turun baris */
+    white-space: nowrap;
 }
 
-.checkbox-col { flex: 0.1; min-width: 30px; }
-/* PENTING: Penyesuaian proporsi flex agar tabel rata */
+.checkbox-col { flex: 0.1; min-width: 30px; display: flex; align-items: center; }
 .col-tanggal { flex: 1; min-width: 80px;} 
-.col-nama { flex: 2; min-width: 150px; } /* Ditingkatkan menjadi 2 */
+.col-nama { flex: 2; min-width: 150px; font-weight: 600; color: #333; }
 .col-instansi { flex: 1.5; min-width: 100px; }
-.col-layanan { flex: 2.5; min-width: 150px; } /* Ditingkatkan menjadi 2.5 */
-.col-keperluan { flex: 3; min-width: 200px; } /* Ditingkatkan menjadi 3 */
+.col-layanan { flex: 2.5; min-width: 150px; }
+.col-keperluan { flex: 3; min-width: 200px; }
 .col-hp { flex: 1.2; min-width: 90px; }
 
+/* Checkbox Style */
+input[type="checkbox"] {
+    accent-color: #30E3BC;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
 
-/* Wrapper untuk container yang bisa di-scroll */
+/* Scroll Container */
 .tabel-container {
     flex-grow: 1;
     overflow-y: auto;
     padding-right: 6px;
-    margin-top: 5px;
+    background-color: #fff;
 }
 
-/* Action Buttons - Diadaptasi dari .action-buttons sebelumnya */
+/* Action Buttons (3D Push Buttons) */
 .action-buttons {
-    padding: 15px 10px;
+    padding: 15px 20px;
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 15px;
     border-top: 1px solid #eee;
+    background-color: #fafbfc;
 }
+
 .btn-action {
-    padding: 10px 20px;
+    padding: 10px 25px;
     border: none;
-    border-radius: 10px;
-    font-weight: 600;
+    border-radius: 50px;
+    font-weight: 700;
     cursor: pointer;
-    transition: 0.2s ease;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     text-transform: uppercase;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    position: relative;
+    top: 0;
 }
+
+/* Edit Button (Green) */
 .btn-edit { 
-    background-color: #20c997; /* Hijau */
+    background: linear-gradient(135deg, #20c997 0%, #17a078 100%);
     color: #fff; 
-    box-shadow: 0 3px 8px rgba(32, 201, 151, 0.4);
+    box-shadow: 0 4px 0 #138563, 0 5px 10px rgba(32, 201, 151, 0.3);
 }
-.btn-edit:hover { background-color: #1a9c7b; }
+.btn-edit:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #138563, 0 8px 15px rgba(32, 201, 151, 0.4); }
+.btn-edit:active { top: 4px; box-shadow: 0 0 0 #138563, 0 2px 5px rgba(32, 201, 151, 0.3); }
 
+/* Delete Button (Red) */
 .btn-hapus { 
-    background-color: #dc3545; /* Merah */
+    background: linear-gradient(135deg, #EF4444 0%, #b91c1c 100%);
     color: #fff; 
-    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.4);
+    box-shadow: 0 4px 0 #991b1b, 0 5px 10px rgba(239, 68, 68, 0.3);
 }
-.btn-hapus:hover { background-color: #c82333; }
+.btn-hapus:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #991b1b, 0 8px 15px rgba(239, 68, 68, 0.4); }
+.btn-hapus:active { top: 4px; box-shadow: 0 0 0 #991b1b, 0 2px 5px rgba(239, 68, 68, 0.3); }
 
-/* ===================================================== */
+/* Tombol Keluar Sidebar (Merah) */
+.btn-keluar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background: linear-gradient(135deg, #EF4444 0%, #b91c1c 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #991b1b;
+    transition: all 0.1s;
+}
+.btn-keluar:active { transform: translateY(4px); box-shadow: none; }
+
 /* ================= RESPONSIVE MODE ==================== */
-/* ===================================================== */
 @media (max-width: 992px) {
-
     .dashboard-card { flex-direction: column; height: auto; }
-
-    /* Mengubah urutan untuk mobile: Gambar di atas */
+    
     .dashboard-left-image { 
         order: 1;
         height: 260px; 
         padding-top: 40px; 
         border-radius: 20px 20px 0 0; 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
-
     .dashboard-left-image h1 { font-size: 1.8rem; margin-top: 10px; }
     
-    .dashboard-right-content {
-        order: 2;
-        padding: 30px 20px;
-    }
-
-    .title-card {
-        font-size: 1.8rem;
-    }
-    
-    .container-dashboard {
-        margin-top: 10px; /* Dikecilkan lagi untuk mobile */
-    }
-
-    .logo-header {
-        top: 10px;
-        right: 10px;
-    }
-
-    .logo-header img {
-        height: 40px;
-    }
+    .dashboard-right-content { order: 2; padding: 30px 20px; }
+    .title-card { font-size: 1.8rem; }
+    .container-dashboard { margin-top: 10px; }
+    .logo-header { top: 10px; right: 10px; }
+    .logo-header img { height: 40px; }
 }
 
 @media (max-width: 600px) {
-    .dashboard-left-image h1 {
-        font-size: 1.5rem;
-    }
+    .dashboard-left-image h1 { font-size: 1.5rem; }
+    .title-card { font-size: 1.5rem; }
     
-    .title-card {
-        font-size: 1.5rem;
-    }
+    /* Header tabel responsif - sembunyikan kolom kurang penting */
+    .col-hp, .col-keperluan { display: none; } 
     
-    .data-table-header span,
-    .data-table-row span {
-        font-size: .7rem; /* Lebih kecil agar muat */
-    }
-
-    .action-buttons {
-        padding: 10px;
-        gap: 5px;
-    }
-    .btn-action {
-        padding: 8px 10px;
-        font-size: 0.7rem;
-    }
+    .data-table-header span, .data-table-row span { font-size: .75rem; }
+    .action-buttons { padding: 15px; gap: 10px; flex-direction: column; }
+    .btn-action { width: 100%; }
     
-    /* Radius untuk mobile */
-    .dashboard-card {
-        border-radius: 15px;
-    }
-    .dashboard-left-image {
-        border-radius: 15px 15px 0 0;
-    }
+    .dashboard-card { border-radius: 15px; }
+    .dashboard-left-image { border-radius: 15px 15px 0 0; }
 }
 </style>
 
@@ -437,43 +329,10 @@ body {
     <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
 </div>
 
-<div id="sidebar">
-    <div class="sidebar-profile">
-        <img src="{{ asset('images/avatar_admin.jpg') }}" alt="Avatar">
-        <div>
-            {{ Auth::user()->name ?? 'Admin' }}
-            <span>Admin</span>
-        </div>
+{{-- === PANGGIL SIDEBAR DARI COMPONENT === --}}
+@include('components._sidebar')
 
-    </div>
-
-    <a href="{{ url('/admin/dashboard') }}" class="sidebar-link {{ Request::is('admin/dashboard') ? 'active' : '' }}">
-        <i class="fas fa-home"></i> Beranda
-    </a>
-    <a href="{{ url('/admin/pengunjung') }}" class="sidebar-link {{ Request::is('admin/pengunjung') ? 'active' : '' }}">
-        <i class="fas fa-users"></i> Data Pengunjung
-    </a>
-    <a href="{{ url('/admin/skm') }}" class="sidebar-link {{ Request::is('admin/skm') ? 'active' : '' }}">
-        <i class="fas fa-file-alt"></i> Data SKM
-    </a>
-        <a href="{{ url('/admin/skm/pertanyaan') }}" class="sidebar-link {{ Request::is('admin/skm/pertanyaan') ? 'active' : '' }}">
-        <i class="fas fa-file-alt"></i> Data SKM Pertanyaan
-    </a>
-    <a href="{{ url('/admin/laporan') }}" class="sidebar-link {{ Request::is('admin/laporan') ? 'active' : '' }}">
-        <i class="fas fa-chart-line"></i> Laporan
-    </a>
-
-    <div class="sidebar-footer">
-        <form action="{{ route('admin.logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="btn-item btn-keluar">
-                <i class="fas fa-sign-out-alt"></i> Keluar
-            </button>
-        </form>     
-    </div>
-</div>
-<div id="sidebar-overlay"></div>
-
+{{-- KONTEN UTAMA --}}
 <div class="container-dashboard">
     <div class="dashboard-card">
         
@@ -501,7 +360,7 @@ body {
                         <span class="col-hp">No. Hp</span>
                     </div>
 
-                    <form id="batchForm" method="POST" action="">
+                    <form id="batchForm" method="POST" action="" style="display:flex; flex-direction:column; flex-grow:1; overflow:hidden;">
                         @csrf
                         <div class="tabel-container">
                             @foreach($pengunjung as $item)
@@ -533,33 +392,18 @@ body {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // === SIDEBAR TOGGLE ===
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    const toggle = document.getElementById('menuToggle');
 
-    toggle.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-        overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
-    });
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-        overlay.style.display = 'none';
-    });
-
-    // === CHECKBOX ===
+    // === CHECKBOX & BUTTON LOGIC ===
     const checkAll = document.getElementById('checkAll');
     const checkboxes = document.querySelectorAll('input[name="ids[]"]');
     const batchForm = document.getElementById('batchForm');
     const batchEdit = document.getElementById('batchEdit');
     const batchDelete = document.getElementById('batchDelete');
 
-    // fungsi untuk ngecek apakah ada yang dicentang
     function updateButtonState() {
         const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
 
         if (anyChecked) {
-            // aktifkan
             batchEdit.style.pointerEvents = "auto";
             batchDelete.style.pointerEvents = "auto";
             batchEdit.style.opacity = "1";
@@ -567,17 +411,24 @@ document.addEventListener('DOMContentLoaded', function() {
             batchEdit.style.cursor = "pointer";
             batchDelete.style.cursor = "pointer";
         } else {
-            // nonaktif
             batchEdit.style.pointerEvents = "none";
             batchDelete.style.pointerEvents = "none";
-            batchEdit.style.opacity = "0.5";
-            batchDelete.style.opacity = "0.5";
+            batchEdit.style.opacity = "0.6"; // Sedikit lebih terang dari 0.5
+            batchDelete.style.opacity = "0.6";
             batchEdit.style.cursor = "not-allowed";
             batchDelete.style.cursor = "not-allowed";
+            // Hilangkan shadow saat disabled agar terlihat flat
+            batchEdit.style.boxShadow = "none";
+            batchDelete.style.boxShadow = "none";
+        }
+        
+        // Kembalikan shadow jika enabled (reset inline style)
+        if(anyChecked) {
+            batchEdit.style.boxShadow = "";
+            batchDelete.style.boxShadow = "";
         }
     }
 
-    // Set awal: disable kedua tombol
     updateButtonState();
 
     checkAll.addEventListener('change', () => {

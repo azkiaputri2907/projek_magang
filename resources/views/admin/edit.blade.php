@@ -1,17 +1,29 @@
 @extends('layouts.app')
 
-@section('title','Edit Banyak Pengunjung')
+@section('title', 'Edit Banyak Pengunjung | Disdik Kab.Banjar')
 
 @section('content')
 <style>
-    body {
-        background-color: #DFEDFE;
-        font-family: 'Poppins', sans-serif;
-        margin: 0;
-        padding-top: 40px;
-    }
+/* ======================== GLOBAL ======================== */
+body {
+    background-color: #DFEDFE;
+    background-image: 
+        linear-gradient(135deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(225deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(45deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(315deg, rgba(255,255,255,0.18) 25%, #DFEDFE 25%);
+    background-position: 20px 0, 20px 0, 0 0, 0 0;
+    background-size: 20px 20px;
+    background-repeat: repeat;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding-top: 0rem; 
+    min-height: 100vh;
+    overflow-x: hidden;
+}
 
-    .logo-header {
+/* LOGO */
+.logo-header {
     position: absolute;
     top: 18px;
     right: 25px;
@@ -19,191 +31,333 @@
     align-items: center;
     gap: 10px;
     z-index: 100;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+.logo-header img { height: 50px; }
+
+.btn-keluar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    background: linear-gradient(135deg, #EF4444 0%, #b91c1c 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #991b1b;
+    transition: all 0.1s;
+}
+.btn-keluar:active { transform: translateY(4px); box-shadow: none; }
+
+/* ================= DASHBOARD MAIN (3D CARD) ================= */
+.container-dashboard {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 95%;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding-top: 0; 
+    margin-top: 5px; 
+    padding-bottom: 20px;
 }
 
-.logo-header img {
-    height: 50px;
+.dashboard-card {
+    display: flex;
+    background-color: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    
+    /* EFEK TIMBUL 3D */
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.15),
+        0 5px 15px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-bottom: 6px solid #e1e8f0;
+    
+    min-height: 620px;
+    width: 100%;
 }
 
-    /* WRAPPER BESAR (2 KOLOM) */
-    .edit-wrapper {
-        width: 95%;
-        max-width: 1300px;
-        margin: 0 auto;
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        display: flex;
-        overflow: hidden;
-        min-height: 720px;
-    }
+/* ================= LEFT PANEL (CONTENT) ================= */
+.dashboard-left {
+    flex: 2.1; 
+    padding: 40px 50px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 20px;
+    background-color: #F8FBFF;
+    z-index: 1;
+    min-width: 0; /* Agar konten tidak mendorong layout */
+}
 
-    /* LEFT FORM */
-    .bukutamu-left {
-        flex: 2;
-        padding: 50px 60px;
-        overflow-y: auto;
-    }
+/* Title Card */
+.title-card {
+    background: transparent; 
+    border-radius: 0; 
+    padding: 0; 
+    font-size: 2rem; 
+    font-weight: 800;
+    color: #003366; 
+    margin-bottom: 5px; 
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-shadow: 0 2px 3px rgba(0,0,0,0.05);
+}
+.title-card span { color: #30E3BC; }
 
-    .bukutamu-left h1 {
-        font-size: 2.2rem;
-        font-weight: 800;
-        color: #003366;
-        margin-bottom: 25px;
-    }
+.menu-icon {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 22px;
+    height: 18px;
+    min-width: 22px;
+}
+.menu-icon span {
+    height: 3px;
+    background: #003366;
+    border-radius: 2px;
+}
 
-    .edit-card {
-        background: #ffffff;
-        border-radius: 15px;
-        padding: 20px 25px;
-        margin-bottom: 18px;
-        border: 1px solid #d5e6ff;
-        box-shadow: 0px 6px 14px rgba(0,0,0,0.06);
-    }
+/* === FORM CONTAINER === */
+.form-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+}
 
-    .edit-card label {
-        font-weight: 600;
-        margin-bottom: 5px;
-        display: block;
-    }
+/* EDIT CARD (INSET PANEL) */
+.edit-card {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 20px 25px;
+    margin-bottom: 25px;
+    border: 1px solid #e0e6ed;
+    /* Efek Timbul Halus */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    position: relative;
+}
 
-    .edit-card input {
+/* Label Header dalam card untuk membedakan data */
+.card-header-label {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #30E3BC;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 5px;
+    display: block;
+}
+
+.edit-card label {
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: block;
+    color: #003366;
+    font-size: 0.9rem;
+}
+
+/* INPUT FIELDS (INSET EFFECT) */
+.edit-card input,
+.edit-card select,
+.edit-card textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e0e6ed;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    outline: none;
+    transition: all 0.2s;
+    background-color: #f8fafc;
+    font-size: 0.95rem;
+    /* Bayangan dalam agar terlihat cekung */
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.03); 
+}
+
+.edit-card input:focus {
+    background-color: #fff;
+    border-color: #30E3BC;
+    box-shadow: 
+        0 0 0 4px rgba(48, 227, 188, 0.15),
+        0 4px 10px rgba(0,0,0,0.05);
+    transform: translateY(-2px);
+}
+
+/* TOMBOL SIMPAN (3D PUSH) */
+.btn-simpan-semua {
+    background: linear-gradient(135deg, #2bd9a6 0%, #17a078 100%);
+    border: none;
+    padding: 14px 40px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 800;
+    border-radius: 50px;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    margin: 10px 0 20px 0;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    top: 0;
+    /* KUNCI EFEK 3D */
+    box-shadow: 
+        0 6px 0 #138563, /* Sisi tebal tombol */
+        0 12px 20px rgba(43, 217, 166, 0.3); /* Bayangan lantai */
+}
+
+.btn-simpan-semua:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #3dfcd1 0%, #21e0b3 100%);
+    box-shadow: 
+        0 8px 0 #138563, 
+        0 15px 25px rgba(43, 217, 166, 0.4);
+}
+
+.btn-simpan-semua:active {
+    top: 6px; 
+    box-shadow: 
+        0 0 0 #138563, 
+        0 2px 5px rgba(43, 217, 166, 0.3);
+}
+
+/* ================= RIGHT PANEL (IMAGE) ================= */
+.dashboard-right {
+    flex: 0.9;
+    background-color: #C9E1FF;
+    background-image: url('{{ asset('images/admin1.jpg') }}');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 80px 40px 40px; 
+    position: relative;
+    
+    /* Bayangan pemisah */
+    box-shadow: inset 15px 0 20px -10px rgba(0,0,0,0.15);
+    z-index: 2;
+    flex-shrink: 0;
+    min-width: 300px;
+}
+
+.dashboard-right::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.35) 10%, transparent 60%);
+    z-index: 1;
+}
+.dashboard-right h1 {
+    z-index: 2;
+    color: white;
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-top: 40px;
+    text-shadow: 0 4px 8px rgba(0,0,0,0.6);
+    text-align: center;
+}
+.dashboard-right h1 span { color: #30E3BC; }
+
+
+/* ================= RESPONSIVE MODE ==================== */
+@media (max-width: 992px) {
+    .dashboard-card { flex-direction: column; min-height: auto; }
+
+    /* Mobile: Image on Top */
+    .dashboard-right { 
+        order: 1;
+        height: 260px; 
+        padding-top: 40px; 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-bottom-right-radius: 0;
+        border-radius: 20px 20px 0 0;
         width: 100%;
-        padding: 10px 12px;
-        border: 1px solid #bcd4fe;
-        border-radius: 10px;
-        margin-bottom: 12px;
-        outline: none;
-        transition: .2s;
+        min-width: unset;
     }
-
-    .edit-card input:focus {
-        border-color: #007BFF;
-        box-shadow: 0 0 6px rgba(0,123,255,0.3);
-    }
-
-    .btn-simpan-semua {
-        background: #2bd9a6;
-        border: none;
-        padding: 14px 28px;
-        color: #fff;
-        font-size: 1.1rem;
-        font-weight: 700;
-        border-radius: 12px;
-        cursor: pointer;
-        display: block;
-        margin: 20px auto 0 auto;
-        transition: .2s;
-    }
-
-    .btn-simpan-semua:hover {
-        background: #1fc190;
-        transform: translateY(-2px);
-    }
-
-    /* RIGHT PHOTO PANEL */
-    .bukutamu-right {
-        flex: 1;
-        background-color: #C9E1FF;
-        background-image: url('{{ asset('images/survey.png') }}');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        padding-top: 100px;
-    }
-
-    .bukutamu-right::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to bottom, rgba(0,0,0,0.35), transparent 60%);
-        z-index: 1;
-    }
-
-    .bukutamu-right h1 {
-        z-index: 2;
-        color: #fff;
-        font-size: 2rem;
-        font-weight: 800;
-        text-align: center;
-        text-shadow: 0 3px 8px rgba(0, 0, 0, 0.55);
-    }
-
-    .bukutamu-right h1 span {
-        color: #30E3BC;
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 992px) {
-        .edit-wrapper {
-            flex-direction: column;
-        }
-        .bukutamu-right {
-            height: 260px;
-        }
-        .logo-header {
-            top: 10px;
-            right: 10px;
-        }
-
-        .logo-header img {
-            height: 40px;
-        }
-
-        
-    }
+    .dashboard-right h1 { font-size: 1.8rem; margin-top: 10px; }
+    
+    .dashboard-left { order: 2; padding: 30px 20px; }
+    .title-card { font-size: 1.8rem; }
+    .container-dashboard { margin-top: 10px; }
+    .logo-header { top: 10px; right: 10px; }
+    .logo-header img { height: 40px; }
+}
 </style>
 
+{{-- LOGO --}}
 <div class="logo-header">
     <img src="{{ asset('images/LOGO_KEMENTRIAN.png') }}" alt="Logo Kementrian">
     <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
 </div>
 
-<div class="edit-wrapper">
-    
-    {{-- RIGHT SIDE IMAGE --}}
-    <div class="bukutamu-right">
-        <h1><span>Edit</span> Pengunjung</h1>
-    </div>
+{{-- === PANGGIL SIDEBAR DARI COMPONENT === --}}
+@include('components._sidebar')
 
-    {{-- LEFT SIDE CONTENT --}}
-    <div class="bukutamu-left">
-        <form action="{{ route('pengunjung.updateMultiple') }}" method="POST">
-            @csrf
+{{-- LAYOUT UTAMA --}}
+<div class="container-dashboard">
+    <div class="dashboard-card">
 
-            @foreach($items as $item)
-            <div class="edit-card">
-                <input type="hidden" name="pengunjung[{{ $item->id }}][id]" value="{{ $item->id }}">
-
-                <label>Tanggal</label>
-                <input type="date" name="pengunjung[{{ $item->id }}][tanggal]" value="{{ $item->tanggal }}">
-
-                <label>Nama / NIP</label>
-                <input type="text" name="pengunjung[{{ $item->id }}][nama_nip]" value="{{ $item->nama_nip }}">
-
-                <label>Instansi</label>
-                <input type="text" name="pengunjung[{{ $item->id }}][instansi]" value="{{ $item->instansi }}">
-
-                <label>Layanan</label>
-                <input type="text" name="pengunjung[{{ $item->id }}][layanan]" value="{{ $item->layanan }}">
-
-                <label>Keperluan</label>
-                <input type="text" name="pengunjung[{{ $item->id }}][keperluan]" value="{{ $item->keperluan }}">
-
-                <label>No. HP</label>
-                <input type="text" name="pengunjung[{{ $item->id }}][no_hp]" value="{{ $item->no_hp }}">
+        {{-- KIRI (FORM EDIT) --}}
+        <div class="dashboard-left">
+            <div class="title-card">
+                <div class="menu-icon" id="menuToggle">
+                    <span></span><span></span><span></span>
+                </div>
+                Edit <span>Pengunjung</span>
             </div>
-            @endforeach
 
-            <button type="submit" class="btn-simpan-semua">Simpan Semua</button>
-        </form>
+            <div class="form-container">
+                <form action="{{ route('pengunjung.updateMultiple') }}" method="POST">
+                    @csrf
+
+                    @foreach($items as $item)
+                    <div class="edit-card">
+                        {{-- Header kecil untuk membedakan setiap pengunjung --}}
+                        <span class="card-header-label">Data Pengunjung: {{ $item->nama_nip }}</span>
+
+                        <input type="hidden" name="pengunjung[{{ $item->id }}][id]" value="{{ $item->id }}">
+
+                        <label>Tanggal</label>
+                        <input type="date" name="pengunjung[{{ $item->id }}][tanggal]" value="{{ $item->tanggal }}">
+
+                        <label>Nama / NIP</label>
+                        <input type="text" name="pengunjung[{{ $item->id }}][nama_nip]" value="{{ $item->nama_nip }}">
+
+                        <label>Instansi</label>
+                        <input type="text" name="pengunjung[{{ $item->id }}][instansi]" value="{{ $item->instansi }}">
+
+                        <label>Layanan</label>
+                        <input type="text" name="pengunjung[{{ $item->id }}][layanan]" value="{{ $item->layanan }}">
+
+                        <label>Keperluan</label>
+                        <input type="text" name="pengunjung[{{ $item->id }}][keperluan]" value="{{ $item->keperluan }}">
+
+                        <label>No. HP</label>
+                        <input type="text" name="pengunjung[{{ $item->id }}][no_hp]" value="{{ $item->no_hp }}">
+                    </div>
+                    @endforeach
+
+                    <button type="submit" class="btn-simpan-semua">Simpan Semua</button>
+                </form>
+            </div>
+        </div>
+
+        {{-- KANAN (GAMBAR) --}}
+        <div class="dashboard-right">
+            <h1>Edit Data <span>Pengunjung</span></h1>
+        </div>
     </div>
-
 </div>
 
-@endsection
 @include('components._footer')
+
+@endsection

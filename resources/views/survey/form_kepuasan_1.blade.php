@@ -7,6 +7,14 @@
 /* ======================== GLOBAL ======================== */
 body {
     background-color: #DFEDFE;
+    background-image: 
+        linear-gradient(135deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(225deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(45deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(315deg, rgba(255,255,255,0.18) 25%, #DFEDFE 25%);
+    background-position: 20px 0, 20px 0, 0 0, 0 0;
+    background-size: 20px 20px;
+    background-repeat: repeat;    
     font-family: 'Poppins', sans-serif;
     margin: 0;
     min-height: 100vh;
@@ -14,6 +22,7 @@ body {
     justify-content: center;
     align-items: center;
     overflow-x: hidden;
+    padding: 20px 0;
 }
 
 /* LOGO */
@@ -25,20 +34,25 @@ body {
     align-items: center;
     gap: 10px;
     z-index: 100;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
 
-.logo-header img {
-    height: 50px; /* Match form buku tamu */
-}
+.logo-header img { height: 50px; }
 
-/* ======================== WRAPPER ======================== */
+/* ======================== WRAPPER (EFEK 3D CARD) ======================== */
 .bukutamu-wrapper {
     display: flex;
     justify-content: center;
     align-items: stretch;
     background: #fff;
     border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    
+    /* EFEK TIMBUL: Shadow Berlapis & Border Halus */
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.15),
+        0 5px 15px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255,255,255,0.6);
+
     width: 95%;
     max-width: 1300px;
     min-height: 720px;
@@ -49,11 +63,12 @@ body {
 /* ======================== LEFT PANEL (FORM) ======================== */
 .bukutamu-left {
     flex: 2.1;
-    padding: 60px 80px;
+    padding: 50px 80px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     position: relative;
+    z-index: 2;
 }
 
 .bukutamu-left h1 {
@@ -62,59 +77,86 @@ body {
     color: #003366;
     margin-bottom: 25px;
     line-height: 1.3;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.bukutamu-left h1 span {
-    color: #30E3BC;
-}
+.bukutamu-left h1 span { color: #30E3BC; }
 
-.form-group {
-    margin-bottom: 15px;
-}
+.form-group { margin-bottom: 18px; }
 
 .form-group label {
     display: block;
     font-weight: 600;
-    margin-bottom: 6px;
-    color: #333;
-    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #444;
+    font-size: 0.95rem;
 }
 
+/* EFEK TIMBUL: INPUT FIELD (INSET/CEKUNG) */
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 13px 14px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
+    padding: 14px 16px;
+    border: 1px solid #e0e6ed;
+    border-radius: 12px;
     font-size: 1rem;
-    transition: 0.2s;
+    background-color: #f8fafc;
+    transition: all 0.2s;
+    /* Bayangan dalam (Inset) agar terlihat masuk ke dalam kertas */
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.03); 
 }
+
+/* Hilangkan panah spinner number */
+.form-group input[type=number]::-webkit-outer-spin-button,
+.form-group input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none; margin: 0;
+}
+.form-group input[type=number] { -moz-appearance: textfield; }
 
 .form-group input:focus,
 .form-group select:focus {
+    background-color: #fff;
     border-color: #30E3BC;
-    box-shadow: 0 0 0 3px rgba(48, 227, 188, 0.2);
+    /* Efek Glow saat diklik */
+    box-shadow: 
+        0 0 0 4px rgba(48, 227, 188, 0.15),
+        0 4px 10px rgba(0,0,0,0.05);
     outline: none;
+    transform: translateY(-2px);
 }
 
+/* EFEK TIMBUL: TOMBOL SUBMIT (PUSH BUTTON) */
 .btn-submit {
-    background-color: #30E3BC;
+    background: linear-gradient(135deg, #30E3BC 0%, #1bcfa5 100%);
     color: white;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 1.1rem;
-    padding: 13px 40px;
+    padding: 14px 45px;
     border: none;
-    border-radius: 12px;
+    border-radius: 50px;
     cursor: pointer;
     margin-top: 25px;
-    box-shadow: 0 5px 15px rgba(48, 227, 188, 0.3);
-    transition: 0.25s ease;
     align-self: flex-start;
+    letter-spacing: 0.5px;
+
+    /* KUNCI EFEK 3D */
+    box-shadow: 
+        0 6px 0 #16a080, /* Sisi tebal tombol */
+        0 12px 20px rgba(48, 227, 188, 0.3); /* Bayangan lantai */
+    
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
 }
 
 .btn-submit:hover {
-    background-color: #27C4A1;
     transform: translateY(-2px);
+    background: linear-gradient(135deg, #3dfcd1 0%, #21e0b3 100%);
+    box-shadow: 0 8px 0 #16a080, 0 15px 25px rgba(48, 227, 188, 0.4);
+}
+
+.btn-submit:active {
+    transform: translateY(6px); /* Turun ke bawah */
+    box-shadow: 0 0 0 #16a080, 0 2px 5px rgba(48, 227, 188, 0.4);
 }
 
 /* ======================== RIGHT PANEL (PHOTO) ======================== */
@@ -130,6 +172,9 @@ body {
     justify-content: center;
     align-items: flex-start;
     padding: 80px 40px 40px;
+
+    /* Bayangan dalam di sisi kiri */
+    box-shadow: inset 15px 0 20px -10px rgba(0,0,0,0.15);
 }
 
 .bukutamu-right::after {
@@ -149,12 +194,12 @@ body {
     z-index: 2;
     margin-top: 60px;
     line-height: 1.3;
-    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.55), 0 0 15px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 4px 10px rgba(0,0,0,0.6);
 }
 
 .bukutamu-right h1 span {
     color: #30E3BC;
-    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.55);
+    text-shadow: 0 4px 10px rgba(0,0,0,0.6);
 }
 
 /* ======================== RESPONSIVE ======================== */
@@ -167,98 +212,43 @@ body {
 
     .bukutamu-left {
         order: 2;
-        padding: 35px 25px;
+        padding: 40px 30px;
     }
 
     .bukutamu-right {
         order: 1;
         height: 280px;
-        background-position: center;
+        /* Bayangan pindah ke bawah */
+        box-shadow: inset 0 -15px 20px -10px rgba(0,0,0,0.15); 
     }
 
-    .bukutamu-left h1 {
-        font-size: 1.9rem;
-    }
-
-    .logo-header {
-        top: 10px;
-        right: 10px;
-    }
-
-    .logo-header img {
-        height: 40px;
-    }
+    .bukutamu-left h1 { font-size: 1.9rem; }
+    .logo-header { top: 10px; right: 10px; }
+    .logo-header img { height: 40px; }
 }
 
 @media (max-width: 600px) {
-    body {
-        padding: 10px;
+    .bukutamu-left { padding: 30px 20px; }
+    .bukutamu-left h1 { font-size: 1.6rem; margin-bottom: 20px; }
+    .form-group label { font-size: 0.9rem; }
+    .form-group input, .form-group select { padding: 8px; font-size: 0.9rem; }
+    
+    .btn-submit { 
+        width: 100%; 
+        padding: 14px 0;
+        text-align: center; 
     }
-
-    .bukutamu-wrapper {
-        border-radius: 15px;
-        width: 100%;
-    }
-
-    .bukutamu-left {
-        padding: 28px 20px;
-    }
-
-    .bukutamu-left h1 {
-        font-size: 1.6rem;
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        font-size: 0.9rem;
-    }
-
-    .form-group input,
-    .form-group select {
-        padding: 11px 5px;
-        font-size: 0.9rem;
-        border-radius: 8px;
-    }
-
-    .btn-submit {
-        width: 100%;
-        padding: 12px 0;
-        font-size: 1rem;
-        border-radius: 10px;
-    }
-
-    .bukutamu-right {
-        height: 220px;
-        padding: 40px 20px;
-    }
-
-    .bukutamu-right h1 {
-        font-size: 1.5rem;
-    }
+    
+    .bukutamu-right { height: 220px; padding: 40px 20px; }
+    .bukutamu-right h1 { font-size: 1.5rem; }
 }
 
 @media (max-width: 390px) {
-    .bukutamu-left {
-        padding: 20px 15px;
-    }
-
-    .bukutamu-left h1 {
-        font-size: 1.4rem;
-    }
-
-    .form-group input,
-    .form-group select {
-        padding: 10px;
-        font-size: 0.85rem;
-    }
-
-    .bukutamu-right {
-        height: 180px;
-    }
-
-    .bukutamu-right h1 {
-        font-size: 1.3rem;
-    }
+    .bukutamu-left { padding: 20px 15px; }
+    .bukutamu-left h1 { font-size: 1.4rem; }
+    .form-group input, .form-group select { padding: 10px; font-size: 0.85rem; }
+    .bukutamu-right { height: 180px; }
+    .bukutamu-right h1 { font-size: 1.3rem; }
 }
 </style>
 
@@ -280,7 +270,17 @@ body {
 
             <div class="form-group">
                 <label for="usia">Usia (Tahun)</label>
-                <input type="text" id="usia" name="usia" required>
+                <input 
+                    type="number" 
+                    id="usia" 
+                    name="usia" 
+                    required 
+                    min="1" 
+                    max="150"
+                    inputmode="numeric"
+                    placeholder="Contoh: 25"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                >
             </div>
 
             <div class="form-group">
@@ -329,7 +329,9 @@ body {
                     <option value="Magang / Penelitian">Magang / Penelitian</option>
                     <option value="NPSN">NPSN</option>
                     <option value="Rekomendasi Izin Pendirian Satuan Pendidikan">Rekomendasi Izin Pendirian Satuan Pendidikan</option>
+                    <option value="Rekomendasi Pendirian Satuan Pendidikan">Rekomendasi Pendirian Satuan Pendidikan</option>
                     <option value="Rekomendasi Operasional Satuan Pendidikan">Rekomendasi Operasional Satuan Pendidikan</option>
+                    <option value="Konsultasi Lainnya">Konsultasi Lainnya</option>
                 </select>
             </div>
 

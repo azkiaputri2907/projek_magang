@@ -4,8 +4,17 @@
 
 @section('content')
 <style>
+/* ======================== GLOBAL ======================== */
 body {
     background-color: #DFEDFE;
+    background-image: 
+        linear-gradient(135deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(225deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(45deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(315deg, rgba(255,255,255,0.18) 25%, #DFEDFE 25%);
+    background-position: 20px 0, 20px 0, 0 0, 0 0;
+    background-size: 20px 20px;
+    background-repeat: repeat;
     font-family: 'Poppins', sans-serif;
     margin: 0;
     min-height: 100vh;
@@ -26,124 +35,7 @@ body {
 }
 .logo-header img { height: 50px; }
 
-/* SIDEBAR */
-#sidebar {
-    position: fixed;
-    top: 0;
-    left: -250px;
-    height: 100%;
-    width: 250px;
-    background-color: #fff;
-    box-shadow: 2px 0 15px rgba(0,0,0,0.3);
-    z-index: 1000;
-    transition: left 0.3s ease;
-    padding: 20px 0;
-    border-radius: 0 20px 20px 0;
-    display: flex;
-    flex-direction: column;
-}
-
-#sidebar.active { 
-    left: 0; 
-}
-
-#sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 999;
-    display: none;
-}
-
-#sidebar.active + #sidebar-overlay { 
-    display: block; 
-}
-
-/* PROFILE DI SIDEBAR */
-.sidebar-profile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 15px 20px 15px;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.sidebar-profile img {
-    width: 60px; 
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
-}
-
-.sidebar-profile div { 
-    font-size: 14px; 
-    color: #333; 
-}
-
-.sidebar-profile div span { 
-    display: block; 
-    font-size: 12px; 
-    color: #666; 
-}
-
-
-/* MENU LINK */
-.sidebar-link {
-    display: flex;
-    align-items: center;
-    padding: 12px 15px;
-    text-decoration: none;
-    color: #333;
-    font-size: 14px;
-    margin: 5px 0;
-    transition: background 0.2s ease;
-}
-
-.sidebar-link i { 
-    margin-right: 10px; 
-}
-
-.sidebar-link:hover { 
-    background-color: rgba(220,53,69,0.05); 
-}
-
-.sidebar-link.active {
-    background-color: rgba(195, 222, 255, 0.909);
-    border-left: 4px solid #CFDDF7;
-    font-weight: bold;
-    border-radius: 0 8px 8px 0;
-    margin-left: 0;
-    margin-right: 20px;
-    padding-left: 20px;
-}
-
-
-/* FOOTER / LOGOUT */
-.sidebar-footer {
-    padding: 15px;
-    margin-top: auto;
-    margin-bottom: 40px; /* ⭐ Tambahin jarak biar ga mentok bawah */
-}
-
-.sidebar-footer form button {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    background-color: #EF4444;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-
-/* DASHBOARD CARD */
+/* ======================== DASHBOARD CONTENT ======================== */
 .container-dashboard {
     display: flex;
     justify-content: center;
@@ -157,7 +49,11 @@ body {
     background-color: #fff;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    /* EFEK TIMBUL: Shadow berlapis & Border halus */
+    box-shadow: 
+        0 20px 50px rgba(0,0,0,0.2), 
+        0 10px 15px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     height: 720px;
     width: 100%;
 }
@@ -196,29 +92,45 @@ body {
 
 /* TODAY CARD */
 .today-card {
-    background-color: #ffadf1;
+    /* EFEK TIMBUL: Gradient & Soft Shadow */
+    background: linear-gradient(135deg, #ffadf1 0%, #ff85ea 100%);
     color: #fff;
     border-radius: 12px;
     padding: 10px 20px;
     font-weight: 600;
     font-size: 0.9rem;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 15px rgba(255, 133, 234, 0.3);
     margin-bottom: 15px;
     text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.4); /* Highlight atas */
 }
 
-/* ⭐ LAYANAN (FIXED — warna & ukuran sama versi awal) */
+/* LAYANAN */
 .layanan-card {
     background-color: #C9E1FF;
     padding: 15px 20px;
     border-radius: 15px;
     margin-bottom: 15px;
+    /* EFEK TIMBUL: Shadow bawah */
+    box-shadow: 
+        0 10px 20px rgba(0, 123, 255, 0.1),
+        inset 0 2px 0 rgba(255, 255, 255, 0.4); /* Highlight dalam */
+    border: 1px solid #bde0ff;
+}
+
+/* ANIMASI MASUK */
+@keyframes slideFadeIn {
+    0% { opacity: 0; transform: translateX(-25px) scale(.98); }
+    100% { opacity: 1; transform: translateX(0) scale(1); }
 }
 .layanan-card h3 {
     font-size: 1rem;
     font-weight: 600;
     color: #003366;
     margin-bottom: 14px;
+    opacity: 0;
+    animation: slideFadeIn .6s ease-out forwards;
+    animation-delay: .25s;    
 }
 
 .layanan-card ol {
@@ -229,11 +141,22 @@ body {
 
 .layanan-card ol li {
     margin-bottom: 6px;
+    animation: slideFadeIn .45s ease-out forwards;    
 }
 .layanan-card ol li::marker {
     color: #007BFF;
     font-weight: 700;
 }
+/* Stagger */
+.layanan-card ol li:nth-child(1) { animation-delay: .30s; }
+.layanan-card ol li:nth-child(2) { animation-delay: .36s; }
+.layanan-card ol li:nth-child(3) { animation-delay: .42s; }
+.layanan-card ol li:nth-child(4) { animation-delay: .48s; }
+.layanan-card ol li:nth-child(5) { animation-delay: .54s; }
+.layanan-card ol li:nth-child(6) { animation-delay: .60s; }
+.layanan-card ol li:nth-child(7) { animation-delay: .66s; }
+.layanan-card ol li:nth-child(8) { animation-delay: .72s; }
+.layanan-card ol li:nth-child(9) { animation-delay: .78s; }
 
 /* DATA CARD */
 .data-cards {
@@ -244,29 +167,87 @@ body {
 .data-card {
     flex: 1;
     min-height: 120px;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    border-radius: 16px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     color: #fff;
     cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    /* EFEK 3D GLOSSY */
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid rgba(255,255,255,0.3);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
 }
-.data-card.pengunjung { background-color: #007bff; }
-.data-card.skm { background-color: #2DD4BF; }
-.data-card .card-header { display: flex; align-items: center; gap: 10px; }
+
+.data-card.pengunjung { 
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+}
+
+.data-card.skm { 
+    background: linear-gradient(135deg, #2DD4BF 0%, #0d9488 100%);
+    box-shadow: 0 10px 20px rgba(13, 148, 136, 0.3);
+}
+
+.data-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+}
+
+.data-card .icon-container {
+    width: 35px; 
+    height: 35px; 
+    background-color: rgba(255,255,255,0.25); 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    box-shadow: inset 0 2px 5px rgba(255,255,255,0.2);
+}
 .data-card h4 { font-size: 0.9rem; font-weight: 600; margin: 0; }
-.icon-container { width: 25px; height: 25px; background-color: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 .count { font-size: 2rem; font-weight: 700; margin: 0; }
 .description { font-size: 11px; margin-top: 3px; }
 
-/* BUTTONS */
+/* BUTTONS DASHBOARD */
 .button-wrapper { display: flex; gap: 15px; margin-top: 10px; }
-.btn-item { flex: 1; font-weight: 600; padding: 12px 20px; border: none; border-radius: 12px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
 .btn-item:hover { transform: translateY(-1px); }
-.btn-laporan { background-color: #dfefff; color: #444; }
-.btn-keluar { background-color: #EF4444; color: #fff; }
+.btn-item {
+    flex: 1;
+    font-weight: 600;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    border-bottom: 4px solid rgba(0,0,0,0.1); 
+}
+
+.btn-item:active {
+    transform: translateY(2px);
+    border-bottom: 2px solid rgba(0,0,0,0.1);
+}
+
+.btn-laporan { 
+    background-color: #dfefff; 
+    color: #0056b3; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.btn-keluar { 
+    background: linear-gradient(135deg, #EF4444 0%, #dc2626 100%);
+    color: #fff; 
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}
 
 /* RIGHT PANEL */
 .dashboard-right {
@@ -324,40 +305,8 @@ body {
     <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
 </div>
 
-{{-- SIDEBAR --}}
-<div id="sidebar">
-    <div class="sidebar-profile">
-        <img src="{{ asset('images/avatar_admin.jpg') }}" alt="Avatar">
-        <div>
-            {{ Auth::user()->name ?? 'Admin' }}
-            <span>Admin</span>
-        </div>
-    </div>
-
-    <a href="{{ url('/admin/dashboard') }}" class="sidebar-link {{ Request::is('admin/dashboard') ? 'active' : '' }}">
-        <i class="fas fa-home"></i> Beranda
-    </a>
-    <a href="{{ url('/admin/pengunjung') }}" class="sidebar-link {{ Request::is('admin/pengunjung') ? 'active' : '' }}">
-        <i class="fas fa-users"></i> Data Pengunjung
-    </a>
-    <a href="{{ url('/admin/skm') }}" class="sidebar-link {{ Request::is('admin/skm') ? 'active' : '' }}">
-        <i class="fas fa-file-alt"></i> Data SKM
-    </a>
-    <a href="{{ url('/admin/skm/pertanyaan') }}" class="sidebar-link {{ Request::is('admin/skm/pertanyaan') ? 'active' : '' }}">
-        <i class="fas fa-file-alt"></i> Data SKM Pertanyaan
-    </a>
-    <a href="{{ url('/admin/laporan') }}" class="sidebar-link {{ Request::is('admin/laporan') ? 'active' : '' }}">
-        <i class="fas fa-chart-line"></i> Laporan
-    </a>
-
-    <div class="sidebar-footer">
-        <form action="{{ route('admin.logout') }}" method="POST">
-            @csrf
-            <button type="submit"><i class="fas fa-sign-out-alt"></i> Keluar</button>
-        </form>
-    </div>
-</div>
-<div id="sidebar-overlay"></div>
+{{-- === PANGGIL SIDEBAR DARI COMPONENT === --}}
+@include('components._sidebar')
 
 {{-- DASHBOARD --}}
 <div class="container-dashboard">
@@ -425,9 +374,9 @@ body {
                     <i class="fas fa-chart-line"></i> Laporan
                 </a>
 
-                <form action="{{ route('admin.logout') }}" method="POST">
+                <form action="{{ route('admin.logout') }}" method="POST" style="flex:1;">
                     @csrf
-                    <button type="submit" class="btn-item btn-keluar">
+                    <button type="submit" class="btn-item btn-keluar" style="width:100%;">
                         <i class="fas fa-sign-out-alt"></i> Keluar
                     </button>
                 </form>
@@ -446,20 +395,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('today-card').innerText =
         today.toLocaleDateString('id-ID', options);
 
-    // Sidebar toggle
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    const toggle = document.getElementById('menuToggle');
-
-    toggle.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-        overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
-    });
-
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-        overlay.style.display = 'none';
-    });
 });
 </script>
 @endsection

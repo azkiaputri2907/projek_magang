@@ -7,9 +7,16 @@
 /* ======================== GLOBAL ======================== */
 body {
     background-color: #DFEDFE;
+    background-image: 
+        linear-gradient(135deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(225deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(45deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(315deg, rgba(255,255,255,0.18) 25%, #DFEDFE 25%);
+    background-position: 20px 0, 20px 0, 0 0, 0 0;
+    background-size: 20px 20px;
+    background-repeat: repeat;
     font-family: 'Poppins', sans-serif;
     margin: 0;
-    /* PENYESUAIAN: Menghapus padding-top 50px */
     padding-top: 0rem; 
     min-height: 100vh;
     overflow-x: hidden;
@@ -18,132 +25,34 @@ body {
 /* LOGO */
 .logo-header {
     position: absolute;
-    top: 18px; /* Lebih ke atas */
+    top: 18px;
     right: 25px;
     display: flex;
     align-items: center;
     gap: 10px;
     z-index: 100;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
-.logo-header img { height: 50px; } /* Lebih kecil */
+.logo-header img { height: 50px; }
 
-/* SIDEBAR - Pertahankan Gaya Asli */
-#sidebar {
-    position: fixed;
-    top: 0;
-    left: -250px;
-    height: 100%;
-    width: 250px;
-    background-color: #fff;
-    box-shadow: 2px 0 15px rgba(0,0,0,0.3);
-    z-index: 1000;
-    transition: left 0.3s ease;
-    padding: 20px 0;
-    border-radius: 0 20px 20px 0;
-    display: flex;
-    flex-direction: column;
-}
-
-#sidebar.active { 
-    left: 0; 
-}
-
-#sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 999;
-    display: none;
-}
-
-#sidebar.active + #sidebar-overlay { 
-    display: block; 
-}
-
-/* PROFILE DI SIDEBAR */
-.sidebar-profile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 15px 20px 15px;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.sidebar-profile img {
-    width: 60px; 
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
-}
-
-.sidebar-profile div { 
-    font-size: 14px; 
-    color: #333; 
-}
-
-.sidebar-profile div span { 
-    display: block; 
-    font-size: 12px; 
-    color: #666; 
-}
-
-
-/* MENU LINK */
-.sidebar-link {
-    display: flex;
-    align-items: center;
-    padding: 12px 15px;
-    text-decoration: none;
-    color: #333;
-    font-size: 14px;
-    margin: 5px 0;
-    transition: background 0.2s ease;
-}
-
-.sidebar-link i { 
-    margin-right: 10px; 
-}
-
-.sidebar-link:hover { 
-    background-color: rgba(220,53,69,0.05); 
-}
-
-.sidebar-link.active {
-    background-color: rgba(195, 222, 255, 0.909);
-    border-left: 4px solid #CFDDF7;
-    font-weight: bold;
-    border-radius: 0 8px 8px 0;
-    margin-left: 0;
-    margin-right: 20px;
-    padding-left: 20px;
-}
-
-
-/* FOOTER / LOGOUT */
-.sidebar-footer {
-    padding: 15px;
-    margin-top: auto;
-    margin-bottom: 40px; 
-}
-
-.sidebar-footer form button {
+.btn-keluar {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 10px;
-    background-color: #EF4444;
+    background: linear-gradient(135deg, #EF4444 0%, #b91c1c 100%);
     color: #fff;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
+    box-shadow: 0 4px 0 #991b1b;
+    transition: all 0.1s;
 }
+.btn-keluar:active { transform: translateY(4px); box-shadow: none; }
 
-/* DASHBOARD MAIN - Mengadopsi style Data Pengunjung yang dirapikan */
+/* ================= DASHBOARD CONTENT (3D CARD) ================= */
 .container-dashboard {
     display: flex;
     justify-content: center;
@@ -161,13 +70,19 @@ body {
     background-color: #fff;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    /* Menambah min-height agar vertikal scrollbar muncul saat data panjang */
-    min-height: 580px; 
+    
+    /* EFEK TIMBUL 3D */
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.15),
+        0 5px 15px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-bottom: 6px solid #e1e8f0;
+    
+    min-height: 620px;
     width: 100%;
 }
 
-/* ================= LEFT PANEL (KONTEN) ================= */
+/* ================= LEFT PANEL (CONTENT) ================= */
 .dashboard-left {
     flex: 2.1; 
     padding: 40px 50px;
@@ -175,6 +90,9 @@ body {
     flex-direction: column;
     position: relative;
     gap: 20px;
+    background-color: #F8FBFF;
+    z-index: 1;
+    min-width: 0;
 }
 
 /* Title Card */
@@ -185,17 +103,14 @@ body {
     font-size: 2rem; 
     font-weight: 800;
     color: #003366; 
-    margin-bottom: 15px; 
+    margin-bottom: 5px; 
     display: flex;
     align-items: center;
     gap: 15px;
+    text-shadow: 0 2px 3px rgba(0,0,0,0.05);
 }
-.title-card span {
-    color: #30E3BC; 
-}
+.title-card span { color: #30E3BC; }
 
-
-/* MENU ICON */
 .menu-icon {
     cursor: pointer;
     display: flex;
@@ -211,144 +126,169 @@ body {
     border-radius: 2px;
 }
 
-
-/* TABLE CARD */
+/* === DATA CARD (TABLE CONTAINER) === */
 .data-card {
     background: #fff;
     border-radius: 15px;
     padding: 0; 
-    box-shadow: 0 6px 15px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    border: 1px solid #eee;
     overflow: hidden;
+
+    /* Efek Timbul Inset Halus */
+    box-shadow: 
+        0 4px 6px rgba(0,0,0,0.02),
+        inset 0 0 0 1px #e0e6ed;
 }
 
 .data-card h3 {
-    margin: 15px 10px 0 15px;
+    margin: 15px 20px 5px 20px;
     font-size: 1.1rem;
     font-weight: 700;
     color: #003366;
 }
 
-/* HEADER TABEL */
-.data-table-header,
+/* HEADER TABEL (Style Bar Timbul) */
+.data-table-header {
+    display: flex;
+    padding: 12px 10px;
+    font-weight: 700;
+    background: linear-gradient(to right, #007BFF, #0056b3);
+    color: #fff;
+    font-size: .9rem;
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+    z-index: 2;
+    align-items: center;
+}
+
 .data-table-row {
     display: flex;
-    padding: 8px 10px; 
-    align-items: center;
-    min-width: max-content; /* PENTING: Agar header/row tidak hancur saat banyak kolom */
-    width: 100%;
-}
-
-.data-table-header {
-    font-weight: 700; 
-    border-bottom: 2px solid #007BFF; 
-    color: #333;
-    font-size: .9rem;
-    background-color: #f8f9fa;
-}
-.data-table-row {
-    border-bottom: 1px solid #ddd; 
+    padding: 10px 10px;
+    border-bottom: 1px solid #f0f0f0;
     color: #444;
     font-size: .85rem;
+    transition: background 0.2s;
+    align-items: center;
 }
-.data-table-row:last-child {
-    border-bottom: none;
-}
+.data-table-row:hover { background-color: #f0f7ff; }
+.data-table-row:last-child { border-bottom: none; }
 
-
-/* Column Flex Properties - RAPAT KIRI DAN PROPORSI KOLOM JAWABAN */
-.data-table-header > span,
-.data-table-row > span {
+/* Column Flex Properties */
+.data-table-header > span, .data-table-row > span {
     text-align: left; 
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap; 
-    /* Default flex */
-    flex-grow: 1;
-    flex-shrink: 0;
 }
 
-.checkbox-col { 
-    flex: 0 0 30px; /* Ukuran tetap 30px */
-    min-width: 30px;
-    max-width: 30px;
-}
-/* Proporsi Kolom Jawaban (Q1-Q9) - Semua jawaban U1-U4, jadi lebar sama */
+.checkbox-col { flex: 0 0 30px; min-width: 30px; display: flex; align-items: center; }
+
+/* Proporsi Kolom Jawaban (Q1-Q9) - Rata Tengah */
 .q-col {
-    flex: 0 0 70px; /* Lebar tetap 70px untuk Q1-Q9 */
+    flex: 0 0 70px; 
     min-width: 70px;
     max-width: 70px;
-    text-align: center; /* Teks U1/U2/U3/U4 di tengah kolomnya */
+    text-align: center !important;
+    justify-content: center;
 }
-/* Kolom Saran/Masukan (Q10) - Diberi lebar lebih besar */
+
+/* Kolom Saran (Flexible) */
 .data-table-header span:last-child,
 .data-table-row span:last-child {
-    flex: 1 1 200px; /* Fleksibel, tapi minimum 200px */
+    flex: 1 1 200px; 
     min-width: 200px;
-    text-align: left; /* Teks Saran rata kiri */
+    text-align: left;
+    padding-left: 10px;
 }
 
+/* Checkbox */
+input[type="checkbox"] {
+    accent-color: #30E3BC;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
 
-/* Wrapper untuk container yang bisa di-scroll */
+/* Scroll Container (Horizontal Scroll Enabled) */
 .tabel-container {
     flex-grow: 1;
     overflow-y: auto;
-    /* PENTING: Untuk horizontal scroll */
-    overflow-x: auto; 
+    overflow-x: auto; /* Penting untuk tabel lebar */
     padding-right: 6px;
-    margin-top: 5px;
+    margin-top: 0;
 }
 
-/* Tambahkan wrapper internal untuk memaksa lebar tabel saat scroll horizontal */
+/* Wrapper agar tabel tidak menyempit */
 .data-table-wrapper {
-    min-width: 1200px; /* Lebar minimum agar semua 11 kolom muat */
+    min-width: 1200px; /* Paksa lebar agar tidak hancur */
 }
 
-
-/* BUTTON ACTION - Mengadopsi style Data Pengunjung */
+/* === BUTTON ACTION (3D PUSH BUTTONS) === */
 .action-buttons {
-    padding: 15px 10px;
+    padding: 15px 20px;
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 15px;
     border-top: 1px solid #eee;
+    background-color: #fafbfc;
 }
+
 .btn-action {
-    padding: 10px 20px;
-    border-radius: 10px;
+    padding: 10px 25px;
+    border-radius: 50px;
     border: none;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     text-transform: uppercase;
-    font-size: 0.85rem;
-    transition: 0.2s ease;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    top: 0;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.btn-simpan { 
-    background: #30E3BC; 
-    color: #fff; 
-    box-shadow: 0 3px 8px rgba(48, 227, 188, 0.4);
-}
+/* Edit Button (Green) */
 .btn-edit { 
-    background-color: #20c997; 
+    background: linear-gradient(135deg, #20c997 0%, #17a078 100%);
     color: #fff; 
-    box-shadow: 0 3px 8px rgba(32, 201, 151, 0.4);
+    box-shadow: 0 4px 0 #138563, 0 5px 10px rgba(32, 201, 151, 0.3);
 }
+.btn-edit:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #138563, 0 8px 15px rgba(32, 201, 151, 0.4); }
+.btn-edit:active { top: 4px; box-shadow: 0 0 0 #138563, 0 2px 5px rgba(32, 201, 151, 0.3); }
+
+/* Delete Button (Red) */
 .btn-hapus { 
-    background-color: #dc3545; 
+    background: linear-gradient(135deg, #EF4444 0%, #b91c1c 100%);
     color: #fff; 
-    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.4);
+    box-shadow: 0 4px 0 #991b1b, 0 5px 10px rgba(239, 68, 68, 0.3);
+}
+.btn-hapus:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #991b1b, 0 8px 15px rgba(239, 68, 68, 0.4); }
+.btn-hapus:active { top: 4px; box-shadow: 0 0 0 #991b1b, 0 2px 5px rgba(239, 68, 68, 0.3); }
+
+/* Simpan/Kembali Button (Blue/Teal) */
+.btn-simpan { 
+    background: linear-gradient(135deg, #30E3BC 0%, #1bcfa5 100%);
+    color: #fff; 
+    box-shadow: 0 4px 0 #16a080, 0 5px 10px rgba(48, 227, 188, 0.3);
+}
+.btn-simpan:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #16a080, 0 8px 15px rgba(48, 227, 188, 0.4); }
+.btn-simpan:active { top: 4px; box-shadow: 0 0 0 #16a080, 0 2px 5px rgba(48, 227, 188, 0.3); }
+
+/* Disabled State */
+.disabled {
+    background: #ccc !important;
+    box-shadow: none !important;
+    color: #666 !important;
+    transform: none !important;
+    top: 0 !important;
 }
 
-.btn-edit:hover { background-color: #1a9c7b; }
-.btn-hapus:hover { background-color: #c82333; }
-.btn-simpan:hover { background-color: #27C4A1; }
-
-
-/* RIGHT PANEL (Image) - Mengadopsi dashboard-left-image Data Pengunjung */
+/* ================= RIGHT PANEL (IMAGE) ================= */
 .dashboard-right {
     flex: 0.9;
     background-color: #C9E1FF;
@@ -361,9 +301,14 @@ body {
     align-items: flex-start;
     padding: 80px 40px 40px; 
     position: relative;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
-    overflow: hidden;
+    
+    /* Bayangan pemisah */
+    box-shadow: inset 15px 0 20px -10px rgba(0,0,0,0.15);
+    z-index: 2;
+
+    /* 🔥 PERBAIKAN UTAMA: Mencegah gambar 'gepeng' atau hilang */
+    flex-shrink: 0; 
+    min-width: 300px; /* Menjaga ukuran minimal gambar */
 }
 
 .dashboard-right::after {
@@ -374,148 +319,65 @@ body {
     z-index: 1;
 }
 .dashboard-right h1 {
+    position: relative;
     z-index: 2;
     color: white;
     font-size: 2.2rem;
     font-weight: 800;
     margin-top: 40px;
-    text-shadow: 0 3px 8px rgba(0,0,0,0.55);
+    text-shadow: 0 4px 8px rgba(0,0,0,0.6);
+    text-align: center;
 }
 .dashboard-right h1 span { color: #30E3BC; }
 
 
 /* ================= RESPONSIVE MODE ==================== */
 @media (max-width: 992px) {
-
     .dashboard-card { flex-direction: column; min-height: auto; }
 
-    /* Mengubah urutan untuk mobile: Gambar di atas */
+    /* Mobile: Image on Top */
     .dashboard-right { 
         order: 1;
         height: 260px; 
         padding-top: 40px; 
-        border-radius: 20px 20px 0 0; 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         border-bottom-right-radius: 0;
+        border-radius: 20px 20px 0 0;
     }
-
     .dashboard-right h1 { font-size: 1.8rem; margin-top: 10px; }
     
-    .dashboard-left {
-        order: 2;
-        padding: 30px 20px;
-    }
-
-    .title-card {
-        font-size: 1.8rem;
-    }
+    .dashboard-left { order: 2; padding: 30px 20px; }
+    .title-card { font-size: 1.8rem; }
+    .container-dashboard { margin-top: 10px; }
+    .logo-header { top: 10px; right: 10px; }
+    .logo-header img { height: 40px; }
     
-    .container-dashboard {
-        margin-top: 10px; 
-    }
-
-    .logo-header {
-        top: 10px;
-        right: 10px;
-    }
-
-    .logo-header img {
-        height: 40px;
-    }
-    
-    /* Pada mobile, lebar tabel mungkin tetap perlu dipertahankan untuk scroll horizontal */
-    .data-table-wrapper {
-        min-width: 1000px; 
-    }
+    .data-table-header { font-size: 0.8rem; }
+    .data-table-row { font-size: 0.75rem; }
 }
 
 @media (max-width: 600px) {
-    .dashboard-right h1 {
-        font-size: 1.5rem;
-    }
+    .dashboard-right h1 { font-size: 1.5rem; }
+    .title-card { font-size: 1.5rem; }
     
-    .title-card {
-        font-size: 1.5rem;
-    }
+    /* Button Stack */
+    .action-buttons { flex-direction: column; gap: 10px; }
+    .btn-action { width: 80%; }
     
-    .data-table-header span,
-    .data-table-row span {
-        font-size: .65rem; 
-    }
-
-    .q-col {
-        flex: 0 0 50px;
-        min-width: 50px;
-        max-width: 50px;
-    }
-    
-    .action-buttons {
-        padding: 10px;
-        gap: 5px;
-    }
-    .btn-action {
-        padding: 8px 10px;
-        font-size: 0.7rem;
-    }
-    
-    /* Radius untuk mobile */
-    .dashboard-card {
-        border-radius: 15px;
-    }
-    .dashboard-right {
-        border-radius: 15px 15px 0 0;
-    }
-    
-    /* Lebar wrapper dipertahankan agar bisa scroll */
-    .data-table-wrapper {
-        min-width: 900px;
-    }
+    /* Table still scrollable horizontally */
+    .data-table-wrapper { min-width: 900px; }
 }
 </style>
 
-{{-- LOGO --}}
+
 <div class="logo-header">
     <img src="{{ asset('images/LOGO_KEMENTRIAN.png') }}" alt="Logo Kementrian">
     <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
 </div>
 
-<div id="sidebar">
-    <div class="sidebar-profile">
-        <img src="{{ asset('images/avatar_admin.jpg') }}" alt="Avatar">
-        <div>
-            {{ Auth::user()->name ?? 'Admin' }}
-            <span>Admin</span>
-        </div>
+{{-- === PANGGIL SIDEBAR DARI COMPONENT === --}}
+@include('components._sidebar')
 
-    </div>
-
-    <a href="{{ url('/admin/dashboard') }}" class="sidebar-link {{ Request::is('admin/dashboard') ? 'active' : '' }}">
-        <i class="fas fa-home"></i> Beranda
-    </a>
-    <a href="{{ url('/admin/pengunjung') }}" class="sidebar-link {{ Request::is('admin/pengunjung') ? 'active' : '' }}">
-        <i class="fas fa-users"></i> Data Pengunjung
-    </a>
-    <a href="{{ url('/admin/skm') }}" class="sidebar-link {{ Request::is('admin/skm') ? 'active' : '' }}">
-        <i class="fas fa-file-alt"></i> Data SKM
-    </a>
-        <a href="{{ url('/admin/skm/pertanyaan') }}" class="sidebar-link {{ Request::is('admin/skm/pertanyaan') ? 'active' : '' }}">
-        <i class="fas fa-file-alt"></i> Data SKM Pertanyaan
-    </a>
-    <a href="{{ url('/admin/laporan') }}" class="sidebar-link {{ Request::is('admin/laporan') ? 'active' : '' }}">
-        <i class="fas fa-chart-line"></i> Laporan
-    </a>
-
-    <div class="sidebar-footer">
-        <form action="{{ route('admin.logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="btn-item btn-keluar">
-                <i class="fas fa-sign-out-alt"></i> Keluar
-            </button>
-        </form>     
-    </div>
-</div>
-<div id="sidebar-overlay"></div>
-
-{{-- LAYOUT --}}
 <div class="container-dashboard">
     <div class="dashboard-card">
 
@@ -592,24 +454,6 @@ body {
 
 @include('components._footer')
 
-{{-- SCRIPT SIDEBAR --}}
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    const toggle = document.getElementById('menuToggle');
-
-    toggle.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-        overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
-    });
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-        overlay.style.display = 'none';
-    });
-});
-</script>
-
 {{-- SCRIPT AKTIFKAN EDIT & HAPUS --}}
 <script>
 document.addEventListener("DOMContentLoaded", function(){
@@ -642,6 +486,9 @@ document.addEventListener("DOMContentLoaded", function(){
             btnDelete.style.pointerEvents = "auto";
             btnEdit.style.opacity = "1";
             btnDelete.style.opacity = "1";
+            // Kembalikan shadow
+            btnEdit.style.boxShadow = "";
+            btnDelete.style.boxShadow = "";
 
             btnEdit.classList.remove("disabled");
             btnDelete.classList.remove("disabled");
@@ -654,13 +501,15 @@ document.addEventListener("DOMContentLoaded", function(){
             btnDelete.style.pointerEvents = "none";
             btnEdit.style.opacity = "0.5";
             btnDelete.style.opacity = "0.5";
+            // Hilangkan shadow
+            btnEdit.style.boxShadow = "none";
+            btnDelete.style.boxShadow = "none";
 
             btnEdit.classList.add("disabled");
             btnDelete.classList.add("disabled");
         }
     }
     
-    // Set initial state
     updateButtonState();
 });
 </script>

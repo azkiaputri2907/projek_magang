@@ -2,6 +2,7 @@
 
 @section('title', 'Laporan | Disdik Kab.Banjar')
 
+{{-- Load Chart.js --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 @section('content')
@@ -9,9 +10,16 @@
 /* ======================== GLOBAL ======================== */
 body {
     background-color: #DFEDFE;
+    background-image: 
+        linear-gradient(135deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(225deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(45deg, rgba(255,255,255,0.18) 25%, transparent 25%),
+        linear-gradient(315deg, rgba(255,255,255,0.18) 25%, #DFEDFE 25%);
+    background-position: 20px 0, 20px 0, 0 0, 0 0;
+    background-size: 20px 20px;
+    background-repeat: repeat;
     font-family: 'Poppins', sans-serif;
     margin: 0;
-    /* PENYESUAIAN: Menghapus padding-top 50px */
     padding-top: 0rem; 
     min-height: 100vh;
     overflow-x: hidden;
@@ -20,132 +28,21 @@ body {
 /* LOGO */
 .logo-header {
     position: absolute;
-    top: 18px; /* Lebih ke atas */
+    top: 18px;
     right: 25px;
     display: flex;
     align-items: center;
     gap: 10px;
     z-index: 100;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
-.logo-header img { height: 50px; } /* Lebih kecil */
+.logo-header img { height: 50px; }
 
-/* SIDEBAR - Pertahankan Gaya Asli */
-#sidebar {
-    position: fixed;
-    top: 0;
-    left: -250px;
-    height: 100%;
-    width: 250px;
-    background-color: #fff;
-    box-shadow: 2px 0 15px rgba(0,0,0,0.3);
-    z-index: 1000;
-    transition: left 0.3s ease;
-    padding: 20px 0;
-    border-radius: 0 20px 20px 0;
-    display: flex;
-    flex-direction: column;
-}
+/* CATATAN: CSS Sidebar dihapus dari sini karena sudah ada 
+   di dalam file components/_sidebar.blade.php 
+*/
 
-#sidebar.active { 
-    left: 0; 
-}
-
-#sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 999;
-    display: none;
-}
-
-#sidebar.active + #sidebar-overlay { 
-    display: block; 
-}
-
-/* PROFILE DI SIDEBAR */
-.sidebar-profile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 15px 20px 15px;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.sidebar-profile img {
-    width: 60px; 
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
-}
-
-.sidebar-profile div { 
-    font-size: 14px; 
-    color: #333; 
-}
-
-.sidebar-profile div span { 
-    display: block; 
-    font-size: 12px; 
-    color: #666; 
-}
-
-
-/* MENU LINK */
-.sidebar-link {
-    display: flex;
-    align-items: center;
-    padding: 12px 15px;
-    text-decoration: none;
-    color: #333;
-    font-size: 14px;
-    margin: 5px 0;
-    transition: background 0.2s ease;
-}
-
-.sidebar-link i { 
-    margin-right: 10px; 
-}
-
-.sidebar-link:hover { 
-    background-color: rgba(220,53,69,0.05); 
-}
-
-.sidebar-link.active {
-    background-color: rgba(195, 222, 255, 0.909);
-    border-left: 4px solid #CFDDF7;
-    font-weight: bold;
-    border-radius: 0 8px 8px 0;
-    margin-left: 0;
-    margin-right: 20px;
-    padding-left: 20px;
-}
-
-
-/* FOOTER / LOGOUT */
-.sidebar-footer {
-    padding: 15px;
-    margin-top: auto;
-    margin-bottom: 40px; 
-}
-
-.sidebar-footer form button {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    background-color: #EF4444;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* === DASHBOARD MAIN LAYOUT === */
+/* ================= DASHBOARD MAIN (3D CARD) ================= */
 .container-dashboard {
     display: flex;
     justify-content: center;
@@ -153,7 +50,6 @@ body {
     width: 95%;
     max-width: 1300px;
     margin: 0 auto;
-    /* PENYESUAIAN: Konten ditarik ke atas */
     padding-top: 0; 
     margin-top: 5px; 
     padding-bottom: 20px;
@@ -164,19 +60,29 @@ body {
     background-color: #fff;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    min-height: 580px;
+    
+    /* EFEK TIMBUL 3D */
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.15),
+        0 5px 15px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-bottom: 6px solid #e1e8f0;
+    
+    min-height: 620px;
     width: 100%;
 }
 
 /* ================= LEFT PANEL (KONTEN) ================= */
 .dashboard-left {
-    flex: 2.1; /* Mengadopsi rasio konten yang lebih besar */
+    flex: 2.1; 
     padding: 40px 50px;
     display: flex;
     flex-direction: column;
     position: relative;
     gap: 20px;
+    background-color: #F8FBFF;
+    z-index: 1;
+    min-width: 0;
 }
 
 /* Title Card */
@@ -191,13 +97,10 @@ body {
     display: flex;
     align-items: center;
     gap: 15px;
+    text-shadow: 0 2px 3px rgba(0,0,0,0.05);
 }
-.title-card span {
-    color: #30E3BC; 
-}
+.title-card span { color: #30E3BC; }
 
-
-/* MENU ICON */
 .menu-icon {
     cursor: pointer;
     display: flex;
@@ -213,71 +116,97 @@ body {
     border-radius: 2px;
 }
 
-
-/* REPORT CONTENT & CHARTS */
+/* === REPORT CONTENT & CHARTS === */
 .report-content {
     display: flex;
-    justify-content: center; /* Diubah dari space-around ke center */
-    align-items: flex-start; /* Diubah dari center ke flex-start */
+    justify-content: center;
+    align-items: flex-start;
     gap: 40px;
     padding: 20px 0;
     flex-wrap: wrap;
     flex-grow: 1;
 }
 
+/* 3D CARD UNTUK CHART */
 .report-chart {
     text-align: center;
     background: #fff;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-    width: 260px;
-    height: 320px;
+    border-radius: 20px;
+    padding: 25px;
+    width: 280px;
+    height: 360px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid #eee; /* Tambah border tipis */
+    justify-content: center;
+    
+    /* EFEK TIMBUL CARD KECIL */
+    border: 1px solid #e0e6ed;
+    border-bottom: 5px solid #d1d9e6;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
 }
 
-/* FIX DONUT BIAR NGGAK GEPENG */
+.report-chart:hover {
+    transform: translateY(-5px);
+}
+
 .chart-wrapper {
     width: 220px;
     height: 220px;
     position: relative;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 .chart-wrapper canvas {
     position: absolute;
     inset: 0;
 }
+
 .report-chart p {
-    font-weight: 600;
-    color: #333;
-    margin: 5px 0 0 0;
+    font-weight: 700;
+    color: #003366;
+    margin: 0 0 15px 0;
+    font-size: 1.1rem;
 }
 
-
-/* BUTTON UNDUH */
+/* TOMBOL UNDUH (3D PUSH BUTTON) */
 .btn-unduh {
     display: inline-block;
-    background-color: #1BC5BD;
+    background: linear-gradient(135deg, #1BC5BD 0%, #0f968e 100%);
     color: white;
-    padding: 10px 25px; /* Disesuaikan */
-    margin-top: 15px; /* Disesuaikan */
-    border-radius: 10px; /* Disesuaikan */
-    font-weight: 600;
+    padding: 10px 30px;
+    border-radius: 50px;
+    font-weight: 700;
     text-decoration: none;
-    box-shadow: 0 3px 8px rgba(27, 197, 189, 0.4);
-    transition: 0.2s ease;
     text-transform: uppercase;
     font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    position: relative;
+    top: 0;
+    
+    /* KUNCI EFEK 3D */
+    box-shadow: 
+        0 4px 0 #0f7a74, 
+        0 5px 10px rgba(27, 197, 189, 0.3);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .btn-unduh:hover {
-    background-color: #15a098;
+    background: linear-gradient(135deg, #25dcd3 0%, #13b0a7 100%);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 6px 0 #0f7a74, 
+        0 8px 15px rgba(27, 197, 189, 0.4);
 }
 
+.btn-unduh:active {
+    top: 4px;
+    box-shadow: 
+        0 0 0 #0f7a74, 
+        0 2px 5px rgba(27, 197, 189, 0.3);
+}
 
-/* RIGHT PANEL (Image) - Mengadopsi dashboard-left-image Data Pengunjung */
+/* ================= RIGHT PANEL (IMAGE) ================= */
 .dashboard-right {
     flex: 0.9;
     background-color: #C9E1FF;
@@ -288,11 +217,15 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding: 80px 40px 40px; /* Padding disesuaikan */
+    padding: 80px 40px 40px; 
     position: relative;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
-    overflow: hidden;
+    
+    /* Bayangan pemisah */
+    box-shadow: inset 15px 0 20px -10px rgba(0,0,0,0.15);
+    z-index: 2;
+    
+    flex-shrink: 0;
+    min-width: 300px;
 }
 
 .dashboard-right::after {
@@ -306,55 +239,42 @@ body {
     z-index: 2;
     color: white;
     text-align: center;
-    font-size: 2.2rem; /* Disesuaikan */
+    font-size: 2.2rem;
     font-weight: 800;
     margin-top: 40px;
-    text-shadow: 0 3px 8px rgba(0,0,0,0.55);
+    text-shadow: 0 4px 8px rgba(0,0,0,0.6);
 }
 .dashboard-right h1 span { color: #30E3BC; }
 
 
 /* === RESPONSIVE MODE === */
 @media (max-width: 992px) {
-
     .dashboard-card { flex-direction: column; min-height: auto; }
 
-    /* Mengubah urutan untuk mobile: Gambar di atas */
+    /* Mobile: Image on Top */
     .dashboard-right { 
         order: 1;
         height: 260px; 
         padding-top: 40px; 
         border-radius: 20px 20px 0 0; 
         border-bottom-right-radius: 0;
+        width: 100%;
+        min-width: unset;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        text-align: center;
     }
 
-    .dashboard-right h1 { font-size: 1.8rem; margin-top: 10px; }
+    .dashboard-right h1 { font-size: 1.8rem; margin-top: 10px; text-align: center; }
     
-    .dashboard-left {
-        order: 2;
-        padding: 30px 20px;
-    }
-
-    .title-card {
-        font-size: 1.8rem;
-    }
-    
-    .container-dashboard {
-        margin-top: 10px; 
-    }
-
-    .logo-header {
-        top: 10px;
-        right: 10px;
-    }
-
-    .logo-header img {
-        height: 40px;
-    }
+    .dashboard-left { order: 2; padding: 30px 20px; }
+    .title-card { font-size: 1.8rem; }
+    .container-dashboard { margin-top: 10px; }
+    .logo-header { top: 10px; right: 10px; }
+    .logo-header img { height: 40px; }
     
     .report-chart {
         width: 100%;
-        max-width: 320px; /* Batasi lebar chart di mobile */
+        max-width: 320px;
     }
     
     .report-content {
@@ -364,29 +284,10 @@ body {
 }
 
 @media (max-width: 600px) {
-    .dashboard-right h1 {
-        font-size: 1.5rem;
-    }
-    
-    .title-card {
-        font-size: 1.5rem;
-    }
-    
-    .report-chart {
-        padding: 15px;
-    }
-    
-    .btn-unduh {
-        padding: 8px 15px;
-        font-size: 0.75rem;
-    }
-
-    .dashboard-card {
-        border-radius: 15px;
-    }
-    .dashboard-right {
-        border-radius: 15px 15px 0 0;
-    }
+    .dashboard-right h1 { font-size: 1.5rem; text-align: center;}
+    .title-card { font-size: 1.5rem; }
+    .report-chart { padding: 20px; height: auto; }
+    .btn-unduh { width: 100%; text-align: center; box-sizing: border-box; }
 }
 </style>
 
@@ -396,48 +297,16 @@ body {
     <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
 </div>
 
-<div id="sidebar">
-    <div class="sidebar-profile">
-        <img src="{{ asset('images/avatar_admin.jpg') }}" alt="Avatar">
-        <div>
-            {{ Auth::user()->name ?? 'Admin' }}
-            <span>Admin</span>
-        </div>
-    </div>
-
-
-    <a href="{{ url('/admin/dashboard') }}" class="sidebar-link {{ Request::is('admin/dashboard') ? 'active' : '' }}">
-        <i class="fas fa-home"></i> Beranda
-    </a>
-    <a href="{{ url('/admin/pengunjung') }}" class="sidebar-link {{ Request::is('admin/pengunjung') ? 'active' : '' }}">
-        <i class="fas fa-users"></i> Data Pengunjung
-    </a>
-    <a href="{{ url('/admin/skm') }}" class="sidebar-link {{ Request::is('admin/skm') ? 'active' : '' }}">
-        <i class="fas fa-file-alt"></i> Data SKM
-    </a>
-        <a href="{{ url('/admin/skm/pertanyaan') }}" class="sidebar-link {{ Request::is('admin/skm/pertanyaan') ? 'active' : '' }}">
-        <i class="fas fa-file-alt"></i> Data SKM Pertanyaan
-    </a>
-    <a href="{{ url('/admin/laporan') }}" class="sidebar-link {{ Request::is('admin/laporan') ? 'active' : '' }}">
-        <i class="fas fa-chart-line"></i> Laporan
-    </a>
-
-    <div class="sidebar-footer">
-        <form action="{{ route('admin.logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="btn-item btn-keluar">
-                <i class="fas fa-sign-out-alt"></i> Keluar
-            </button>
-        </form>     
-    </div>
-</div>
-<div id="sidebar-overlay"></div>
+{{-- === PANGGIL SIDEBAR DARI COMPONENT === --}}
+@include('components._sidebar')
 
 <div class="container-dashboard">
     <div class="dashboard-card">
 
+        {{-- KIRI (KONTEN) --}}
         <div class="dashboard-left">
             <div class="title-card">
+                {{-- ID menuToggle wajib ada agar script di sidebar berfungsi --}}
                 <div class="menu-icon" id="menuToggle">
                     <span></span><span></span><span></span>
                 </div>
@@ -446,31 +315,34 @@ body {
 
             <div class="report-content">
 
+                {{-- CARD 1: PENGUNJUNG --}}
                 <div class="report-chart">
+                    <p>Data Pengunjung</p>
                     <div class="chart-wrapper">
                         <canvas id="chartPengunjung"></canvas>
                     </div>
-                    <p>Data Pengunjung</p>
-                        <a href="https://docs.google.com/spreadsheets/d/1XKirvKDNNnwcauLTxHebHCcHbAdEHLZdL5caoB3HiVE/export?format=xlsx" 
-                        class="btn-unduh" target="_blank">
-                        Unduh
-                        </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1XKirvKDNNnwcauLTxHebHCcHbAdEHLZdL5caoB3HiVE/export?format=xlsx" 
+                       class="btn-unduh" target="_blank">
+                       <i class="fas fa-download" style="margin-right:5px;"></i> Unduh Excel
+                    </a>
                 </div>
 
+                {{-- CARD 2: SKM --}}
                 <div class="report-chart">
+                    <p>Data SKM</p>
                     <div class="chart-wrapper">
                         <canvas id="chartSkm"></canvas>
                     </div>
-                    <p>Data SKM</p>
-                        <a href="https://docs.google.com/spreadsheets/d/1iTmYnrKDmx3lmoIjoEqeAkSlHE0aePXF56SGFqfl6J0/export?format=xlsx" 
-                        class="btn-unduh" target="_blank">
-                        Unduh
-                        </a>
+                    <a href="https://docs.google.com/spreadsheets/d/1iTmYnrKDmx3lmoIjoEqeAkSlHE0aePXF56SGFqfl6J0/export?format=xlsx" 
+                       class="btn-unduh" target="_blank">
+                       <i class="fas fa-download" style="margin-right:5px;"></i> Unduh Excel
+                    </a>
                 </div>
 
             </div>
         </div>
 
+        {{-- KANAN (GAMBAR) --}}
         <div class="dashboard-right">
             <h1>Data Laporan <span>Buku Tamu</span></h1>
         </div>
@@ -481,29 +353,14 @@ body {
 @include('components._footer')
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    const toggle = document.getElementById('menuToggle');
-
-    toggle.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-        overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
-    });
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-        overlay.style.display = 'none';
-    });
-
-});
-</script>
-
-<script>
+// KONFIGURASI CHART.JS
 const donutColors = ['#30AADD', '#00917C', '#F9D923', '#F05454'];
 
+// Mengambil data dari controller, default ke 0 jika kosong
 const totalPengunjung = {{ $totalPengunjung ?? 0 }};
 const totalSkm = {{ $totalSkm ?? 0 }};
 
+// Chart Pengunjung
 new Chart(document.getElementById('chartPengunjung'), {
     type: 'doughnut',
     data: {
@@ -511,22 +368,28 @@ new Chart(document.getElementById('chartPengunjung'), {
         datasets: [{
             data: [totalPengunjung],
             backgroundColor: donutColors[0],
-            borderWidth: 0
+            borderWidth: 0,
+            hoverOffset: 4
         }]
     },
     options: { 
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        cutout: '70%',
-        elements: {
-            arc: {
-                borderWidth: 0
+        plugins: { 
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.raw + ' Orang';
+                    }
+                }
             }
-        }
+        },
+        cutout: '75%',
     }
 });
 
+// Chart SKM
 new Chart(document.getElementById('chartSkm'), {
     type: 'doughnut',
     data: {
@@ -534,19 +397,24 @@ new Chart(document.getElementById('chartSkm'), {
         datasets: [{
             data: [totalSkm],
             backgroundColor: donutColors[1],
-            borderWidth: 0
+            borderWidth: 0,
+            hoverOffset: 4
         }]
     },
     options: { 
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        cutout: '70%',
-        elements: {
-            arc: {
-                borderWidth: 0
+        plugins: { 
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.raw + ' Responden';
+                    }
+                }
             }
-        }
+        },
+        cutout: '75%',
     }
 });
 </script>

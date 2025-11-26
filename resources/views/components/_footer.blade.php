@@ -10,7 +10,7 @@
         transform: translateX(-50%);
         width: 95%;
         max-width: 770px;
-        background-color: #CFDDF7;
+        background-color: #DFEDFE;
         padding: 12px 10px;
         border-top-left-radius: 15px;
         border-top-right-radius: 15px;
