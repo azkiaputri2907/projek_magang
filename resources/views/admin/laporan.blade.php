@@ -246,7 +246,33 @@ body {
 }
 .dashboard-right h1 span { color: #30E3BC; }
 
+/* TAMBAHAN: TEKS DI TENGAH CHART */
+.chart-center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none; /* Agar grafik tetap bisa diklik/hover */
+    z-index: 0;
+}
 
+.chart-center-text h2 {
+    margin: 0;
+    font-size: 2.5rem; /* Ukuran angka besar */
+    font-weight: 800;
+    color: #003366;
+    line-height: 1;
+}
+
+.chart-center-text span {
+    font-size: 0.85rem;
+    color: #888;
+    font-weight: 500;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 5px;
+}
 /* === RESPONSIVE MODE === */
 @media (max-width: 992px) {
     .dashboard-card { flex-direction: column; min-height: auto; }
@@ -319,11 +345,18 @@ body {
                 <div class="report-chart">
                     <p>Data Pengunjung</p>
                     <div class="chart-wrapper">
-                        <canvas id="chartPengunjung"></canvas>
+                        <canvas id="chartPengunjung" style="position: relative; z-index: 2;"></canvas>
+                        
+                        {{-- TEKS ANGKA DI TENGAH --}}
+                        <div class="chart-center-text">
+                            <h2>{{ $totalPengunjung ?? 0 }}</h2>
+                            <span>Orang</span>
+                        </div>
                     </div>
+                    
                     <a href="https://docs.google.com/spreadsheets/d/1XKirvKDNNnwcauLTxHebHCcHbAdEHLZdL5caoB3HiVE/export?format=xlsx" 
-                       class="btn-unduh" target="_blank">
-                       <i class="fas fa-download" style="margin-right:5px;"></i> Unduh Excel
+                    class="btn-unduh" target="_blank">
+                    <i class="fas fa-download" style="margin-right:5px;"></i> Unduh Excel
                     </a>
                 </div>
 
@@ -331,11 +364,18 @@ body {
                 <div class="report-chart">
                     <p>Data SKM</p>
                     <div class="chart-wrapper">
-                        <canvas id="chartSkm"></canvas>
+                        <canvas id="chartSkm" style="position: relative; z-index: 2;"></canvas>
+                        
+                        {{-- TEKS ANGKA DI TENGAH --}}
+                        <div class="chart-center-text">
+                            <h2>{{ $totalSkm ?? 0 }}</h2>
+                            <span>Responden</span>
+                        </div>
                     </div>
+                    
                     <a href="https://docs.google.com/spreadsheets/d/1iTmYnrKDmx3lmoIjoEqeAkSlHE0aePXF56SGFqfl6J0/export?format=xlsx" 
-                       class="btn-unduh" target="_blank">
-                       <i class="fas fa-download" style="margin-right:5px;"></i> Unduh Excel
+                    class="btn-unduh" target="_blank">
+                    <i class="fas fa-download" style="margin-right:5px;"></i> Unduh Excel
                     </a>
                 </div>
 
