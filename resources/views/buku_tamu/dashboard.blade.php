@@ -72,7 +72,7 @@ body {
 /* ================= LEFT (GAMBAR) ================= */
 .bukutamu-left {
     flex: 0.9;
-    background-image: url('{{ asset("images/Pengunjung.jpg") }}');
+    background-image: url('{{ asset("images/pengunjung.jpg") }}');
     background-size: cover;
     background-position: center;
     display: flex;
