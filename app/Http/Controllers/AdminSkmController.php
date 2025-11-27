@@ -195,19 +195,38 @@ class AdminSkmController extends Controller
     private function getGoogleSheetsService()
     {
         $client = new Client();
-        $credentialsFile = Config::get('app.google_service_account_credentials', 'credentials.json');
-        $credentialPath = storage_path('app/' . $credentialsFile);
-        $jsonCredentials = env('GOOGLE_CREDENTIALS_JSON');
+        
+        // Ambil path kredensial dari config (biasanya 'app.google_service_account_credentials')
+        $credentialsFile = Config::get('app.google_service_account_credentials');
 
+        // Jika config kosong, ambil dari Env Variable (jika config tidak di-cache)
+        if (empty($credentialsFile)) {
+            // Asumsi di Vercel, kita mengambil path dari env
+            $credentialsFile = env('GOOGLE_SERVICE_ACCOUNT_CREDENTIALS', 'credentials.json');
+        }
+
+        $credentialPath = $credentialsFile;
+
+        // **PERBAIKAN BAGIAN 2: Hanya gunakan storage_path() jika path-nya relatif.**
+        // Jika $credentialPath dimulai dengan '/', berarti itu adalah path absolut (seperti /tmp/credentials.json)
+        // dan tidak perlu digabungkan dengan storage_path().
+        if (str_starts_with($credentialPath, '/') === false) {
+            $credentialPath = storage_path('app/' . $credentialsFile);
+        }
+        
+        // Cek keberadaan file. Di Vercel, ini akan dicek di /tmp/credentials.json
         if (!file_exists($credentialPath)) {
-             $credentialPath = base_path($credentialsFile);
-             if (!file_exists($credentialPath)) {
-                throw new \Exception("File credentials.json tidak ditemukan.");
-             }
+            // Lakukan pengecekan fallback lain jika perlu
+            if(file_exists(base_path($credentialsFile))) {
+                $credentialPath = base_path($credentialsFile);
+            } else {
+                // Ini akan memunculkan error, tetapi sekarang hanya jika semua path gagal
+                throw new \Exception("File credential tidak ditemukan pada path: " . $credentialPath);
+            }
         }
 
         $client->setAuthConfig($credentialPath);
-        $client->addScope(Sheets::SPREADSHEETS);
+        $client->setScopes([Sheets::SPREADSHEETS]);
 
         return new Sheets($client);
     }
