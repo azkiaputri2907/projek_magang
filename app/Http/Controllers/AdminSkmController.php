@@ -37,7 +37,7 @@ class AdminSkmController extends Controller
             // Asumsi Kolom:
             // A=Usia, B=JK, C=Pendidikan, D=Pekerjaan, E=Layanan
             // F-N = Q1-Q9, O=Saran
-            $range = $this->sheetName . "!A{$id}:O{$id}";
+            $range = $this->sheetName . "!B{$id}:O{$id}";
             $response = $service->spreadsheets_values->get($this->spreadsheetId, $range);
             $values = $response->getValues();
 
@@ -127,7 +127,7 @@ class AdminSkmController extends Controller
             ];
 
             // Tentukan Range: Update baris ke-$id, kolom A sampai O
-            $range = $this->sheetName . "!A{$id}:O{$id}";
+            $range = $this->sheetName . "!B{$id}:O{$id}";
             
             $body = new \Google\Service\Sheets\ValueRange([
                 'values' => [$updateRow]
