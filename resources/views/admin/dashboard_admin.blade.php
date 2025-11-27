@@ -299,112 +299,106 @@ body {
 }
 </style>
 
+{{-- LOGO HEADER --}}
 <div class="logo-header">
     <img src="{{ asset('images/LOGO_KEMENTRIAN.png') }}" alt="Logo Kementrian">
     <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
 </div>
 
-<div class="container-bukutamu">
-    <div class="bukutamu-card">
-        <div class="bukutamu-left">
-            <h1>Isi <span>Buku Tamu,</span> Yuk!</h1>
+{{-- === PANGGIL SIDEBAR DARI COMPONENT === --}}
+@include('components._sidebar')
+
+{{-- DASHBOARD --}}
+<div class="container-dashboard">
+    <div class="dashboard-card">
+
+        {{-- RIGHT PANEL --}}
+        <div class="dashboard-right" style="order:1;">
+            <h1>Selamat Datang, <span>Admin!</span></h1>
         </div>
 
-        <div class="bukutamu-right">
-            <div class="right-content-wrapper">
-                <div class="layanan-section">
-                    <div class="layanan-card">
-                        <h3>Layanan di Satu Pintu Disdik</h3>
-                        <ol>
-                            <li>Rekomendasi Mutasi</li>
-                            <li>Rekomendasi Mutasi Siswa</li>
-                            <li>Surat Keterangan Pengganti Ijazah</li>
-                            <li>Legalisir Ijazah</li>
-                            <li>Magang / Penelitian</li>
-                            <li>NPSN</li>
-                            <li>Rekomendasi Izin Pendirian Satuan Pendidikan</li>
-                            <li>Rekomendasi Pendirian Satuan Pendidikan</li>
-                            <li>Rekomendasi Operasional Satuan Pendidikan</li>
-                        </ol>
-                    </div>
-                </div>
+        {{-- LEFT PANEL --}}
+        <div class="dashboard-left" style="order:2;">
 
-                <div class="tabel-section">
-                    <div class="date-box">
-                        {{-- PERBAIKAN: Tombol prev/next di-disable karena tidak didukung oleh backend Google Sheets API tanpa AJAX --}}
-                        <button class="nav-btn" id="prevMonth" disabled>&lt;</button> 
-                        <span id="monthDisplay">{{ $currentMonthYear }}</span>
-                        <button class="nav-btn" id="nextMonth" disabled>&gt;</button>
-                    </div>
-
-                    <div class="guest-header">
-                        <span class="col-tanggal">Tanggal</span>
-                        <span class="col-nama">Nama / NIP</span>
-                        <span class="col-instansi">Instansi</span>
-                        <span class="col-layanan">Layanan</span>
-                        <span class="col-keperluan">Keperluan</span>
-                    </div>
-
-                    <div class="tabel-container">
-                        @if(!empty($pengunjung) && count($pengunjung) > 0)
-                            @foreach($pengunjung as $tamu)
-                                <div class="guest-row">
-                                    {{-- PERBAIKAN: Memastikan Tanggal diformat dengan benar --}}
-                                    <span class="col-tanggal">
-                                        @php
-                                            try {
-                                                // Memparsing string tanggal yang sudah dibersihkan dari Controller
-                                                $formattedDate = \Carbon\Carbon::parse($tamu['tanggal'])->translatedFormat('d M Y');
-                                            } catch (\Exception $e) {
-                                                // Fallback jika masih ada data non-tanggal (misal: serial number Excel)
-                                                $formattedDate = $tamu['tanggal'];
-                                            }
-                                        @endphp
-                                        {{ $formattedDate }}
-                                    </span>
-                                    
-                                    <span class="col-nama">{{ $tamu['nama_nip'] }}</span>
-                                    <span class="col-instansi">{{ $tamu['instansi'] }}</span>
-                                    <span class="col-layanan">{{ $tamu['layanan'] }}</span>
-                                    <span class="col-keperluan">{{ $tamu['keperluan'] }}</span>
-                                </div>
-                            @endforeach
-                        @else
-                            @for($i=0;$i<3;$i++)
-                            <div class="guest-row">
-                                <span class="col-tanggal">-</span>
-                                <span class="col-nama">Belum ada data</span>
-                                <span class="col-instansi">-</span>
-                                <span class="col-layanan">-</span>
-                                <span class="col-keperluan">-</span>
-                            </div>
-                            @endfor
-                        @endif
-                    </div>
-                </div>
+            <div class="title-card">
+                <div class="menu-icon" id="menuToggle"><span></span><span></span><span></span></div>
+                Dashboard <span style="color:#30E3BC;">Admin!</span>
             </div>
 
-            <a href="{{ url('/buku-tamu/isi') }}" class="btn-tambah">Tambah</a>
+            {{-- TODAY --}}
+            <div class="today-card" id="today-card"></div>
+
+            {{-- LAYANAN --}}
+            <div class="layanan-card">
+                <h3>Layanan di Satu Pintu Disdik</h3>
+                <ol>
+                    <li>Rekomendasi Mutasi</li>
+                    <li>Rekomendasi Mutasi Siswa</li>
+                    <li>Surat Keterangan Pengganti Ijazah</li>
+                    <li>Legalisir Ijazah</li>
+                    <li>Magang / Penelitian</li>
+                    <li>NPSN</li>
+                    <li>Rekomendasi Izin Pendirian Satuan Pendidikan</li>
+                    <li>Rekomendasi Pendirian Satuan Pendidikan</li>
+                    <li>Rekomendasi Operasional Satuan Pendidikan</li>
+                </ol>
+            </div>
+
+            {{-- DATA CARDS --}}
+            <div class="data-cards">
+
+                {{-- CARD PENGUNJUNG --}}
+                <a href="{{ url('/admin/pengunjung') }}" class="data-card pengunjung" style="text-decoration:none;">
+                    <div class="card-header">
+                        <div class="icon-container"><i class="fas fa-users"></i></div>
+                        <h4>Data Pengunjung</h4>
+                    </div>
+                    {{-- ANGKA INI OTOMATIS BERISI HASIL HITUNG GOOGLE SHEETS DARI CONTROLLER --}}
+                    <p class="count">{{ $total_pengunjung ?? 0 }}</p>
+                    <span class="description">Pengunjung</span>
+                </a>
+
+                {{-- CARD SKM --}}
+                <a href="{{ url('/admin/skm') }}" class="data-card skm" style="text-decoration:none;">
+                    <div class="card-header">
+                        <div class="icon-container"><i class="fas fa-user-check"></i></div>
+                        <h4>Data SKM</h4>
+                    </div>
+                    {{-- ANGKA INI OTOMATIS BERISI HASIL HITUNG GOOGLE SHEETS DARI CONTROLLER --}}
+                    <p class="count">{{ $total_skm ?? 0 }}</p>
+                    <span class="description">Survey Kepuasan Masyarakat</span>
+                </a>
+
+            </div>
+
+
+            {{-- BUTTONS --}}
+            <div class="button-wrapper">
+                <a href="{{ route('admin.laporan') }}" class="btn-item btn-laporan">
+                    <i class="fas fa-chart-line"></i> Laporan
+                </a>
+
+                <form action="{{ route('admin.logout') }}" method="POST" style="flex:1;">
+                    @csrf
+                    <button type="submit" class="btn-item btn-keluar" style="width:100%;">
+                        <i class="fas fa-sign-out-alt"></i> Keluar
+                    </button>
+                </form>
+            </div>
+
         </div>
     </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function(){
-    const display = document.getElementById('monthDisplay');
-    const prev = document.getElementById('prevMonth');
-    const next = document.getElementById('nextMonth');
+document.addEventListener('DOMContentLoaded', function() {
 
-    // PERBAIKAN: Menghapus logika JavaScript untuk navigasi bulan yang tidak didukung
-    // oleh backend saat ini. Biarkan tampilan bulan tetap sesuai data PHP.
-    
-    // Memberi gaya visual disable pada tombol prev/next yang sudah di-disable di HTML
-    if (prev && next) {
-        prev.style.opacity = 0.5;
-        next.style.opacity = 0.5;
-        prev.style.cursor = 'default';
-        next.style.cursor = 'default';
-    }
+    // Tanggal hari ini
+    const today = new Date();
+    const options = { weekday:'long', day:'numeric', month:'long', year:'numeric' };
+    document.getElementById('today-card').innerText =
+        today.toLocaleDateString('id-ID', options);
+
 });
 </script>
 @endsection
