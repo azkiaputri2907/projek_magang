@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
         // === TAMBAHKAN KODE INI MULAI DARI SINI ===
         
         // Cek jika kita ada di production (Vercel) dan punya datanya
-        $googleCredentials = env('GOOGLE_CREDENTIALS_DATA');
+        $googleCredentials = env('GOOGLE_CREDENTIALS_JSON');
         
         if ($googleCredentials) {
             // Tulis isi JSON ke folder /tmp agar bisa dibaca library Google
