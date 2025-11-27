@@ -118,13 +118,21 @@ class SurveyController extends Controller
             $validated['pengunjung_id'] = $pengunjungId;
             $survey = new SurveiKepuasan($validated);
 
-            // Simpan DB (Local Only)
-            if (env('APP_ENV') !== 'production') {
-                $pengunjung = Pengunjung::find($pengunjungId);
-                if ($pengunjung) {
-                    $survey->save();
-                    $pengunjung->update(['sudah_survey' => true]);
+            // --- DATABASE BLOCK (SAFE MODE) ---
+            // Kita bungkus dalam try-catch terpisah.
+            // Tujuannya: Jika database error (karena Vercel SQLite corrupt/read-only), 
+            // aplikasi JANGAN BERHENTI. Tetap lanjut kirim ke Google Sheets.
+            try {
+                if (env('APP_ENV') !== 'production') {
+                    $pengunjung = Pengunjung::find($pengunjungId);
+                    if ($pengunjung) {
+                        $survey->save();
+                        $pengunjung->update(['sudah_survey' => true]);
+                    }
                 }
+            } catch (\Exception $dbError) {
+                // Silent fail untuk database. Abaikan error SQLSTATE[HY000] dsb.
+                // Prioritas utama adalah Google Sheets.
             }
 
             // 4. KIRIM KE GOOGLE SHEETS
@@ -135,8 +143,8 @@ class SurveyController extends Controller
             return redirect()->route('survey.thank-you');
 
         } catch (\Exception $e) {
-            // TAMPILKAN ERROR GOOGLE SHEETS DI LAYAR
-            dd("GOOGLE SHEETS ERROR: " . $e->getMessage());
+            // TAMPILKAN ERROR UTAMA (Biasanya Google Sheets)
+            dd("GOOGLE SHEETS / SYSTEM ERROR: " . $e->getMessage());
         }
     }
     
