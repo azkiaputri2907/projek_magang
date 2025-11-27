@@ -47,20 +47,17 @@ class SurveyController extends Controller
     {
         $client = new Client();
         
-        // Ambil nama file/path dari env atau config
-        // Pastikan di Vercel Env Variable: GOOGLE_SERVICE_ACCOUNT_CREDENTIALS = /tmp/credentials.json
+        // Cek Variable Environment di Vercel
         $credentialsFile = env('GOOGLE_SERVICE_ACCOUNT_CREDENTIALS', Config::get('app.google_service_account_credentials'));
 
         if (empty($credentialsFile)) {
-            throw new \Exception("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS tidak terdefinisi.");
+            throw new \Exception("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS belum diatur di Vercel.");
         }
         
-        // --- PERBAIKAN PATH CREDENTIALS ---
-        // Cek apakah path diawali '/' (Absolute path, contoh: /tmp/credentials.json)
+        // Logika Path (Support Local & Vercel)
         if (str_starts_with($credentialsFile, '/') || str_contains($credentialsFile, 'tmp')) {
-             $credentialPath = $credentialsFile; // Gunakan langsung (untuk Vercel)
+             $credentialPath = $credentialsFile; 
         } else {
-             // Jika tidak, asumsikan ada di storage local (untuk Laptop/Localhost)
              $credentialPath = storage_path('app/' . $credentialsFile);
         }
 
@@ -78,92 +75,71 @@ class SurveyController extends Controller
      */
     public function store(Request $request)
     {
-        // Ambil data pengunjung ID dari session/hidden field
-        $pengunjungId = session('current_pengunjung_id') ?? $request->pengunjung_id;
-        
-        // --- LOGIKA PENGUNJUNG (Updated for Vercel) ---
-        $pengunjung = null;
-
-        if (env('APP_ENV') === 'production') {
-            // DI VERCEL: Kita tidak bisa cek database karena data pengunjung sebelumnya tidak disimpan di DB.
-            // Kita percaya saja pada session ID yang ada.
-            if (!$pengunjungId) {
-                return redirect('/')->withErrors('Sesi Pengunjung hilang. Silakan isi buku tamu ulang.');
-            }
-            // Buat dummy object untuk menghindari error null reference nanti
-            $pengunjung = new Pengunjung();
-            $pengunjung->id = $pengunjungId;
-        } else {
-            // DI LOCALHOST: Cek validitas ID di database
-            $pengunjung = Pengunjung::find($pengunjungId);
-            if (!$pengunjung) {
-                return redirect('/')->withErrors('Sesi Pengunjung tidak ditemukan atau sudah kadaluarsa.');
-            }
-        }
-        
-        // Validasi dan gabungkan semua data dari form 1, 2, dan 3
-        $validated = $request->validate([
-            // Demografi
-            'usia' => 'required|integer',
-            'jenis_kelamin' => 'required|string',
-            'pendidikan_terakhir' => 'required|string',
-            'pekerjaan' => 'required|string',
-            'jenis_layanan_diterima' => 'required|string',
-            
-            // Pertanyaan Layanan (Q1-Q5)
-            'q1_persyaratan' => 'required|integer|min:1|max:4',
-            'q2_prosedur' => 'required|integer|min:1|max:4',
-            'q3_waktu' => 'required|integer|min:1|max:4',
-            'q4_biaya' => 'required|integer|min:1|max:4',
-            'q5_produk' => 'required|integer|min:1|max:4',
-            
-            // Pertanyaan Petugas & Sarana (Q6-Q9)
-            'q6_kompetensi_petugas' => 'required|integer|min:1|max:4',
-            'q7_perilaku_petugas' => 'required|integer|min:1|max:4',
-            'q8_penanganan_pengaduan' => 'required|integer|min:1|max:4',
-            'q9_sarana' => 'required|integer|min:1|max:4',
-            'saran_masukan' => 'nullable|string',
-        ]);
-        
         try {
-            // --- MODIFIKASI UNTUK VERCEL ---
+            // 1. Ambil ID Pengunjung (Dengan Fallback Aman)
+            $pengunjungId = session('current_pengunjung_id') ?? $request->input('pengunjung_id');
             
-            // 1. Siapkan Objek Survey (Memory Only)
-            // Kita gunakan new SurveiKepuasan() alih-alih create() agar tidak auto-save
+            // JIKA DI VERCEL & ID HILANG: Jangan Error, tapi pakai 'Anonim'
+            if (env('APP_ENV') === 'production' && !$pengunjungId) {
+                $pengunjungId = 'Anonim-' . rand(1000, 9999);
+            }
+
+            // Jika di Localhost & ID Hilang: Baru boleh error
+            if (env('APP_ENV') !== 'production' && !$pengunjungId) {
+                return redirect('/')->withErrors('Sesi habis. Silakan isi buku tamu lagi.');
+            }
+            
+            // 2. Validasi Form (Pastikan 'name' di form HTML sesuai ini)
+            $validated = $request->validate([
+                'usia' => 'required',
+                'jenis_kelamin' => 'required',
+                'pendidikan_terakhir' => 'required',
+                'pekerjaan' => 'required',
+                'jenis_layanan_diterima' => 'required',
+                // Pertanyaan bisa nullable atau required, sesuaikan kebutuhan
+                'q1_persyaratan' => 'required',
+                'q2_prosedur' => 'required',
+                'q3_waktu' => 'required',
+                'q4_biaya' => 'required',
+                'q5_produk' => 'required',
+                'q6_kompetensi_petugas' => 'required',
+                'q7_perilaku_petugas' => 'required',
+                'q8_penanganan_pengaduan' => 'required',
+                'q9_sarana' => 'required',
+                'saran_masukan' => 'nullable',
+            ]);
+            
+            // 3. Buat Object Survey (Memory Only)
             $validated['pengunjung_id'] = $pengunjungId;
             $survey = new SurveiKepuasan($validated);
 
-            // Cek Environment
-            if (env('APP_ENV') === 'production') {
-                // DI VERCEL: SKIP Save DB & Update Pengunjung
-                // Langsung lanjut ke Google Sheets
-            } else {
-                // DI LOCALHOST: Simpan normal
-                $survey->save(); 
-                
-                // Update status pengunjung
-                if ($pengunjung && $pengunjung->exists) {
+            // Simpan DB hanya jika Localhost
+            if (env('APP_ENV') !== 'production') {
+                $pengunjung = Pengunjung::find($pengunjungId);
+                if ($pengunjung) {
+                    $survey->save();
                     $pengunjung->update(['sudah_survey' => true]);
                 }
             }
 
-            // 2. Kirim Data ke Google Sheets (Survei Kepuasan)
-            // Ini prioritas utama di Vercel
+            // 4. KIRIM KE GOOGLE SHEETS (Action Utama)
             $this->exportToGoogleSheets($survey);
 
-            // 4. Bersihkan session
+            // 5. Sukses
             session()->forget('current_pengunjung_id');
-
-            // 5. Redirect ke halaman terima kasih survey
             return redirect()->route('survey.thank-you');
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Error Validasi (Form belum lengkap)
+            return back()->withInput()->withErrors($e->errors());
         } catch (\Exception $e) {
-            return back()->withInput()->withErrors('Gagal menyimpan data SKM. Error: ' . $e->getMessage());
+            // Error Sistem / Google Sheets
+            return back()->withInput()->withErrors('Gagal Kirim Survey: ' . $e->getMessage());
         }
     }
     
     /**
-     * Menambahkan satu baris data survei kepuasan ke Google Sheets (DataSKM).
+     * Ekspor ke Google Sheets
      */
     private function exportToGoogleSheets(SurveiKepuasan $survey)
     {
@@ -171,10 +147,10 @@ class SurveyController extends Controller
         $spreadsheetId = env('GOOGLE_SHEET_ID_SKM', Config::get('app.google_sheet_id_skm'));
 
         if (empty($spreadsheetId)) {
-            throw new \Exception("GOOGLE_SHEET_ID_SKM kosong.");
+            throw new \Exception("ID Spreadsheet SKM belum diisi di Vercel (GOOGLE_SHEET_ID_SKM).");
         }
 
-        // Data yang akan ditambahkan ke baris baru
+        // Susun Data Row
         $rowData = [
             Carbon::now()->toDateTimeString(),
             $survey->pengunjung_id,
@@ -192,11 +168,13 @@ class SurveyController extends Controller
             $survey->q7_perilaku_petugas,
             $survey->q8_penanganan_pengaduan,
             $survey->q9_sarana,
-            $survey->saran_masukan ?? '',
+            $survey->saran_masukan ?? '-',
         ];
         
-        // Range 'DataSKM'
+        // PENTING: Nama Sheet harus 'DataSKM'. 
+        // Kalau di excelmu namanya 'Sheet1', error 'Unable to parse range' akan muncul.
         $range = 'DataSKM'; 
+        
         $body = new ValueRange(['values' => [$rowData]]);
         
         $service->spreadsheets_values->append(
