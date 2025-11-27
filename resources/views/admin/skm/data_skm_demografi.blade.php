@@ -420,6 +420,7 @@ input[type="checkbox"] {
                     </div>
 
                     {{-- ROWS --}}
+                    {{-- Disesuaikan agar data yang ditampilkan sesuai dengan urutan Kolom A-E di Google Sheet --}}
                     @foreach($skm as $index => $item)
                     <div class="data-table-row">
                         <span class="checkbox-col" data-label="Responden #{{ $index + 1 }}">
@@ -454,7 +455,7 @@ input[type="checkbox"] {
                         </button>
                     </form>
 
-                    <a href="{{ url('/admin/skm/pertanyaan') }}"
+                    <a href="{{ url('/admin/skm/jawaban') }}"
                         class="btn-action btn-simpan"
                         style="text-decoration:none;">
                         Pertanyaan
@@ -501,20 +502,41 @@ document.addEventListener("DOMContentLoaded", function(){
 
         if (checked) {
             let id = checked.value;
+            
+            // Logika disederhanakan: Menggunakan console.error, bukan alert()
+            if (parseInt(id) < 2) {
+                console.error('Peringatan: Tidak dapat mengedit atau menghapus baris header (Baris 1).');
+                checked.checked = false; // Uncheck it
+                id = null; // Set id to null to disable buttons
+            }
 
-            btnEdit.style.pointerEvents = "auto";
-            btnDelete.style.pointerEvents = "auto";
-            btnEdit.style.opacity = "1";
-            btnDelete.style.opacity = "1";
-            // Restore shadows
-            btnEdit.style.boxShadow = "";
-            btnDelete.style.boxShadow = "";
 
-            btnEdit.classList.remove("disabled");
-            btnDelete.classList.remove("disabled");
+            if (id) {
+                btnEdit.style.pointerEvents = "auto";
+                btnDelete.style.pointerEvents = "auto";
+                btnEdit.style.opacity = "1";
+                btnDelete.style.opacity = "1";
+                // Restore shadows
+                btnEdit.style.boxShadow = "";
+                btnDelete.style.boxShadow = "";
 
-            btnEdit.href = "{{ url('/admin/skm') }}/" + id + "/edit";
-            deleteForm.action = "{{ url('/admin/skm') }}/" + id;
+                btnEdit.classList.remove("disabled");
+                btnDelete.classList.remove("disabled");
+
+                btnEdit.href = "{{ url('/admin/skm') }}/" + id + "/edit";
+                deleteForm.action = "{{ url('/admin/skm') }}/" + id;
+            } else {
+                btnEdit.style.pointerEvents = "none";
+                btnDelete.style.pointerEvents = "none";
+                btnEdit.style.opacity = "0.5";
+                btnDelete.style.opacity = "0.5";
+                // Remove shadows for flat look
+                btnEdit.style.boxShadow = "none";
+                btnDelete.style.boxShadow = "none";
+
+                btnEdit.classList.add("disabled");
+                btnDelete.classList.add("disabled");
+            }
 
         } else {
             btnEdit.style.pointerEvents = "none";

@@ -194,11 +194,10 @@ body {
 }
 
 /* Kolom Saran (Flexible) */
-.data-table-header span:last-child,
-.data-table-row span:last-child {
+.col-saran {
     flex: 1 1 200px; 
     min-width: 200px;
-    text-align: left;
+    text-align: left !important;
     padding-left: 10px;
 }
 
@@ -221,7 +220,8 @@ input[type="checkbox"] {
 
 /* Wrapper agar tabel tidak menyempit */
 .data-table-wrapper {
-    min-width: 1200px; /* Paksa lebar agar tidak hancur */
+    /* Lebar minimal: 30px (checkbox) + (9 * 70px (Q1-Q9)) + 200px (Saran) = 860px. Dibuat 1000px untuk margin. */
+    min-width: 1000px; 
 }
 
 /* === BUTTON ACTION (3D PUSH BUTTONS) === */
@@ -306,9 +306,9 @@ input[type="checkbox"] {
     box-shadow: inset 15px 0 20px -10px rgba(0,0,0,0.15);
     z-index: 2;
 
-    /* 🔥 PERBAIKAN UTAMA: Mencegah gambar 'gepeng' atau hilang */
+    /* Menjaga ukuran minimal gambar */
     flex-shrink: 0; 
-    min-width: 300px; /* Menjaga ukuran minimal gambar */
+    min-width: 300px; 
 }
 
 .dashboard-right::after {
@@ -341,7 +341,6 @@ input[type="checkbox"] {
         height: 260px; 
         padding-top: 40px; 
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        border-bottom-right-radius: 0;
         border-radius: 20px 20px 0 0;
     }
     .dashboard-right h1 { font-size: 1.8rem; margin-top: 10px; }
@@ -364,7 +363,7 @@ input[type="checkbox"] {
     .action-buttons { flex-direction: column; gap: 10px; }
     .btn-action { width: 80%; }
     
-    /* Table still scrollable horizontally */
+    /* Table still scrollable horizontally for Q-cols */
     .data-table-wrapper { min-width: 900px; }
 }
 </style>
@@ -390,6 +389,13 @@ input[type="checkbox"] {
                 Data SKM <span>(Jawaban)</span>
             </div>
 
+            @if (session('success'))
+                <div class="p-3 bg-green-100 text-green-700 border border-green-300 rounded-lg">{{ session('success') }}</div>
+            @endif
+            @if (session('error'))
+                <div class="p-3 bg-red-100 text-red-700 border border-red-300 rounded-lg">{{ session('error') }}</div>
+            @endif
+
             <div class="data-card">
                 <h3>📊 Jawaban Survey Kepuasan Masyarakat</h3>
 
@@ -400,11 +406,12 @@ input[type="checkbox"] {
                             @for($i=1; $i<=9; $i++)
                                 <span class="q-col">Q{{ $i }}</span>
                             @endfor
-                            <span class="q-col">Saran/Masukan</span>
+                            <span class="col-saran">Saran/Masukan</span>
                         </div>
 
                         {{-- ROWS --}}
-                        @foreach($skm as $row)
+                        {{-- Data Jawaban (Kolom F sampai O) --}}
+                        @forelse($skm as $row)
                         <div class="data-table-row">
 
                             <span class="checkbox-col">
@@ -420,9 +427,13 @@ input[type="checkbox"] {
                             <span class="q-col">{{ $row->q7_perilaku_petugas }}</span>
                             <span class="q-col">{{ $row->q8_penanganan_pengaduan }}</span>
                             <span class="q-col">{{ $row->q9_sarana }}</span>
-                            <span class="q-col">{{ $row->saran_masukan ?? ' - ' }}</span>
+                            <span class="col-saran">{{ $row->saran_masukan ?? ' - ' }}</span>
                         </div>
-                        @endforeach
+                        @empty
+                        <div class="p-4 text-center text-gray-500">
+                            Tidak ada data Jawaban Survey Kepuasan Masyarakat ditemukan.
+                        </div>
+                        @endforelse
                     </div>
                 </div>
 
@@ -430,7 +441,7 @@ input[type="checkbox"] {
                 <div class="action-buttons">
                     <a id="btnEdit" href="javascript:void(0)" class="btn-action btn-edit disabled" style="pointer-events:none; opacity:.5;">Edit</a>
 
-                    <form id="deleteForm" method="POST" style="margin:0;" onsubmit="return confirm('Yakin mau hapus data yang dipilih?');">
+                    <form id="deleteForm" method="POST" action="#" style="margin:0;" onsubmit="return confirm('Yakin mau hapus data yang dipilih? Data akan terhapus permanen dari Google Sheet.');">
                         @csrf
                         @method('DELETE')
                         <button id="btnDelete" class="btn-action btn-hapus disabled" style="pointer-events:none; opacity:.5;">
@@ -479,34 +490,41 @@ document.addEventListener("DOMContentLoaded", function(){
     function updateButtonState() {
         let checked = document.querySelector('.row-check:checked');
 
-        if (checked) {
-            let id = checked.value;
-
-            btnEdit.style.pointerEvents = "auto";
-            btnDelete.style.pointerEvents = "auto";
-            btnEdit.style.opacity = "1";
-            btnDelete.style.opacity = "1";
-            // Kembalikan shadow
-            btnEdit.style.boxShadow = "";
-            btnDelete.style.boxShadow = "";
-
-            btnEdit.classList.remove("disabled");
-            btnDelete.classList.remove("disabled");
-
-            btnEdit.href = "{{ url('/admin/skm/jawaban') }}/" + id + "/edit";
-            deleteForm.action = "{{ url('/admin/skm/jawaban') }}/" + id;
-
-        } else {
+        // Reset button styles to default (disabled)
+        const disableButtons = () => {
             btnEdit.style.pointerEvents = "none";
             btnDelete.style.pointerEvents = "none";
             btnEdit.style.opacity = "0.5";
             btnDelete.style.opacity = "0.5";
-            // Hilangkan shadow
-            btnEdit.style.boxShadow = "none";
-            btnDelete.style.boxShadow = "none";
-
             btnEdit.classList.add("disabled");
             btnDelete.classList.add("disabled");
+        }
+
+        const enableButtons = (id) => {
+            // NOTE: Tombol Edit dinonaktifkan di sini karena tidak ada form edit Jawaban
+            btnEdit.style.pointerEvents = "none"; 
+            btnEdit.style.opacity = "0.5";
+            btnEdit.classList.add("disabled");
+            
+            // Hapus di halaman Jawaban mengarah ke fungsi destroy umum
+            btnDelete.style.pointerEvents = "auto";
+            btnDelete.style.opacity = "1";
+            btnDelete.classList.remove("disabled");
+
+            deleteForm.action = "{{ url('/admin/skm') }}/" + id; // Mengarah ke fungsi destroy umum
+        }
+
+        if (checked) {
+            let id = checked.value;
+            if (parseInt(id) < 2) {
+                disableButtons();
+                console.error('Peringatan: Tidak dapat menghapus baris header (Baris 1).');
+                checked.checked = false; // Uncheck it
+                return;
+            }
+            enableButtons(id);
+        } else {
+            disableButtons();
         }
     }
     

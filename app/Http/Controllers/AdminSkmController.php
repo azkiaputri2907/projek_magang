@@ -20,12 +20,83 @@ class AdminSkmController extends Controller
     }
 
     // =================================================================
-    // 1. EDIT (AMBIL DATA DARI SHEET BERDASARKAN NOMOR BARIS)
+    // LIST DATA RESPONDEN (Index) - Mengambil kolom B sampai F
+    // =================================================================
+    public function index()
+    {
+        try {
+            $service = $this->getGoogleSheetsService();
+            // Ambil data dari baris ke-2 (setelah header) sampai baris terakhir, kolom B sampai F (Usia, JK, Pendidikan, Pekerjaan, Layanan)
+            $range = $this->sheetName . '!B2:F';
+            $response = $service->spreadsheets_values->get($this->spreadsheetId, $range);
+            $values = $response->getValues();
+
+            $skm = [];
+            if (!empty($values)) {
+                foreach ($values as $index => $row) {
+                    // Nomor baris di Sheet = index + 2 (karena dimulai dari baris 2/index 0)
+                    $rowIndex = $index + 2;
+                    $skm[] = (object) [
+                        'id' => $rowIndex, 
+                        'usia' => $row[0] ?? '',          // Kolom B (Index 0)
+                        'jenis_kelamin' => $row[1] ?? '', // Kolom C (Index 1)
+                        'pendidikan_terakhir' => $row[2] ?? '', // Kolom D (Index 2)
+                        'pekerjaan' => $row[3] ?? '',          // Kolom E (Index 3)
+                        'jenis_layanan_diterima' => $row[4] ?? '', // Kolom F (Index 4)
+                    ];
+                }
+            }
+
+            return view('admin.skm.index', compact('skm'));
+        } catch (\Exception $e) {
+            return view('admin.skm.index')->with('error', 'Gagal memuat data responden: ' . $e->getMessage());
+        }
+    }
+
+    // =================================================================
+    // LIST DATA JAWABAN (Jawaban) - Mengambil kolom G sampai P
+    // =================================================================
+    public function jawaban()
+    {
+        try {
+            $service = $this->getGoogleSheetsService();
+            // Ambil data dari baris ke-2 (setelah header) sampai baris terakhir, kolom G sampai P (Q1-Q9 dan Saran)
+            $range = $this->sheetName . '!G2:P';
+            $response = $service->spreadsheets_values->get($this->spreadsheetId, $range);
+            $values = $response->getValues();
+
+            $skm = [];
+            if (!empty($values)) {
+                foreach ($values as $index => $row) {
+                    // Nomor baris di Sheet = index + 2
+                    $rowIndex = $index + 2;
+                    $skm[] = (object) [
+                        'id' => $rowIndex, 
+                        'q1_persyaratan' => $row[0] ?? '',         // Kolom G (Index 0)
+                        'q2_prosedur' => $row[1] ?? '',            // Kolom H (Index 1)
+                        'q3_waktu' => $row[2] ?? '',               // Kolom I (Index 2)
+                        'q4_biaya' => $row[3] ?? '',               // Kolom J (Index 3)
+                        'q5_produk' => $row[4] ?? '',              // Kolom K (Index 4)
+                        'q6_kompetensi_petugas' => $row[5] ?? '',  // Kolom L (Index 5)
+                        'q7_perilaku_petugas' => $row[6] ?? '',    // Kolom M (Index 6)
+                        'q8_penanganan_pengaduan' => $row[7] ?? '', // Kolom N (Index 7)
+                        'q9_sarana' => $row[8] ?? '',              // Kolom O (Index 8)
+                        'saran_masukan' => $row[9] ?? '',          // Kolom P (Index 9)
+                    ];
+                }
+            }
+
+            return view('admin.skm.jawaban', compact('skm'));
+        } catch (\Exception $e) {
+            return view('admin.skm.jawaban')->with('error', 'Gagal memuat data jawaban: ' . $e->getMessage());
+        }
+    }
+
+    // =================================================================
+    // 4. EDIT (AMBIL DATA RESPONDEN B-F)
     // =================================================================
     public function edit($id)
     {
-        // $id di sini adalah NOMOR BARIS di Excel (misal: 5)
-        // Validasi sederhana agar tidak mengedit Header (baris 1)
         if ($id < 2) {
             return back()->with('error', 'Tidak dapat mengedit baris header.');
         }
@@ -33,11 +104,8 @@ class AdminSkmController extends Controller
         try {
             $service = $this->getGoogleSheetsService();
             
-            // Ambil data dari baris tersebut (Kolom A sampai O)
-            // Asumsi Kolom:
-            // A=Usia, B=JK, C=Pendidikan, D=Pekerjaan, E=Layanan
-            // F-N = Q1-Q9, O=Saran
-            $range = $this->sheetName . "!A{$id}:P{$id}";
+            // Range dibatasi hanya B sampai F (Data Responden)
+            $range = $this->sheetName . "!B{$id}:F{$id}";
             $response = $service->spreadsheets_values->get($this->spreadsheetId, $range);
             $values = $response->getValues();
 
@@ -47,33 +115,19 @@ class AdminSkmController extends Controller
 
             $row = $values[0];
 
-            // Mapping Array Sheet ke Object (agar View Blade tidak error saat panggil $skm->usia)
+            // Mapping berdasarkan range B:F -> index 0-4
             $skm = (object) [
-            'id'                      => $id, // ID sekarang adalah nomor baris
-            
-            // DATA SURVEY (Bergeser 1 kolom ke kanan)
-            'timestamp'               => $row[0] ?? '', // Kolom A
-            'usia'                    => $row[1] ?? '', // Kolom B
-            'jenis_kelamin'           => $row[2] ?? '', // Kolom C
-            'pendidikan_terakhir'     => $row[3] ?? '', // Kolom D
-            'pekerjaan'               => $row[4] ?? '', // Kolom E
-            'jenis_layanan_diterima'  => $row[5] ?? '', // Kolom F
-            
-            // Nilai Survey (Q1-Q9) - Mulai dari index 6
-            'q1_persyaratan'          => $row[6] ?? '', // Kolom G
-            'q2_prosedur'             => $row[7] ?? '', // Kolom H
-            'q3_waktu'                => $row[8] ?? '', // Kolom I
-            'q4_biaya'                => $row[9] ?? '', // Kolom J
-            'q5_produk'               => $row[10] ?? '', // Kolom K
-            'q6_kompetensi_petugas'   => $row[11] ?? '', // Kolom L
-            'q7_perilaku_petugas'     => $row[12] ?? '', // Kolom M
-            'q8_penanganan_pengaduan' => $row[13] ?? '', // Kolom N
-            'q9_sarana'               => $row[14] ?? '', // Kolom O
-            
-            'saran_masukan'           => $row[15] ?? '', // Kolom P
-        ];
+                'id' => $id, 
+                // DATA RESPONDEN (Mapping berdasarkan range B:F -> index 0-4)
+                'usia' => $row[0] ?? '',                   // Kolom B
+                'jenis_kelamin' => $row[1] ?? '',          // Kolom C
+                'pendidikan_terakhir' => $row[2] ?? '',    // Kolom D
+                'pekerjaan' => $row[3] ?? '',              // Kolom E
+                'jenis_layanan_diterima' => $row[4] ?? '', // Kolom F
+            ];
 
-            return view('admin.skm.edit_skm', compact('skm'));
+            // Anda harus menyediakan view edit_skm.blade.php
+            return view('admin.skm.edit_skm', compact('skm')); 
 
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal mengambil data dari Google Sheet: ' . $e->getMessage());
@@ -81,54 +135,33 @@ class AdminSkmController extends Controller
     }
 
     // =================================================================
-    // 2. UPDATE (TIMPA DATA KE SHEET)
+    // 5. UPDATE (TIMPA DATA RESPONDEN KE SHEET B-F)
     // =================================================================
     public function update(Request $request, $id)
     {
-        // Validasi Input
+        // Validasi disederhanakan untuk contoh
         $request->validate([
-            'usia' => 'required|integer',
+            'usia' => 'required',
             'jenis_kelamin' => 'required|string',
             'pendidikan_terakhir' => 'required|string',
             'pekerjaan' => 'required|string',
             'jenis_layanan_diterima' => 'required|string',
-            'q1_persyaratan' => 'required|integer|min:1|max:4',
-            'q2_prosedur' => 'required|integer|min:1|max:4',
-            'q3_waktu' => 'required|integer|min:1|max:4',
-            'q4_biaya' => 'required|integer|min:1|max:4',
-            'q5_produk' => 'required|integer|min:1|max:4',
-            'q6_kompetensi_petugas' => 'required|integer|min:1|max:4',
-            'q7_perilaku_petugas' => 'required|integer|min:1|max:4',
-            'q8_penanganan_pengaduan' => 'required|integer|min:1|max:4',
-            'q9_sarana' => 'required|integer|min:1|max:4',
-            'saran_masukan' => 'nullable|string',
         ]);
 
         try {
             $service = $this->getGoogleSheetsService();
 
-            // Susun data array sesuai urutan Kolom A - O 
-            // Kita TIDAK mengupdate kolom P (Timestamp) agar data waktu asli terjaga
+            // Susun data array sesuai urutan Kolom B - F di Google Sheet
             $updateRow = [
-                $request->usia,
-                $request->jenis_kelamin,
-                $request->pendidikan_terakhir,
-                $request->pekerjaan,
-                $request->jenis_layanan_diterima,
-                $request->q1_persyaratan,
-                $request->q2_prosedur,
-                $request->q3_waktu,
-                $request->q4_biaya,
-                $request->q5_produk,
-                $request->q6_kompetensi_petugas,
-                $request->q7_perilaku_petugas,
-                $request->q8_penanganan_pengaduan,
-                $request->q9_sarana,
-                $request->saran_masukan ?? ''
+                $request->usia,                  // Kolom B
+                $request->jenis_kelamin,         // Kolom C
+                $request->pendidikan_terakhir,   // Kolom D
+                $request->pekerjaan,             // Kolom E
+                $request->jenis_layanan_diterima,// Kolom F
             ];
 
-            // Tentukan Range: Update baris ke-$id, kolom A sampai O
-            $range = $this->sheetName . "!A{$id}:P{$id}";
+            // Tentukan Range: Update baris ke-$id, kolom B sampai F
+            $range = $this->sheetName . "!B{$id}:F{$id}";
             
             $body = new \Google\Service\Sheets\ValueRange([
                 'values' => [$updateRow]
@@ -140,16 +173,17 @@ class AdminSkmController extends Controller
             $service->spreadsheets_values->update($this->spreadsheetId, $range, $body, $params);
 
             // Redirect ke halaman index SKM
-            return Redirect::route('admin.skm')->with("success", "Data SKM baris ke-{$id} berhasil diperbarui di Google Sheets.");
+            return Redirect::route('admin.skm')->with("success", "Data SKM responden baris ke-{$id} berhasil diperbarui.");
 
         } catch (\Exception $e) {
             return back()->with("error", "Gagal Update Google Sheet: " . $e->getMessage())->withInput();
         }
     }
-
+    
     // =================================================================
-    // 3. DELETE (HAPUS BARIS DI SHEET)
+    // 6. DELETE (HAPUS BARIS DI SHEET - Digunakan untuk Responden & Jawaban)
     // =================================================================
+    // Fungsi ini tidak perlu diubah, karena sudah benar menggunakan BatchUpdate untuk menghapus 1 baris penuh.
     public function destroy($id)
     {
         if ($id < 2) {
@@ -159,12 +193,8 @@ class AdminSkmController extends Controller
         try {
             $service = $this->getGoogleSheetsService();
 
-            // Kita butuh Sheet ID (angka/GID), bukan cuma nama tab string.
             $sheetIdNumeric = $this->getSheetIdByName($service, $this->sheetName);
 
-            // Google Sheets API index mulai dari 0.
-            // Baris 1 Excel = Index 0.
-            // Baris $id Excel = Index $id - 1.
             $startIndex = $id - 1; 
 
             $requestBody = new \Google\Service\Sheets\BatchUpdateSpreadsheetRequest([
@@ -192,38 +222,29 @@ class AdminSkmController extends Controller
     }
 
     // =================================================================
-    // HELPER FUNCTIONS
+    // HELPER FUNCTIONS (Tidak Diubah)
     // =================================================================
 
     private function getGoogleSheetsService()
     {
         $client = new Client();
         
-        // Ambil path kredensial dari config (biasanya 'app.google_service_account_credentials')
         $credentialsFile = Config::get('app.google_service_account_credentials');
 
-        // Jika config kosong, ambil dari Env Variable (jika config tidak di-cache)
         if (empty($credentialsFile)) {
-            // Asumsi di Vercel, kita mengambil path dari env
             $credentialsFile = env('GOOGLE_SERVICE_ACCOUNT_CREDENTIALS', 'credentials.json');
         }
 
         $credentialPath = $credentialsFile;
 
-        // **PERBAIKAN BAGIAN 2: Hanya gunakan storage_path() jika path-nya relatif.**
-        // Jika $credentialPath dimulai dengan '/', berarti itu adalah path absolut (seperti /tmp/credentials.json)
-        // dan tidak perlu digabungkan dengan storage_path().
         if (str_starts_with($credentialPath, '/') === false) {
             $credentialPath = storage_path('app/' . $credentialsFile);
         }
         
-        // Cek keberadaan file. Di Vercel, ini akan dicek di /tmp/credentials.json
         if (!file_exists($credentialPath)) {
-            // Lakukan pengecekan fallback lain jika perlu
             if(file_exists(base_path($credentialsFile))) {
                 $credentialPath = base_path($credentialsFile);
             } else {
-                // Ini akan memunculkan error, tetapi sekarang hanya jika semua path gagal
                 throw new \Exception("File credential tidak ditemukan pada path: " . $credentialPath);
             }
         }

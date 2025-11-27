@@ -80,21 +80,21 @@ class SurveyController extends Controller
 
         // VALIDASI
         $validator = Validator::make($request->all(), [
-            'usia'                  => 'required',
-            'jenis_kelamin'         => 'required',
-            'pendidikan_terakhir'   => 'required',
-            'pekerjaan'             => 'required',
-            'jenis_layanan_diterima'=> 'required',
-            'q1_persyaratan'        => 'required',
-            'q2_prosedur'           => 'required',
-            'q3_waktu'              => 'required',
-            'q4_biaya'              => 'required',
-            'q5_produk'             => 'required',
-            'q6_kompetensi_petugas' => 'required',
-            'q7_perilaku_petugas'   => 'required',
-            'q8_penanganan_pengaduan'=> 'required',
-            'q9_sarana'             => 'required',
-            'saran_masukan'         => 'nullable',
+            'usia'                      => 'required',
+            'jenis_kelamin'             => 'required',
+            'pendidikan_terakhir'       => 'required',
+            'pekerjaan'                 => 'required',
+            'jenis_layanan_diterima'    => 'required',
+            'q1_persyaratan'            => 'required',
+            'q2_prosedur'               => 'required',
+            'q3_waktu'                  => 'required',
+            'q4_biaya'                  => 'required',
+            'q5_produk'                 => 'required',
+            'q6_kompetensi_petugas'     => 'required',
+            'q7_perilaku_petugas'       => 'required',
+            'q8_penanganan_pengaduan'   => 'required',
+            'q9_sarana'                 => 'required',
+            'saran_masukan'             => 'nullable',
         ]);
 
         if ($validator->fails()) {
@@ -131,24 +131,26 @@ class SurveyController extends Controller
             dd("Error: GOOGLE_SHEET_ID_SKM belum diisi di Vercel.");
         }
 
+        // urutan disesuaikan sama sheet: A - P
+        // A: Timestamp, B: Usia, C: JK, D: Pendidikan, E: Pekerjaan, F: Layanan
+        // G-O: Q1-Q9, P: Saran
         $rowData = [
-            Carbon::now()->toDateTimeString(),
-            $survey->pengunjung_id,
-            $survey->usia,
-            $survey->jenis_kelamin,
-            $survey->pendidikan_terakhir,
-            $survey->pekerjaan,
-            $survey->jenis_layanan_diterima,
-            $survey->q1_persyaratan,
-            $survey->q2_prosedur,
-            $survey->q3_waktu,
-            $survey->q4_biaya,
-            $survey->q5_produk,
-            $survey->q6_kompetensi_petugas,
-            $survey->q7_perilaku_petugas,
-            $survey->q8_penanganan_pengaduan,
-            $survey->q9_sarana,
-            $survey->saran_masukan ?? '-',
+            Carbon::now()->toDateTimeString(),  // A (Kolom Baru: Timestamp)
+            $survey->usia,                      // B (Usia bergeser ke kanan)
+            $survey->jenis_kelamin,             // C
+            $survey->pendidikan_terakhir,       // D
+            $survey->pekerjaan,                 // E
+            $survey->jenis_layanan_diterima,    // F
+            $survey->q1_persyaratan,            // G
+            $survey->q2_prosedur,               // H
+            $survey->q3_waktu,                  // I
+            $survey->q4_biaya,                  // J
+            $survey->q5_produk,                 // K
+            $survey->q6_kompetensi_petugas,     // L
+            $survey->q7_perilaku_petugas,       // M
+            $survey->q8_penanganan_pengaduan,   // N
+            $survey->q9_sarana,                 // O
+            $survey->saran_masukan ?? '-',      // P (Saran/Masukan)
         ];
         
         $body = new ValueRange(['values' => [$rowData]]);
@@ -160,5 +162,5 @@ class SurveyController extends Controller
             ['valueInputOption' => 'USER_ENTERED', 'insertDataOption' => 'INSERT_ROWS']
         );
     }
-}
 
+}
