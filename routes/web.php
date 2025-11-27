@@ -55,11 +55,14 @@ Route::prefix('admin')->group(function () {
         Route::get('/pengunjung/edit-multiple', [AdminPengunjungController::class, 'editMultiple'])->name('admin.pengunjung.editMultiple');
         Route::post('/pengunjung/update-multiple', [AdminPengunjungController::class, 'updateMultiple'])->name('admin.pengunjung.updateMultiple');
 
-        // --- MANAJEMEN SKM (READ - AdminController) ---
-        // 1. Tampilan Data Demografi
-        Route::get('/skm', [AdminController::class, 'dataSkmDemografi'])->name('admin.skm');
-        // 2. Tampilan Data Jawaban/Pertanyaan
-        Route::get('/skm/pertanyaan', [AdminController::class, 'dataSkmPertanyaan'])->name('admin.skm.pertanyaan');
+        // --- MANAJEMEN SKM (READ - AdminSkmController) ---
+        
+        // 1. Tampilan Data Demografi (List Index)
+        Route::get('/skm', [AdminSkmController::class, 'index'])->name('admin.skm'); // Menggunakan AdminSkmController::index
+        
+        // 2. Tampilan Data Jawaban/Pertanyaan (MEMPERBAIKI 405 ERROR)
+        // URL yang dicoba user adalah /skm/jawaban
+        Route::get('/skm/jawaban', [AdminSkmController::class, 'jawaban'])->name('admin.skm.jawaban'); 
 
         // --- MANAJEMEN SKM (CRUD - AdminSkmController) ---
         
@@ -69,7 +72,6 @@ Route::prefix('admin')->group(function () {
         Route::delete('/skm/{id}', [AdminSkmController::class, 'destroy'])->name('admin.skm.delete');
         
         // B. CRUD dari Halaman Jawaban/Pertanyaan (Agar URL rapi)
-        // Controller tetap sama, hanya URL dan Name yang membedakan agar JS di View berfungsi
         Route::get('/skm/jawaban/{id}/edit', [AdminSkmController::class, 'edit'])->name('admin.skm.jawaban.edit'); 
         Route::put('/skm/jawaban/{id}', [AdminSkmController::class, 'update'])->name('admin.skm.jawaban.update'); 
         Route::delete('/skm/jawaban/{id}', [AdminSkmController::class, 'destroy'])->name('admin.skm.jawaban.delete');

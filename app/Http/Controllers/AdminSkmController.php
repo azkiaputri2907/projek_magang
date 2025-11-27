@@ -47,9 +47,10 @@ class AdminSkmController extends Controller
                 }
             }
 
-            return view('admin.skm.index', compact('skm'));
+            // DIPERBAIKI: Memanggil view yang sesuai dengan nama file Anda: data_skm_demografi
+            return view('admin.skm.data_skm_demografi', compact('skm'));
         } catch (\Exception $e) {
-            return view('admin.skm.index')->with('error', 'Gagal memuat data responden: ' . $e->getMessage());
+            return view('admin.skm.data_skm_demografi')->with('error', 'Gagal memuat data responden: ' . $e->getMessage());
         }
     }
 
@@ -86,9 +87,11 @@ class AdminSkmController extends Controller
                 }
             }
 
-            return view('admin.skm.jawaban', compact('skm'));
+            // DIPERBAIKI: Memanggil view yang sesuai dengan nama file Anda: data_skm_pertanyaan
+            return view('admin.skm.data_skm_pertanyaan', compact('skm'));
         } catch (\Exception $e) {
-            return view('admin.skm.jawaban')->with('error', 'Gagal memuat data jawaban: ' . $e->getMessage());
+            // DIPERBAIKI: Memanggil view yang sesuai dengan nama file Anda
+            return view('admin.skm.data_skm_pertanyaan')->with('error', 'Gagal memuat data jawaban: ' . $e->getMessage());
         }
     }
 

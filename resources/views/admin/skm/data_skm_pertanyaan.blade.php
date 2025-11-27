@@ -220,7 +220,6 @@ input[type="checkbox"] {
 
 /* Wrapper agar tabel tidak menyempit */
 .data-table-wrapper {
-    /* Lebar minimal: 30px (checkbox) + (9 * 70px (Q1-Q9)) + 200px (Saran) = 860px. Dibuat 1000px untuk margin. */
     min-width: 1000px; 
 }
 
@@ -374,7 +373,7 @@ input[type="checkbox"] {
     <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
 </div>
 
-{{-- === PANGGIL SIDEBAR DARI COMPONENT === --}}
+{{-- ASUMSI: KOMPONEN SIDEBAR BERADA DI PATH components._sidebar --}}
 @include('components._sidebar')
 
 <div class="container-dashboard">
@@ -410,7 +409,7 @@ input[type="checkbox"] {
                         </div>
 
                         {{-- ROWS --}}
-                        {{-- Data Jawaban (Kolom F sampai O) --}}
+                        {{-- Data Jawaban (Mapping dari Kolom G sampai P di Sheet) --}}
                         @forelse($skm as $row)
                         <div class="data-table-row">
 
@@ -418,6 +417,7 @@ input[type="checkbox"] {
                                 <input type="checkbox" class="row-check" value="{{ $row->id }}">
                             </span>
 
+                            {{-- Mapping berdasarkan AdminSkmController::jawaban() --}}
                             <span class="q-col">{{ $row->q1_persyaratan }}</span>
                             <span class="q-col">{{ $row->q2_prosedur }}</span>
                             <span class="q-col">{{ $row->q3_waktu }}</span>
@@ -439,9 +439,10 @@ input[type="checkbox"] {
 
                 {{-- BUTTONS --}}
                 <div class="action-buttons">
+                    {{-- Tombol Edit di halaman Jawaban dinonaktifkan karena edit hanya berlaku untuk demografi --}}
                     <a id="btnEdit" href="javascript:void(0)" class="btn-action btn-edit disabled" style="pointer-events:none; opacity:.5;">Edit</a>
 
-                    <form id="deleteForm" method="POST" action="#" style="margin:0;" onsubmit="return confirm('Yakin mau hapus data yang dipilih? Data akan terhapus permanen dari Google Sheet.');">
+                    <form id="deleteForm" method="POST" action="{{ url('/admin/skm/0') }}" style="margin:0;" onsubmit="return confirm('Yakin mau hapus data yang dipilih? Data akan terhapus permanen dari Google Sheet.');">
                         @csrf
                         @method('DELETE')
                         <button id="btnDelete" class="btn-action btn-hapus disabled" style="pointer-events:none; opacity:.5;">
@@ -449,7 +450,7 @@ input[type="checkbox"] {
                         </button>
                     </form>
 
-                    <a href="{{ url('/admin/skm') }}" class="btn-action btn-simpan" style="text-decoration:none;">
+                    <a href="{{ route('admin.skm') }}" class="btn-action btn-simpan" style="text-decoration:none;">
                         Kembali
                     </a>
                 </div>
@@ -463,6 +464,7 @@ input[type="checkbox"] {
     </div>
 </div>
 
+{{-- ASUMSI: KOMPONEN FOOTER BERADA DI PATH components._footer --}}
 @include('components._footer')
 
 {{-- SCRIPT AKTIFKAN EDIT & HAPUS --}}
@@ -501,17 +503,18 @@ document.addEventListener("DOMContentLoaded", function(){
         }
 
         const enableButtons = (id) => {
-            // NOTE: Tombol Edit dinonaktifkan di sini karena tidak ada form edit Jawaban
+            // Edit dinonaktifkan karena ini halaman Jawaban
             btnEdit.style.pointerEvents = "none"; 
             btnEdit.style.opacity = "0.5";
             btnEdit.classList.add("disabled");
             
-            // Hapus di halaman Jawaban mengarah ke fungsi destroy umum
+            // Delete diaktifkan
             btnDelete.style.pointerEvents = "auto";
             btnDelete.style.opacity = "1";
             btnDelete.classList.remove("disabled");
 
-            deleteForm.action = "{{ url('/admin/skm') }}/" + id; // Mengarah ke fungsi destroy umum
+            // Menggunakan URL langsung dan id
+            deleteForm.action = "{{ url('/admin/skm') }}/" + id; 
         }
 
         if (checked) {
