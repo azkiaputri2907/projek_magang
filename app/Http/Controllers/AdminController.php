@@ -10,6 +10,7 @@ use Google\Service\Sheets;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -68,7 +69,9 @@ class AdminController extends Controller
     { 
         $totalPengunjung = 0;
         $totalSkm = 0;
-
+        $currentDate = Carbon::now();
+        $currentMonthYear = $currentDate->translatedFormat('F Y')
+        ;
         try {
             $service = $this->getGoogleSheetsService();
 
@@ -97,7 +100,8 @@ class AdminController extends Controller
 
         return view('admin.dashboard_admin', [
             'total_pengunjung' => $totalPengunjung,
-            'total_skm' => $totalSkm
+            'total_skm' => $totalSkm,
+            'currentMonthYear' => $currentMonthYear,
         ]);
     }
 
