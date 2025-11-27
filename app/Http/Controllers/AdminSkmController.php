@@ -52,7 +52,6 @@ class AdminSkmController extends Controller
                 'id'                      => $id, // ID sekarang adalah nomor baris
                 
                 // DATA SURVEY (Bergeser 1 kolom ke kanan)
-                'timestamp'               => $row[0] ?? '', // Kolom A
                 'usia'                    => $row[1] ?? '', // Kolom B
                 'jenis_kelamin'           => $row[2] ?? '', // Kolom C
                 'pendidikan_terakhir'     => $row[3] ?? '', // Kolom D
