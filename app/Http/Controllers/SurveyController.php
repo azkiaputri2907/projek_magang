@@ -6,14 +6,14 @@ use App\Models\Pengunjung;
 use App\Models\SurveiKepuasan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
-use Carbon\Carbon; // DITAMBAHKAN untuk penggunaan waktu yang eksplisit
+use Carbon\Carbon; 
 use Google\Client;
 use Google\Service\Sheets;
-use Google\Service\Sheets\ValueRange; // Digunakan untuk ValueRange body
+use Google\Service\Sheets\ValueRange;
 
 class SurveyController extends Controller
 {
-    // --- Tampilan Survey (View Path disesuaikan) ---
+    // --- Tampilan Survey ---
     
     public function ajakan() 
     { 
@@ -46,18 +46,26 @@ class SurveyController extends Controller
     private function getGoogleSheetsService()
     {
         $client = new Client();
-        // Pastikan nama konfigurasi ini sesuai dengan yang Anda gunakan di .env/config
-        $credentialsFile = Config::get('app.google_service_account_credentials');
+        
+        // Ambil nama file/path dari env atau config
+        // Pastikan di Vercel Env Variable: GOOGLE_SERVICE_ACCOUNT_CREDENTIALS = /tmp/credentials.json
+        $credentialsFile = env('GOOGLE_SERVICE_ACCOUNT_CREDENTIALS', Config::get('app.google_service_account_credentials'));
 
         if (empty($credentialsFile)) {
-            throw new \Exception("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS tidak terdefinisi di konfigurasi.");
+            throw new \Exception("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS tidak terdefinisi.");
         }
         
-        // Menggunakan storage_path() untuk mendapatkan path absolut
-        $credentialPath = storage_path('app/' . $credentialsFile);
+        // --- PERBAIKAN PATH CREDENTIALS ---
+        // Cek apakah path diawali '/' (Absolute path, contoh: /tmp/credentials.json)
+        if (str_starts_with($credentialsFile, '/') || str_contains($credentialsFile, 'tmp')) {
+             $credentialPath = $credentialsFile; // Gunakan langsung (untuk Vercel)
+        } else {
+             // Jika tidak, asumsikan ada di storage local (untuk Laptop/Localhost)
+             $credentialPath = storage_path('app/' . $credentialsFile);
+        }
 
         if (!file_exists($credentialPath)) {
-            throw new \Exception("File kredensial Google Service Account tidak ditemukan di: " . $credentialPath);
+            throw new \Exception("File kredensial tidak ditemukan di: " . $credentialPath);
         }
 
         $client->setAuthConfig($credentialPath);
@@ -72,10 +80,25 @@ class SurveyController extends Controller
     {
         // Ambil data pengunjung ID dari session/hidden field
         $pengunjungId = session('current_pengunjung_id') ?? $request->pengunjung_id;
-        $pengunjung = Pengunjung::find($pengunjungId);
+        
+        // --- LOGIKA PENGUNJUNG (Updated for Vercel) ---
+        $pengunjung = null;
 
-        if (!$pengunjung) {
-            return redirect('/')->withErrors('Sesi Pengunjung tidak ditemukan atau sudah kadaluarsa.');
+        if (env('APP_ENV') === 'production') {
+            // DI VERCEL: Kita tidak bisa cek database karena data pengunjung sebelumnya tidak disimpan di DB.
+            // Kita percaya saja pada session ID yang ada.
+            if (!$pengunjungId) {
+                return redirect('/')->withErrors('Sesi Pengunjung hilang. Silakan isi buku tamu ulang.');
+            }
+            // Buat dummy object untuk menghindari error null reference nanti
+            $pengunjung = new Pengunjung();
+            $pengunjung->id = $pengunjungId;
+        } else {
+            // DI LOCALHOST: Cek validitas ID di database
+            $pengunjung = Pengunjung::find($pengunjungId);
+            if (!$pengunjung) {
+                return redirect('/')->withErrors('Sesi Pengunjung tidak ditemukan atau sudah kadaluarsa.');
+            }
         }
         
         // Validasi dan gabungkan semua data dari form 1, 2, dan 3
@@ -103,15 +126,30 @@ class SurveyController extends Controller
         ]);
         
         try {
-            // 1. Simpan ke Database
+            // --- MODIFIKASI UNTUK VERCEL ---
+            
+            // 1. Siapkan Objek Survey (Memory Only)
+            // Kita gunakan new SurveiKepuasan() alih-alih create() agar tidak auto-save
             $validated['pengunjung_id'] = $pengunjungId;
-            $survey = SurveiKepuasan::create($validated); // Ambil instance model yang baru dibuat
+            $survey = new SurveiKepuasan($validated);
+
+            // Cek Environment
+            if (env('APP_ENV') === 'production') {
+                // DI VERCEL: SKIP Save DB & Update Pengunjung
+                // Langsung lanjut ke Google Sheets
+            } else {
+                // DI LOCALHOST: Simpan normal
+                $survey->save(); 
+                
+                // Update status pengunjung
+                if ($pengunjung && $pengunjung->exists) {
+                    $pengunjung->update(['sudah_survey' => true]);
+                }
+            }
 
             // 2. Kirim Data ke Google Sheets (Survei Kepuasan)
+            // Ini prioritas utama di Vercel
             $this->exportToGoogleSheets($survey);
-
-            // 3. Update status pengunjung
-            $pengunjung->update(['sudah_survey' => true]);
 
             // 4. Bersihkan session
             session()->forget('current_pengunjung_id');
@@ -120,10 +158,7 @@ class SurveyController extends Controller
             return redirect()->route('survey.thank-you');
 
         } catch (\Exception $e) {
-            // Jika ada error (Database atau Google Sheets)
-            // Catatan: Pastikan Service Account memiliki akses 'Editor' ke Spreadsheet Anda.
-            return back()->withInput()->withErrors('Gagal menyimpan data SKM. Pastikan konfigurasi Google Sheets sudah benar dan Service Account memiliki akses \'Editor\'. Error: ' . 
-            $e->getMessage());
+            return back()->withInput()->withErrors('Gagal menyimpan data SKM. Error: ' . $e->getMessage());
         }
     }
     
@@ -133,16 +168,15 @@ class SurveyController extends Controller
     private function exportToGoogleSheets(SurveiKepuasan $survey)
     {
         $service = $this->getGoogleSheetsService();
-        // ASUMSI: Menggunakan konfigurasi ID sheet yang berbeda untuk data SKM
-        $spreadsheetId = Config::get('app.google_sheet_id_skm');
+        $spreadsheetId = env('GOOGLE_SHEET_ID_SKM', Config::get('app.google_sheet_id_skm'));
 
         if (empty($spreadsheetId)) {
-            throw new \Exception("GOOGLE_SHEET_ID_SKM tidak terdefinisi atau kosong di konfigurasi (misalnya .env).");
+            throw new \Exception("GOOGLE_SHEET_ID_SKM kosong.");
         }
 
-        // Data yang akan ditambahkan ke baris baru, sesuaikan urutan kolom di sheet DataSKM Anda
+        // Data yang akan ditambahkan ke baris baru
         $rowData = [
-            Carbon::now()->toDateTimeString(), // Perbaikan: Menggunakan Carbon::now()
+            Carbon::now()->toDateTimeString(),
             $survey->pengunjung_id,
             $survey->usia,
             $survey->jenis_kelamin,
@@ -161,11 +195,10 @@ class SurveyController extends Controller
             $survey->saran_masukan ?? '',
         ];
         
-        // Range 'DataSKM' (Sesuai permintaan Anda)
+        // Range 'DataSKM'
         $range = 'DataSKM'; 
         $body = new ValueRange(['values' => [$rowData]]);
         
-        // Menggunakan append untuk menambahkan baris baru tanpa menimpa data
         $service->spreadsheets_values->append(
             $spreadsheetId,
             $range,

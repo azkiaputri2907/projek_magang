@@ -22,11 +22,16 @@ class PengunjungController extends Controller
         $currentDate = Carbon::now();
         $currentMonthYear = $currentDate->translatedFormat('F Y'); 
         
-        // Ambil data pengunjung untuk bulan dan tahun saat ini
-        $pengunjung = Pengunjung::whereMonth('tanggal', $currentDate->month)
-                                 ->whereYear('tanggal', $currentDate->year)
-                                 ->latest()
-                                 ->get();
+        // Cek apakah database bisa diakses (untuk menghindari error di Vercel)
+        try {
+            $pengunjung = Pengunjung::whereMonth('tanggal', $currentDate->month)
+                                    ->whereYear('tanggal', $currentDate->year)
+                                    ->latest()
+                                    ->get();
+        } catch (\Exception $e) {
+            // Jika database error/tidak bisa dibaca, kembalikan collection kosong
+            $pengunjung = collect([]);
+        }
         
         return view('buku_tamu.dashboard', compact('currentMonthYear', 'pengunjung')); 
     }
@@ -46,17 +51,25 @@ class PengunjungController extends Controller
     {
         $client = new Client();
         
-        $credentialsFile = Config::get('app.google_service_account_credentials');
+        // Ambil nama file/path dari env atau config
+        // Pastikan di Vercel Env Variable: GOOGLE_SERVICE_ACCOUNT_CREDENTIALS = /tmp/credentials.json
+        $credentialsFile = env('GOOGLE_SERVICE_ACCOUNT_CREDENTIALS', Config::get('app.google_service_account_credentials'));
 
         if (empty($credentialsFile)) {
             throw new \Exception("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS tidak terdefinisi.");
         }
         
-        // Menggunakan storage_path() untuk mendapatkan path absolut
-        $credentialPath = storage_path('app/' . $credentialsFile);
+        // --- PERBAIKAN PATH CREDENTIALS ---
+        // Cek apakah path diawali '/' (Absolute path, contoh: /tmp/credentials.json)
+        if (str_starts_with($credentialsFile, '/') || str_contains($credentialsFile, 'tmp')) {
+             $credentialPath = $credentialsFile; // Gunakan langsung (untuk Vercel)
+        } else {
+             // Jika tidak, asumsikan ada di storage local (untuk Laptop/Localhost)
+             $credentialPath = storage_path('app/' . $credentialsFile);
+        }
 
         if (!file_exists($credentialPath)) {
-            throw new \Exception("File kredensial Google Service Account tidak ditemukan di: " . $credentialPath);
+            throw new \Exception("File kredensial tidak ditemukan di: " . $credentialPath);
         }
 
         $client->setAuthConfig($credentialPath);
@@ -81,10 +94,23 @@ class PengunjungController extends Controller
         ]);
 
         try {
-            // 1. Simpan ke Database
-            $pengunjung = Pengunjung::create($validated);
+            // --- MODIFIKASI UNTUK VERCEL ---
             
-            // 2. Kirim Data ke Google Sheets
+            // Buat objek Pengunjung di Memory (RAM) saja dulu
+            // Jangan langsung ::create() karena akan mencoba menulis ke DB
+            $pengunjung = new Pengunjung($validated);
+
+            // Cek Environment
+            if (env('APP_ENV') === 'production') {
+                // DI VERCEL: KITA SKIP SIMPAN DB AGAR TIDAK ERROR READ-ONLY
+                // Kita beri ID palsu/random agar session tidak error
+                $pengunjung->id = rand(10000, 99999); 
+            } else {
+                // DI LOCALHOST: Simpan ke Database seperti biasa
+                $pengunjung->save();
+            }
+            
+            // 2. Kirim Data ke Google Sheets (Ini Prioritas Utama)
             $this->exportToGoogleSheets($pengunjung);
             
             // Simpan ID Pengunjung di session untuk survey selanjutnya
@@ -94,10 +120,7 @@ class PengunjungController extends Controller
             return redirect()->route('buku-tamu.thank-you');
 
         } catch (\Exception $e) {
-            // Jika terjadi error, kirim pesan error yang jelas
-            // Catatan: Pastikan Service Account memiliki akses 'Editor' ke Spreadsheet Anda.
-            
-            return back()->withInput()->withErrors('Gagal menyimpan data buku tamu. Error Sheets: ' . $e->getMessage());
+            return back()->withInput()->withErrors('Gagal menyimpan data. Error: ' . $e->getMessage());
         }
     }
     
@@ -107,10 +130,10 @@ class PengunjungController extends Controller
     private function exportToGoogleSheets(Pengunjung $pengunjung)
     {
         $service = $this->getGoogleSheetsService();
-        $spreadsheetId = Config::get('app.google_sheet_id_tamu');
+        $spreadsheetId = env('GOOGLE_SHEET_ID_TAMU', Config::get('app.google_sheet_id_tamu'));
 
         if (empty($spreadsheetId)) {
-            throw new \Exception("GOOGLE_SHEET_ID_TAMU tidak terdefinisi atau kosong di konfigurasi.");
+            throw new \Exception("GOOGLE_SHEET_ID_TAMU kosong.");
         }
 
         // Data yang akan ditambahkan ke baris baru
@@ -125,10 +148,10 @@ class PengunjungController extends Controller
         ];
         
         // Range 'BukuTamu' (pastikan nama sheet ini ada di Spreadsheet Anda)
-        $range = 'BukuTamu'; 
+        $range = 'BukuTamu'; // Sesuaikan dengan nama Tab di bawah spreadsheet (Sheet1 atau BukuTamu)
         $body = new \Google\Service\Sheets\ValueRange(['values' => [$rowData]]);
         
-        // Menggunakan append untuk menambahkan baris baru tanpa menimpa data
+        // Menggunakan append
         $service->spreadsheets_values->append(
             $spreadsheetId,
             $range,
