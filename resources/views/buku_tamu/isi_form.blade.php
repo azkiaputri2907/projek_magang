@@ -158,7 +158,7 @@
     .bukutamu-right {
         flex: 0.9;
         background-color: #C9E1FF;
-        background-image: url('{{ asset('images/Pengunjung.jpg') }}');
+        background-image: url('{{ asset('images/pengunjung.jpg') }}');
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
