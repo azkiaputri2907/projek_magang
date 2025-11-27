@@ -197,6 +197,7 @@ class AdminSkmController extends Controller
         $client = new Client();
         $credentialsFile = Config::get('app.google_service_account_credentials', 'credentials.json');
         $credentialPath = storage_path('app/' . $credentialsFile);
+        $jsonCredentials = env('GOOGLE_CREDENTIALS_JSON');
 
         if (!file_exists($credentialPath)) {
              $credentialPath = base_path($credentialsFile);

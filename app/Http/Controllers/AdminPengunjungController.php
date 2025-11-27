@@ -193,6 +193,7 @@ class AdminPengunjungController extends Controller
         $client = new Client();
         // Cek file credentials
         $credentialFile = env('GOOGLE_SERVICE_ACCOUNT_CREDENTIALS', 'credentials.json');
+        $jsonCredentials = env('GOOGLE_CREDENTIALS_JSON');
         $credentialPath = storage_path('app/' . $credentialFile);
 
         if (!file_exists($credentialPath)) {

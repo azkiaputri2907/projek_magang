@@ -369,6 +369,7 @@ class AdminController extends Controller
 
         if (empty($credentialsFile)) {
             $credentialsFile = 'credentials.json'; 
+            $jsonCredentials = env('GOOGLE_CREDENTIALS_JSON');
         }
 
         $credentialPath = storage_path('app/' . $credentialsFile);
