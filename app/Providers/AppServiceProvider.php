@@ -24,12 +24,12 @@ class AppServiceProvider extends ServiceProvider
         // === TAMBAHKAN KODE INI MULAI DARI SINI ===
         
         // Cek jika kita ada di production (Vercel) dan punya datanya
-        $googleCredentials = env('GOOGLE_CREDENTIALS_JSON');
+        $jsonCredentials = env('GOOGLE_CREDENTIALS_JSON');
         
-        if ($googleCredentials) {
+        if ($jsonCredentials) {
             // Tulis isi JSON ke folder /tmp agar bisa dibaca library Google
             // Path ini harus sama dengan yang kamu set di Environment Variable
-            file_put_contents('/tmp/credentials.json', $googleCredentials);
+            file_put_contents('/tmp/credentials.json', $jsonCredentials);
         }
         
         // === SAMPAI SINI ===
