@@ -49,25 +49,28 @@ class AdminSkmController extends Controller
 
             // Mapping Array Sheet ke Object (agar View Blade tidak error saat panggil $skm->usia)
             $skm = (object) [
-                'id'            => $id, // ID sekarang adalah nomor baris
-                'usia'          => $row[0] ?? '',
-                'jenis_kelamin' => $row[1] ?? '',
-                'pendidikan_terakhir' => $row[2] ?? '',
-                'pekerjaan'     => $row[3] ?? '',
-                'jenis_layanan_diterima' => $row[4] ?? '',
+                'id'                      => $id, // ID sekarang adalah nomor baris
                 
-                // Nilai Survey (Q1-Q9)
-                'q1_persyaratan' => $row[5] ?? '',
-                'q2_prosedur'    => $row[6] ?? '',
-                'q3_waktu'       => $row[7] ?? '',
-                'q4_biaya'       => $row[8] ?? '',
-                'q5_produk'      => $row[9] ?? '',
-                'q6_kompetensi_petugas' => $row[10] ?? '',
-                'q7_perilaku_petugas'   => $row[11] ?? '',
-                'q8_penanganan_pengaduan'=> $row[12] ?? '',
-                'q9_sarana'      => $row[13] ?? '',
+                // DATA SURVEY (Bergeser 1 kolom ke kanan)
+                'timestamp'               => $row[0] ?? '', // Kolom A
+                'usia'                    => $row[1] ?? '', // Kolom B
+                'jenis_kelamin'           => $row[2] ?? '', // Kolom C
+                'pendidikan_terakhir'     => $row[3] ?? '', // Kolom D
+                'pekerjaan'               => $row[4] ?? '', // Kolom E
+                'jenis_layanan_diterima'  => $row[5] ?? '', // Kolom F
                 
-                'saran_masukan' => $row[14] ?? '',
+                // Nilai Survey (Q1-Q9) - Mulai dari index 6
+                'q1_persyaratan'          => $row[6] ?? '', // Kolom G
+                'q2_prosedur'             => $row[7] ?? '', // Kolom H
+                'q3_waktu'                => $row[8] ?? '', // Kolom I
+                'q4_biaya'                => $row[9] ?? '', // Kolom J
+                'q5_produk'               => $row[10] ?? '', // Kolom K
+                'q6_kompetensi_petugas'   => $row[11] ?? '', // Kolom L
+                'q7_perilaku_petugas'     => $row[12] ?? '', // Kolom M
+                'q8_penanganan_pengaduan' => $row[13] ?? '', // Kolom N
+                'q9_sarana'               => $row[14] ?? '', // Kolom O
+                
+                'saran_masukan'           => $row[15] ?? '', // Kolom P
             ];
 
             return view('admin.skm.edit_skm', compact('skm'));
