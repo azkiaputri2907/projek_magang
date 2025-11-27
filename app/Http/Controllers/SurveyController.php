@@ -6,7 +6,7 @@ use App\Models\Pengunjung;
 use App\Models\SurveiKepuasan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Validator; // Tambahkan ini
+use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon; 
 use Google\Client;
 use Google\Service\Sheets;
@@ -77,16 +77,22 @@ class SurveyController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Ambil ID Pengunjung
-        $pengunjungId = session('current_pengunjung_id') ?? $request->input('pengunjung_id');
+        // 1. Ambil ID Pengunjung (Bungkus try-catch jika Session Driver Database rusak)
+        $pengunjungId = null;
+        try {
+            $pengunjungId = session('current_pengunjung_id');
+        } catch (\Throwable $e) {
+            // Abaikan error session database
+        }
+
+        $pengunjungId = $pengunjungId ?? $request->input('pengunjung_id');
         
-        // Fallback ID untuk Vercel
-        if (env('APP_ENV') === 'production' && !$pengunjungId) {
+        // Fallback ID untuk Vercel jika session gagal/kosong
+        if (!$pengunjungId) {
             $pengunjungId = 'Anonim-' . rand(1000, 9999);
         }
         
-        // 2. DEBUG VALIDASI MANUAL
-        // Kita pakai Validator manual biar bisa dd() errornya kalau gagal
+        // 2. VALIDASI MANUAL
         $validator = Validator::make($request->all(), [
             'usia' => 'required',
             'jenis_kelamin' => 'required',
@@ -106,22 +112,18 @@ class SurveyController extends Controller
         ]);
 
         if ($validator->fails()) {
-            // JIKA MUNCUL INI: Berarti form HTML kamu tidak mengirim data lengkap.
-            // Solusi: Pastikan di Form Tahap Akhir ada <input type="hidden"> untuk data tahap 1 & 2.
-            dd("VALIDASI GAGAL! Data berikut tidak dikirim dari Form HTML:", $validator->errors()->toArray(), "Data yang diterima:", $request->all());
+            dd("VALIDASI GAGAL! Data tidak lengkap.", $validator->errors()->toArray(), "Data diterima:", $request->all());
         }
 
         $validated = $validator->validated();
 
         try {
-            // 3. Buat Object Survey
+            // 3. Buat Object Survey (Memory Only)
             $validated['pengunjung_id'] = $pengunjungId;
             $survey = new SurveiKepuasan($validated);
 
-            // --- DATABASE BLOCK (SAFE MODE) ---
-            // Kita bungkus dalam try-catch terpisah.
-            // Tujuannya: Jika database error (karena Vercel SQLite corrupt/read-only), 
-            // aplikasi JANGAN BERHENTI. Tetap lanjut kirim ke Google Sheets.
+            // --- DATABASE BLOCK (SUPER SAFE MODE) ---
+            // Kita bungkus dengan \Throwable agar menangkap Error Fatal sekalipun
             try {
                 if (env('APP_ENV') !== 'production') {
                     $pengunjung = Pengunjung::find($pengunjungId);
@@ -130,21 +132,23 @@ class SurveyController extends Controller
                         $pengunjung->update(['sudah_survey' => true]);
                     }
                 }
-            } catch (\Exception $dbError) {
-                // Silent fail untuk database. Abaikan error SQLSTATE[HY000] dsb.
-                // Prioritas utama adalah Google Sheets.
+            } catch (\Throwable $dbError) {
+                // MASA BODOH dengan error database. Lanjut terus!
             }
 
-            // 4. KIRIM KE GOOGLE SHEETS
+            // 4. KIRIM KE GOOGLE SHEETS (Prioritas Utama)
             $this->exportToGoogleSheets($survey);
 
-            // 5. Sukses
-            session()->forget('current_pengunjung_id');
+            // 5. Bersihkan Session (Juga dibungkus jaga-jaga kalau driver session error)
+            try {
+                session()->forget('current_pengunjung_id');
+            } catch (\Throwable $e) {}
+
             return redirect()->route('survey.thank-you');
 
         } catch (\Exception $e) {
-            // TAMPILKAN ERROR UTAMA (Biasanya Google Sheets)
-            dd("GOOGLE SHEETS / SYSTEM ERROR: " . $e->getMessage());
+            // TAMPILKAN ERROR UTAMA (Hanya jika Google Sheets yang gagal)
+            dd("GOOGLE SHEETS SYSTEM ERROR: " . $e->getMessage());
         }
     }
     
