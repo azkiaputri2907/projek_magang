@@ -392,21 +392,32 @@ body {
                         @if(!empty($pengunjung) && count($pengunjung) > 0)
                             @foreach($pengunjung as $tamu)
                                 <div class="guest-row">
-                                    <span class="col-tanggal">{{ \Carbon\Carbon::parse($tamu->tanggal)->translatedFormat('d M Y') }}</span>
-                                    <span class="col-nama">{{ $tamu->nama_nip }}</span>
-                                    <span class="col-instansi">{{ $tamu->instansi }}</span>
-                                    <span class="col-layanan">{{ $tamu->layanan }}</span>
-                                    <span class="col-keperluan">{{ $tamu->keperluan }}</span>
+                                    {{-- PERBAIKAN DI SINI: MENGGUNAKAN @php ... @endphp UNTUK LOGIKA TRY-CATCH --}}
+                                    <span class="col-tanggal">
+                                        @php
+                                            try {
+                                                $formattedDate = \Carbon\Carbon::parse($tamu['tanggal'])->translatedFormat('d M Y');
+                                            } catch (\Exception $e) {
+                                                $formattedDate = $tamu['tanggal'];
+                                            }
+                                        @endphp
+                                        {{ $formattedDate }}
+                                    </span>
+                                    
+                                    <span class="col-nama">{{ $tamu['nama_nip'] }}</span>
+                                    <span class="col-instansi">{{ $tamu['instansi'] }}</span>
+                                    <span class="col-layanan">{{ $tamu['layanan'] }}</span>
+                                    <span class="col-keperluan">{{ $tamu['keperluan'] }}</span>
                                 </div>
                             @endforeach
                         @else
                             @for($i=0;$i<3;$i++)
                             <div class="guest-row">
-                                <span class="col-tanggal"></span>
-                                <span class="col-nama"></span>
-                                <span class="col-instansi"></span>
-                                <span class="col-layanan"></span>
-                                <span class="col-keperluan"></span>
+                                <span class="col-tanggal">-</span>
+                                <span class="col-nama">Belum ada data</span>
+                                <span class="col-instansi">-</span>
+                                <span class="col-layanan">-</span>
+                                <span class="col-keperluan">-</span>
                             </div>
                             @endfor
                         @endif

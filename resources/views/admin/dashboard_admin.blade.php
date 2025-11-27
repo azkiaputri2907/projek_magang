@@ -347,20 +347,24 @@ body {
             {{-- DATA CARDS --}}
             <div class="data-cards">
 
+                {{-- CARD PENGUNJUNG --}}
                 <a href="{{ url('/admin/pengunjung') }}" class="data-card pengunjung" style="text-decoration:none;">
                     <div class="card-header">
                         <div class="icon-container"><i class="fas fa-users"></i></div>
                         <h4>Data Pengunjung</h4>
                     </div>
+                    {{-- ANGKA INI OTOMATIS BERISI HASIL HITUNG GOOGLE SHEETS DARI CONTROLLER --}}
                     <p class="count">{{ $total_pengunjung ?? 0 }}</p>
                     <span class="description">Pengunjung</span>
                 </a>
 
+                {{-- CARD SKM --}}
                 <a href="{{ url('/admin/skm') }}" class="data-card skm" style="text-decoration:none;">
                     <div class="card-header">
                         <div class="icon-container"><i class="fas fa-user-check"></i></div>
                         <h4>Data SKM</h4>
                     </div>
+                    {{-- ANGKA INI OTOMATIS BERISI HASIL HITUNG GOOGLE SHEETS DARI CONTROLLER --}}
                     <p class="count">{{ $total_skm ?? 0 }}</p>
                     <span class="description">Survey Kepuasan Masyarakat</span>
                 </a>

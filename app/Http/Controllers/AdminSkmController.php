@@ -2,138 +2,223 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SurveiKepuasan;
 use Google\Client;
 use Google\Service\Sheets;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Validation\ValidationException;
 
 class AdminSkmController extends Controller
 {
-    /* ---------------------------------------------
-     * HALAMAN EDIT
-     * --------------------------------------------- */
+    private $spreadsheetId;
+    private $sheetName = 'DataSKM'; // Pastikan nama Tab di Sheet Anda "DataSKM"
+
+    public function __construct()
+    {
+        // Ambil ID Spreadsheet dari Config/Env
+        $this->spreadsheetId = Config::get('app.google_sheet_id_skm');
+    }
+
+    // =================================================================
+    // 1. EDIT (AMBIL DATA DARI SHEET BERDASARKAN NOMOR BARIS)
+    // =================================================================
     public function edit($id)
     {
-        $skm = SurveiKepuasan::findOrFail($id);
-        return view('admin.skm.edit_skm', compact('skm'));
+        // $id di sini adalah NOMOR BARIS di Excel (misal: 5)
+        // Validasi sederhana agar tidak mengedit Header (baris 1)
+        if ($id < 2) {
+            return back()->with('error', 'Tidak dapat mengedit baris header.');
+        }
+
+        try {
+            $service = $this->getGoogleSheetsService();
+            
+            // Ambil data dari baris tersebut (Kolom A sampai O)
+            // Asumsi Kolom:
+            // A=Usia, B=JK, C=Pendidikan, D=Pekerjaan, E=Layanan
+            // F-N = Q1-Q9, O=Saran
+            $range = $this->sheetName . "!A{$id}:O{$id}";
+            $response = $service->spreadsheets_values->get($this->spreadsheetId, $range);
+            $values = $response->getValues();
+
+            if (empty($values)) {
+                return back()->with('error', 'Data tidak ditemukan di baris tersebut.');
+            }
+
+            $row = $values[0];
+
+            // Mapping Array Sheet ke Object (agar View Blade tidak error saat panggil $skm->usia)
+            $skm = (object) [
+                'id'            => $id, // ID sekarang adalah nomor baris
+                'usia'          => $row[0] ?? '',
+                'jenis_kelamin' => $row[1] ?? '',
+                'pendidikan_terakhir' => $row[2] ?? '',
+                'pekerjaan'     => $row[3] ?? '',
+                'jenis_layanan_diterima' => $row[4] ?? '',
+                
+                // Nilai Survey (Q1-Q9)
+                'q1_persyaratan' => $row[5] ?? '',
+                'q2_prosedur'    => $row[6] ?? '',
+                'q3_waktu'       => $row[7] ?? '',
+                'q4_biaya'       => $row[8] ?? '',
+                'q5_produk'      => $row[9] ?? '',
+                'q6_kompetensi_petugas' => $row[10] ?? '',
+                'q7_perilaku_petugas'   => $row[11] ?? '',
+                'q8_penanganan_pengaduan'=> $row[12] ?? '',
+                'q9_sarana'      => $row[13] ?? '',
+                
+                'saran_masukan' => $row[14] ?? '',
+            ];
+
+            return view('admin.skm.edit_skm', compact('skm'));
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal mengambil data dari Google Sheet: ' . $e->getMessage());
+        }
     }
 
-    /* ---------------------------------------------
-     * UPDATE DATA SKM + SYNC KE GOOGLE SHEETS
-     * --------------------------------------------- */
+    // =================================================================
+    // 2. UPDATE (TIMPA DATA KE SHEET)
+    // =================================================================
     public function update(Request $request, $id)
     {
+        // Validasi Input
+        $request->validate([
+            'usia' => 'required|integer',
+            'jenis_kelamin' => 'required|string',
+            'pendidikan_terakhir' => 'required|string',
+            'pekerjaan' => 'required|string',
+            'jenis_layanan_diterima' => 'required|string',
+            'q1_persyaratan' => 'required|integer|min:1|max:4',
+            'q2_prosedur' => 'required|integer|min:1|max:4',
+            'q3_waktu' => 'required|integer|min:1|max:4',
+            'q4_biaya' => 'required|integer|min:1|max:4',
+            'q5_produk' => 'required|integer|min:1|max:4',
+            'q6_kompetensi_petugas' => 'required|integer|min:1|max:4',
+            'q7_perilaku_petugas' => 'required|integer|min:1|max:4',
+            'q8_penanganan_pengaduan' => 'required|integer|min:1|max:4',
+            'q9_sarana' => 'required|integer|min:1|max:4',
+            'saran_masukan' => 'nullable|string',
+        ]);
+
         try {
-            $validated = $request->validate([
-                'usia' => 'required|integer',
-                'jenis_kelamin' => 'required|string',
-                'pendidikan_terakhir' => 'required|string',
-                'pekerjaan' => 'required|string',
-                'jenis_layanan_diterima' => 'required|string',
-                'q1_persyaratan' => 'required|integer|min:1|max:4',
-                'q2_prosedur' => 'required|integer|min:1|max:4',
-                'q3_waktu' => 'required|integer|min:1|max:4',
-                'q4_biaya' => 'required|integer|min:1|max:4',
-                'q5_produk' => 'required|integer|min:1|max:4',
-                'q6_kompetensi_petugas' => 'required|integer|min:1|max:4',
-                'q7_perilaku_petugas' => 'required|integer|min:1|max:4',
-                'q8_penanganan_pengaduan' => 'required|integer|min:1|max:4',
-                'q9_sarana' => 'required|integer|min:1|max:4',
-                'saran_masukan' => 'nullable|string',
+            $service = $this->getGoogleSheetsService();
+
+            // Susun data array sesuai urutan Kolom A - O 
+            // Kita TIDAK mengupdate kolom P (Timestamp) agar data waktu asli terjaga
+            $updateRow = [
+                $request->usia,
+                $request->jenis_kelamin,
+                $request->pendidikan_terakhir,
+                $request->pekerjaan,
+                $request->jenis_layanan_diterima,
+                $request->q1_persyaratan,
+                $request->q2_prosedur,
+                $request->q3_waktu,
+                $request->q4_biaya,
+                $request->q5_produk,
+                $request->q6_kompetensi_petugas,
+                $request->q7_perilaku_petugas,
+                $request->q8_penanganan_pengaduan,
+                $request->q9_sarana,
+                $request->saran_masukan ?? ''
+            ];
+
+            // Tentukan Range: Update baris ke-$id, kolom A sampai O
+            $range = $this->sheetName . "!A{$id}:O{$id}";
+            
+            $body = new \Google\Service\Sheets\ValueRange([
+                'values' => [$updateRow]
             ]);
+            
+            $params = ['valueInputOption' => 'USER_ENTERED'];
 
-            $skm = SurveiKepuasan::findOrFail($id);
-            $skm->update($validated);
+            // Eksekusi Update ke Google Sheets
+            $service->spreadsheets_values->update($this->spreadsheetId, $range, $body, $params);
 
-            // Sync ke Google Sheets
-            $this->syncToSheet();
+            // Redirect ke halaman index SKM
+            return Redirect::route('admin.skm')->with("success", "Data SKM baris ke-{$id} berhasil diperbarui di Google Sheets.");
 
-            return Redirect::route('admin.skm')->with("success", "Data SKM berhasil diupdate & disinkronkan.");
-        } 
-        catch (ValidationException $e) {
-            return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            return back()->with("error", "Gagal Update Google Sheet: " . $e->getMessage())->withInput();
         }
     }
 
-    /* ---------------------------------------------
-     * DELETE + SYNC ULANG
-     * --------------------------------------------- */
+    // =================================================================
+    // 3. DELETE (HAPUS BARIS DI SHEET)
+    // =================================================================
     public function destroy($id)
     {
-        $skm = SurveiKepuasan::findOrFail($id);
-        $skm->delete();
-
-        $this->syncToSheet();
-
-        return Redirect::route('admin.skm')->with("success", "Data berhasil dihapus & disinkronkan.");
-    }
-
-    /* ---------------------------------------------
-     * FUNGSI SYNC KE GOOGLE SHEETS (FINAL VERSION)
-     * --------------------------------------------- */
-    private function syncToSheet()
-    {
-        // --- AUTH GOOGLE ---
-        $client = new Client();
-        $client->setAuthConfig(storage_path('app/credentials.json'));
-        $client->addScope(Sheets::SPREADSHEETS);
-
-        $service = new Sheets($client);
-
-        // ID SPREADSHEET
-        $spreadsheetId = config('app.google_sheet_id_skm');
-
-        if (!$spreadsheetId) {
-            throw new \Exception('google_sheet_id_skm belum diset di config/app.php');
+        if ($id < 2) {
+             return back()->with('error', 'Tidak bisa menghapus header.');
         }
 
-        // --- CLEAR DATA LAMA (A2 ke bawah, biar header aman) ---
-        $service->spreadsheets_values->clear(
-            $spreadsheetId,
-            'DataSKM!A2:Z',
-            new \Google\Service\Sheets\ClearValuesRequest()
-        );
+        try {
+            $service = $this->getGoogleSheetsService();
 
-        // --- AMBIL DATA DARI DB ---
-        $data = SurveiKepuasan::all();
+            // Kita butuh Sheet ID (angka/GID), bukan cuma nama tab string.
+            $sheetIdNumeric = $this->getSheetIdByName($service, $this->sheetName);
 
-        $rows = [];
+            // Google Sheets API index mulai dari 0.
+            // Baris 1 Excel = Index 0.
+            // Baris $id Excel = Index $id - 1.
+            $startIndex = $id - 1; 
 
-        foreach ($data as $d) {
-            $rows[] = [
-                (string)$d->usia,
-                $d->jenis_kelamin,
-                $d->pendidikan_terakhir,
-                $d->pekerjaan,
-                $d->jenis_layanan_diterima,
-                $d->q1_persyaratan,
-                $d->q2_prosedur,
-                $d->q3_waktu,
-                $d->q4_biaya,
-                $d->q5_produk,
-                $d->q6_kompetensi_petugas,
-                $d->q7_perilaku_petugas,
-                $d->q8_penanganan_pengaduan,
-                $d->q9_sarana,
-                $d->saran_masukan,
-                $d->created_at->format('Y-m-d H:i:s'),
-            ];
-        }
-
-        if (!empty($rows)) {
-            $body = new \Google\Service\Sheets\ValueRange([
-                'values' => $rows
+            $requestBody = new \Google\Service\Sheets\BatchUpdateSpreadsheetRequest([
+                'requests' => [
+                    [
+                        'deleteDimension' => [
+                            'range' => [
+                                'sheetId' => $sheetIdNumeric,
+                                'dimension' => 'ROWS',
+                                'startIndex' => $startIndex,
+                                'endIndex' => $startIndex + 1 // Hapus 1 baris
+                            ]
+                        ]
+                    ]
+                ]
             ]);
 
-            // --- APPEND (AMAN UNTUK MULTIPLE ROW) ---
-            $service->spreadsheets_values->append(
-                $spreadsheetId,
-                'DataSKM!A2',
-                $body,
-                ['valueInputOption' => 'USER_ENTERED']
-            );
+            $service->spreadsheets->batchUpdate($this->spreadsheetId, $requestBody);
+
+            return Redirect::back()->with("success", "Data baris ke-{$id} berhasil dihapus dari Google Sheets.");
+
+        } catch (\Exception $e) {
+            return back()->with("error", "Gagal Hapus dari Google Sheet: " . $e->getMessage());
         }
+    }
+
+    // =================================================================
+    // HELPER FUNCTIONS
+    // =================================================================
+
+    private function getGoogleSheetsService()
+    {
+        $client = new Client();
+        $credentialsFile = Config::get('app.google_service_account_credentials', 'credentials.json');
+        $credentialPath = storage_path('app/' . $credentialsFile);
+
+        if (!file_exists($credentialPath)) {
+             $credentialPath = base_path($credentialsFile);
+             if (!file_exists($credentialPath)) {
+                throw new \Exception("File credentials.json tidak ditemukan.");
+             }
+        }
+
+        $client->setAuthConfig($credentialPath);
+        $client->addScope(Sheets::SPREADSHEETS);
+
+        return new Sheets($client);
+    }
+
+    private function getSheetIdByName($service, $sheetName)
+    {
+        $spreadsheet = $service->spreadsheets->get($this->spreadsheetId);
+        foreach ($spreadsheet->getSheets() as $sheet) {
+            if ($sheet->getProperties()->getTitle() === $sheetName) {
+                return $sheet->getProperties()->getSheetId();
+            }
+        }
+        return 0; 
     }
 }

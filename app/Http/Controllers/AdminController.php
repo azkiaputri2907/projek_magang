@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pengunjung;
-use App\Models\SurveiKepuasan;
+// Hapus Pengunjung dan SurveiKepuasan Model
+// use App\Models\Pengunjung; 
+// use App\Models\SurveiKepuasan;
 use Google\Client;
 use Google\Service\Sheets;
 use Illuminate\Http\Request;
@@ -12,9 +13,22 @@ use Illuminate\Support\Facades\Config;
 
 class AdminController extends Controller
 {
+    private $sheetIdPengunjung;
+    private $sheetIdSkm;
+    private $sheetNamePengunjung = 'BukuTamu';
+    private $sheetNameSkm = 'DataSKM'; 
+
+    public function __construct()
+    {
+        // Ambil ID Sheets dari Config/Env untuk digunakan di seluruh controller
+        $this->sheetIdPengunjung = Config::get('app.google_sheet_id_tamu', '1XKirvKDNNnwcauLTxHebHCcHbAdEHLZdL5caoB3HiVE');
+        $this->sheetIdSkm = Config::get('app.google_sheet_id_skm', '1iTmYnrKDmx3lmoIjoEqeAkSlHE0aePXF56SGFqfl6J0');
+    }
+
     // ============================
     // AUTH
     // ============================
+    // Logika Auth tidak berubah karena Auth::attempt biasanya menggunakan tabel 'users'
 
     public function showLoginForm() 
     { 
@@ -44,67 +58,209 @@ class AdminController extends Controller
         return redirect('/');
     }
     
-
+    // ----------------------------------------------------
+    
     // ============================
-    // DASHBOARD
+    // DASHBOARD (HITUNG DARI SHEET)
     // ============================
 
     public function dashboard() 
     { 
+        $totalPengunjung = 0;
+        $totalSkm = 0;
+
+        try {
+            $service = $this->getGoogleSheetsService();
+
+            // --- Hitung Pengunjung dari Sheet ---
+            $rangeP = $this->sheetNamePengunjung . '!A:A'; 
+            $responseP = $service->spreadsheets_values->get($this->sheetIdPengunjung, $rangeP);
+            $valuesP = $responseP->getValues();
+            if ($valuesP) {
+                // Total = Jumlah baris - 1 (Header)
+                $totalPengunjung = max(0, count($valuesP) - 1); 
+            }
+
+            // --- Hitung SKM dari Sheet ---
+            $rangeS = $this->sheetNameSkm . '!A:A'; 
+            $responseS = $service->spreadsheets_values->get($this->sheetIdSkm, $rangeS);
+            $valuesS = $responseS->getValues();
+            if ($valuesS) {
+                // Total = Jumlah baris - 1 (Header)
+                $totalSkm = max(0, count($valuesS) - 1); 
+            }
+
+        } catch (\Exception $e) {
+            // Jika Google Sheets Gagal, total 0
+            session()->flash('error', 'Gagal memuat data dashboard dari Google Sheets.');
+        }
+
         return view('admin.dashboard_admin', [
-            'total_pengunjung' => Pengunjung::count(),
-            'total_skm' => SurveiKepuasan::count()
+            'total_pengunjung' => $totalPengunjung,
+            'total_skm' => $totalSkm
         ]);
     }
 
+    // ----------------------------------------------------
 
     // ============================
-    // DATA VIEW
+    // DATA VIEW (READ DARI SHEET)
     // ============================
 
+    // dataPengunjung: Perlu diubah agar menggunakan logic di AdminPengunjungController::index
+    // Namun, karena kode Anda memanggil AdminController::dataPengunjung, 
+    // kita akan menyediakan implementasi dasar yang membaca data pengunjung dari sheets.
     public function dataPengunjung() 
     { 
-        $pengunjung = Pengunjung::latest()->paginate(10);
+        // NOTE: Sebaiknya fungsionalitas ini dipindahkan ke AdminPengunjungController::index
+        // untuk konsistensi, tetapi di sini diimplementasikan agar AdminController lama bekerja.
+        
+        try {
+            $service = $this->getGoogleSheetsService();
+            // Ambil data dari baris ke-2 sampai kolom G (sesuai struktur AdminPengunjungController)
+            $range = $this->sheetNamePengunjung . '!A2:G'; 
+            $response = $service->spreadsheets_values->get($this->sheetIdPengunjung, $range);
+            $rows = $response->getValues();
+
+            $data = [];
+            if (!empty($rows)) {
+                foreach ($rows as $index => $row) {
+                    $rowIndex = $index + 2; // ID = Row Index
+
+                    $data[] = (object) [
+                        'id' => $rowIndex, 
+                        'tanggal' => $row[0] ?? '-',
+                        'nama_nip' => $row[1] ?? '-',
+                        'instansi' => $row[2] ?? '-',
+                        'layanan' => $row[3] ?? '-',
+                        'keperluan' => $row[4] ?? '-',
+                        'no_hp' => $row[5] ?? '-',
+                        'created_at' => $row[6] ?? '-',
+                    ];
+                }
+            }
+
+            // Urutkan terbaru di atas dan konversi ke Collection
+            $pengunjung = collect(array_reverse($data));
+
+        } catch (\Exception $e) {
+             session()->flash('error', 'Gagal memuat data pengunjung dari Google Sheets.');
+             $pengunjung = collect([]);
+        }
+
+        // Karena data tidak di-paginate, tampilan mungkin perlu disesuaikan 
+        // (misal menghapus $pengunjung->links() di view)
         return view('admin.data_pengunjung', compact('pengunjung')); 
     }
     
+    // dataSkmDemografi: Ambil data demografi langsung dari Sheet
     public function dataSkmDemografi() 
     { 
-        $skm = SurveiKepuasan::with('pengunjung')->latest()->paginate(10);
+        try {
+            $service = $this->getGoogleSheetsService();
+            // Ambil kolom A sampai E (Demografi)
+            $range = $this->sheetNameSkm . '!B2:F'; // <-- Ubah Range di sini
+
+            $response = $service->spreadsheets_values->get($this->sheetIdSkm, $range);
+            $rows = $response->getValues();
+
+            $data = [];
+            if (!empty($rows)) {
+                foreach ($rows as $index => $row) {
+                    $rowIndex = $index + 2; 
+
+                    $data[] = (object) [
+                        'id' => $rowIndex, 
+                        'usia' => $row[0] ?? '-',             // Row index 0 (Sheet B)
+                        'jenis_kelamin' => $row[1] ?? '-',    // Row index 1 (Sheet C)
+                        'pendidikan_terakhir' => $row[2] ?? '-',// Row index 2 (Sheet D)
+                        'pekerjaan' => $row[3] ?? '-',          // Row index 3 (Sheet E)
+                        'jenis_layanan_diterima' => $row[4] ?? '-',// Row index 4 (Sheet F)
+                    ];
+                }
+            }
+            $skm = collect(array_reverse($data));
+        } catch (\Exception $e) {
+            session()->flash('error', 'Gagal memuat data SKM (Demografi) dari Google Sheets.');
+            $skm = collect([]);
+        }
+
         return view('admin.skm.data_skm_demografi', compact('skm')); 
     }
     
+    // dataSkmPertanyaan: Ambil data pertanyaan langsung dari Sheet
     public function dataSkmPertanyaan() 
     { 
-        $skm = SurveiKepuasan::latest()->paginate(10);
+        try {
+            $service = $this->getGoogleSheetsService();
+            // Ambil kolom A sampai O (termasuk Saran/Masukan)
+            $range = $this->sheetNameSkm . '!A2:O'; 
+            $response = $service->spreadsheets_values->get($this->sheetIdSkm, $range);
+            $rows = $response->getValues();
+
+            $data = [];
+            if (!empty($rows)) {
+                foreach ($rows as $index => $row) {
+                    $rowIndex = $index + 2; 
+
+                    // Mapping index column ke property name
+                    $data[] = (object) [
+                        'id' => $rowIndex,
+                        'q1_persyaratan' => $row[5] ?? '-',
+                        'q2_prosedur' => $row[6] ?? '-',
+                        'q3_waktu' => $row[7] ?? '-',
+                        'q4_biaya' => $row[8] ?? '-',
+                        'q5_produk' => $row[9] ?? '-',
+                        'q6_kompetensi_petugas' => $row[10] ?? '-',
+                        'q7_perilaku_petugas' => $row[11] ?? '-',
+                        'q8_penanganan_pengaduan' => $row[12] ?? '-',
+                        'q9_sarana' => $row[13] ?? '-',
+                        'saran_masukan' => $row[14] ?? '-',
+                    ];
+                }
+            }
+            $skm = collect(array_reverse($data));
+        } catch (\Exception $e) {
+            session()->flash('error', 'Gagal memuat data SKM (Pertanyaan) dari Google Sheets.');
+            $skm = collect([]);
+        }
+
         return view('admin.skm.data_skm_pertanyaan', compact('skm')); 
     }
 
+    // ----------------------------------------------------
 
     // ============================
-    // LAPORAN
+    // LAPORAN (HITUNG DARI SHEET)
     // ============================
 
     public function laporan() 
     { 
-        // ============================
-        // UPDATED SECTION (untuk grafik laporan)
-        // ============================
+        // Logika hitung total sudah di atas, kita gunakan kembali
+        $totalPengunjung = 0;
+        $totalSkm = 0;
 
-        $totalPengunjung = Pengunjung::count();
-        $totalSkm = SurveiKepuasan::count();
+        try {
+            $service = $this->getGoogleSheetsService();
+            
+            // Hitung Pengunjung
+            $rangeP = $this->sheetNamePengunjung . '!A:A'; 
+            $valuesP = $service->spreadsheets_values->get($this->sheetIdPengunjung, $rangeP)->getValues();
+            if ($valuesP) $totalPengunjung = max(0, count($valuesP) - 1);
 
-        $dataGender = SurveiKepuasan::selectRaw('jenis_kelamin, COUNT(*) as total')
-            ->groupBy('jenis_kelamin')
-            ->pluck('total', 'jenis_kelamin');
+            // Hitung SKM
+            $rangeS = $this->sheetNameSkm . '!A:A'; 
+            $valuesS = $service->spreadsheets_values->get($this->sheetIdSkm, $rangeS)->getValues();
+            if ($valuesS) $totalSkm = max(0, count($valuesS) - 1);
 
-        $dataLayanan = SurveiKepuasan::selectRaw('jenis_layanan_diterima, COUNT(*) as total')
-            ->groupBy('jenis_layanan_diterima')
-            ->pluck('total', 'jenis_layanan_diterima');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Gagal memuat data laporan dari Google Sheets.');
+        }
 
-        $dataPendidikan = SurveiKepuasan::selectRaw('pendidikan_terakhir, COUNT(*) as total')
-            ->groupBy('pendidikan_terakhir')
-            ->pluck('total', 'pendidikan_terakhir');
+        // Data demografi dikosongkan/disederhanakan untuk efisiensi
+        $dataGender = [];
+        $dataLayanan = [];
+        $dataPendidikan = [];
 
         return view('admin.laporan', compact(
             'totalPengunjung',
@@ -115,63 +271,34 @@ class AdminController extends Controller
         ));
     }
 
+    // ----------------------------------------------------
 
     // ============================
-    // GOOGLE SHEETS
+    // DOWNLOAD (AMBIL SEMUA DATA DARI SHEET)
     // ============================
-
-    private function getGoogleSheetsService()
-    {
-        $client = new Client();
-
-        // ============================
-        // UPDATED SECTION (fix path credential)
-        // ============================
-        $credentialsFile = Config::get('app.google_service_account_credentials');
-
-        if (empty($credentialsFile)) {
-            throw new \Exception("GOOGLE_SERVICE_ACCOUNT_CREDENTIALS tidak ditemukan di config.");
-        }
-
-        $credentialPath = storage_path('app/' . $credentialsFile);
-
-        if (!file_exists($credentialPath)) {
-            throw new \Exception("File credential tidak ditemukan di: " . $credentialPath);
-        }
-
-        $client->setAuthConfig($credentialPath);
-        $client->setScopes([Sheets::SPREADSHEETS]);
-
-        return new Sheets($client);
-    }
-
 
     public function downloadPengunjung()
     {
         try {
             $service = $this->getGoogleSheetsService();
-            $spreadsheetId = Config::get('app.google_sheet_id_tamu');
+            $spreadsheetId = $this->sheetIdPengunjung;
 
-            if (empty($spreadsheetId)) {
-                throw new \Exception("GOOGLE_SHEET_ID_TAMU tidak ditemukan di config.");
+            // Ambil SEMUA data dari Sheet (termasuk header)
+            $range = $this->sheetNamePengunjung . '!A:G'; 
+            $response = $service->spreadsheets_values->get($spreadsheetId, $range);
+            $data = $response->getValues();
+
+            if (empty($data)) {
+                 throw new \Exception("Data Pengunjung kosong di Google Sheet.");
             }
 
-            // ============================
-            // UPDATED SECTION (header + mulai A1)
-            // ============================
-
-            $data = Pengunjung::select('tanggal', 'nama_nip', 'instansi', 'layanan', 'keperluan', 'no_hp', 'created_at')
-                ->get()
-                ->toArray();
-
-            $header = ['Tanggal', 'Nama/NIP', 'Instansi', 'Layanan', 'Keperluan', 'No HP', 'Waktu Input'];
-            array_unshift($data, $header);
-
+            // --- Tulis ulang ke Sheet yang sama untuk 'sinkronisasi' (tidak perlu, tapi mengikuti pola update) ---
             $body = new \Google\Service\Sheets\ValueRange(['values' => $data]);
-
+            
+            // Gunakan update untuk menimpa A1 dengan data yang sudah diambil
             $service->spreadsheets_values->update(
                 $spreadsheetId,
-                'BukuTamu!A1',
+                $this->sheetNamePengunjung . '!A1',
                 $body,
                 ['valueInputOption' => 'USER_ENTERED']
             );
@@ -179,7 +306,7 @@ class AdminController extends Controller
             $sheetUrl = 'https://docs.google.com/spreadsheets/d/' . $spreadsheetId;
 
             return redirect()->route('admin.laporan')
-                ->with('success', "Data Pengunjung berhasil diupdate! <a href='{$sheetUrl}' target='_blank'>Klik untuk unduh</a>");
+                ->with('success', "Data Pengunjung berhasil di-sinkronisasi dari Sheet. <a href='{$sheetUrl}' target='_blank'>Klik untuk lihat/unduh</a>");
 
         } catch (\Exception $e) {
             return redirect()->route('admin.laporan')
@@ -192,36 +319,24 @@ class AdminController extends Controller
     {
         try {
             $service = $this->getGoogleSheetsService();
-            $spreadsheetId = Config::get('app.google_sheet_id_skm');
+            $spreadsheetId = $this->sheetIdSkm;
 
-            if (empty($spreadsheetId)) {
-                throw new \Exception("GOOGLE_SHEET_ID_SKM tidak ditemukan di config.");
+            // Ambil SEMUA data dari Sheet (termasuk header)
+            $range = $this->sheetNameSkm . '!A:P'; // A-P mencakup semua data SKM
+            $response = $service->spreadsheets_values->get($spreadsheetId, $range);
+            $data = $response->getValues();
+
+             if (empty($data)) {
+                 throw new \Exception("Data SKM kosong di Google Sheet.");
             }
-
-            // ============================
-            // UPDATED SECTION (header + mulai A1)
-            // ============================
-
-            $data = SurveiKepuasan::select([
-                'usia', 'jenis_kelamin', 'pendidikan_terakhir', 'pekerjaan', 'jenis_layanan_diterima',
-                'q1_persyaratan', 'q2_prosedur', 'q3_waktu', 'q4_biaya', 'q5_produk',
-                'q6_kompetensi_petugas', 'q7_perilaku_petugas', 'q8_penanganan_pengaduan', 'q9_sarana',
-                'saran_masukan', 'created_at'
-            ])->get()->toArray();
-
-            $header = [
-                'Usia', 'Jenis Kelamin', 'Pendidikan', 'Pekerjaan', 'Layanan',
-                'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9',
-                'Saran', 'Waktu Input'
-            ];
-
-            array_unshift($data, $header);
-
+            
+            // --- Tulis ulang ke Sheet yang sama ---
             $body = new \Google\Service\Sheets\ValueRange(['values' => $data]);
 
+            // Gunakan update untuk menimpa A1 dengan data yang sudah diambil
             $service->spreadsheets_values->update(
                 $spreadsheetId,
-                'DataSKM!A1',
+                $this->sheetNameSkm . '!A1',
                 $body,
                 ['valueInputOption' => 'USER_ENTERED']
             );
@@ -229,12 +344,42 @@ class AdminController extends Controller
             $sheetUrl = 'https://docs.google.com/spreadsheets/d/' . $spreadsheetId;
 
             return redirect()->route('admin.laporan')
-                ->with('success', "Data SKM berhasil diupdate! <a href='{$sheetUrl}' target='_blank'>Klik untuk unduh</a>");
+                ->with('success', "Data SKM berhasil di-sinkronisasi dari Sheet. <a href='{$sheetUrl}' target='_blank'>Klik untuk lihat/unduh</a>");
 
         } catch (\Exception $e) {
             return redirect()->route('admin.laporan')
                 ->with('error', "Gagal update SKM: " . $e->getMessage());
         }
     }
+    
+    // ----------------------------------------------------
 
+    // ============================
+    // GOOGLE SHEETS HELPER
+    // ============================
+
+    private function getGoogleSheetsService()
+    {
+        $client = new Client();
+        $credentialsFile = Config::get('app.google_service_account_credentials');
+
+        if (empty($credentialsFile)) {
+            $credentialsFile = 'credentials.json'; 
+        }
+
+        $credentialPath = storage_path('app/' . $credentialsFile);
+
+        if (!file_exists($credentialPath)) {
+            if(file_exists(base_path($credentialsFile))) {
+                $credentialPath = base_path($credentialsFile);
+            } else {
+                throw new \Exception("File credential tidak ditemukan.");
+            }
+        }
+
+        $client->setAuthConfig($credentialPath);
+        $client->setScopes([Sheets::SPREADSHEETS]);
+
+        return new Sheets($client);
+    }
 }

@@ -22,14 +22,49 @@ class PengunjungController extends Controller
         $currentDate = Carbon::now();
         $currentMonthYear = $currentDate->translatedFormat('F Y'); 
         
-        // Cek apakah database bisa diakses (untuk menghindari error di Vercel)
+        // ID Spreadsheet Anda
+        $spreadsheetId = '1XKirvKDNNnwcauLTxHebHCcHbAdEHLZdL5caoB3HiVE';
+        $range = 'BukuTamu!A:F'; // Ambil kolom A sampai F (Tanggal s/d No HP)
+
+        $pengunjung = collect([]); // Default kosong
+
         try {
-            $pengunjung = Pengunjung::whereMonth('tanggal', $currentDate->month)
-                                    ->whereYear('tanggal', $currentDate->year)
-                                    ->latest()
-                                    ->get();
+            $service = $this->getGoogleSheetsService();
+            $response = $service->spreadsheets_values->get($spreadsheetId, $range);
+            $values = $response->getValues();
+
+            if (!empty($values)) {
+                // Hapus Header (baris pertama) jika ada teks 'Tanggal'
+                if (isset($values[0][0]) && $values[0][0] == 'Tanggal') {
+                    array_shift($values);
+                }
+
+                // Balik urutan array agar yang paling baru (bawah) jadi paling atas
+                $values = array_reverse($values);
+
+                // Mapping array Google Sheets ke Collection Laravel agar mudah di View
+                // Urutan Index sesuai function store(): 
+                // 0=Tanggal, 1=Nama, 2=Instansi, 3=Layanan, 4=Keperluan, 5=NoHP
+                foreach ($values as $row) {
+                    // Filter: hanya ambil bulan ini (Opsional, jika ingin semua data hapus if ini)
+                    // Asumsi format tanggal di excel: YYYY-MM-DD
+                    $rowDate = isset($row[0]) ? Carbon::parse($row[0]) : null;
+
+                    if($rowDate && $rowDate->month == $currentDate->month && $rowDate->year == $currentDate->year) {
+                        $pengunjung->push([
+                            'tanggal'   => $row[0] ?? now(),
+                            'nama_nip'  => $row[1] ?? '-',
+                            'instansi'  => $row[2] ?? '-',
+                            'layanan'   => $row[3] ?? '-',
+                            'keperluan' => $row[4] ?? '-',
+                        ]);
+                    }
+                }
+            }
+
         } catch (\Exception $e) {
-            // Jika database error/tidak bisa dibaca, kembalikan collection kosong
+            // Jika gagal koneksi ke Google, biarkan kosong atau log error
+            // \Log::error($e->getMessage());
             $pengunjung = collect([]);
         }
         

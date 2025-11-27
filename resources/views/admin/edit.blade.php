@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Banyak Pengunjung | Disdik Kab.Banjar')
+@section('title', 'Edit Banyak Pengunjung | Admin')
 
 @section('content')
 <style>
@@ -35,23 +35,6 @@ body {
 }
 .logo-header img { height: 50px; }
 
-.btn-keluar {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    background: linear-gradient(135deg, #EF4444 0%, #b91c1c 100%);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 0 #991b1b;
-    transition: all 0.1s;
-}
-.btn-keluar:active { transform: translateY(4px); box-shadow: none; }
-
 /* ================= DASHBOARD MAIN (3D CARD) ================= */
 .container-dashboard {
     display: flex;
@@ -78,7 +61,7 @@ body {
     border: 1px solid rgba(255,255,255,0.6);
     border-bottom: 6px solid #e1e8f0;
     
-    min-height: 620px;
+    height: 620px; /* Tinggi fix agar scroll berfungsi */
     width: 100%;
 }
 
@@ -92,7 +75,8 @@ body {
     gap: 20px;
     background-color: #F8FBFF;
     z-index: 1;
-    min-width: 0; /* Agar konten tidak mendorong layout */
+    min-width: 0;
+    height: 100%; /* Penting untuk scroll */
 }
 
 /* Title Card */
@@ -129,9 +113,17 @@ body {
 /* === FORM CONTAINER === */
 .form-container {
     flex-grow: 1;
-    overflow-y: auto;
+    overflow-y: auto; /* Scroll vertikal */
     padding-right: 10px;
+    /* Custom Scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #f1f1f1;
 }
+
+.form-container::-webkit-scrollbar { width: 6px; }
+.form-container::-webkit-scrollbar-track { background: #f1f1f1; }
+.form-container::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+
 
 /* EDIT CARD (INSET PANEL) */
 .edit-card {
@@ -140,12 +132,10 @@ body {
     padding: 20px 25px;
     margin-bottom: 25px;
     border: 1px solid #e0e6ed;
-    /* Efek Timbul Halus */
     box-shadow: 0 4px 6px rgba(0,0,0,0.02);
     position: relative;
 }
 
-/* Label Header dalam card untuk membedakan data */
 .card-header-label {
     font-size: 0.85rem;
     font-weight: 800;
@@ -165,7 +155,7 @@ body {
     font-size: 0.9rem;
 }
 
-/* INPUT FIELDS (INSET EFFECT) */
+/* INPUT FIELDS */
 .edit-card input,
 .edit-card select,
 .edit-card textarea {
@@ -178,7 +168,6 @@ body {
     transition: all 0.2s;
     background-color: #f8fafc;
     font-size: 0.95rem;
-    /* Bayangan dalam agar terlihat cekung */
     box-shadow: inset 0 2px 5px rgba(0,0,0,0.03); 
 }
 
@@ -191,7 +180,7 @@ body {
     transform: translateY(-2px);
 }
 
-/* TOMBOL SIMPAN (3D PUSH) */
+/* TOMBOL SIMPAN */
 .btn-simpan-semua {
     background: linear-gradient(135deg, #2bd9a6 0%, #17a078 100%);
     border: none;
@@ -207,25 +196,18 @@ body {
     transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     top: 0;
-    /* KUNCI EFEK 3D */
-    box-shadow: 
-        0 6px 0 #138563, /* Sisi tebal tombol */
-        0 12px 20px rgba(43, 217, 166, 0.3); /* Bayangan lantai */
+    box-shadow: 0 6px 0 #138563, 0 12px 20px rgba(43, 217, 166, 0.3);
 }
 
 .btn-simpan-semua:hover {
     transform: translateY(-2px);
     background: linear-gradient(135deg, #3dfcd1 0%, #21e0b3 100%);
-    box-shadow: 
-        0 8px 0 #138563, 
-        0 15px 25px rgba(43, 217, 166, 0.4);
+    box-shadow: 0 8px 0 #138563, 0 15px 25px rgba(43, 217, 166, 0.4);
 }
 
 .btn-simpan-semua:active {
     top: 6px; 
-    box-shadow: 
-        0 0 0 #138563, 
-        0 2px 5px rgba(43, 217, 166, 0.3);
+    box-shadow: 0 0 0 #138563, 0 2px 5px rgba(43, 217, 166, 0.3);
 }
 
 /* ================= RIGHT PANEL (IMAGE) ================= */
@@ -241,8 +223,6 @@ body {
     align-items: flex-start;
     padding: 80px 40px 40px; 
     position: relative;
-    
-    /* Bayangan pemisah */
     box-shadow: inset 15px 0 20px -10px rgba(0,0,0,0.15);
     z-index: 2;
     flex-shrink: 0;
@@ -270,26 +250,15 @@ body {
 
 /* ================= RESPONSIVE MODE ==================== */
 @media (max-width: 992px) {
-    .dashboard-card { flex-direction: column; min-height: auto; }
-
-    /* Mobile: Image on Top */
+    .dashboard-card { flex-direction: column; height: auto; }
     .dashboard-right { 
-        order: 1;
-        height: 260px; 
-        padding-top: 40px; 
+        order: 1; height: 260px; padding-top: 40px; 
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        border-bottom-right-radius: 0;
-        border-radius: 20px 20px 0 0;
-        width: 100%;
-        min-width: unset;
+        border-radius: 20px 20px 0 0; width: 100%; min-width: unset;
     }
     .dashboard-right h1 { font-size: 1.8rem; margin-top: 10px; }
-    
     .dashboard-left { order: 2; padding: 30px 20px; }
     .title-card { font-size: 1.8rem; }
-    .container-dashboard { margin-top: 10px; }
-    .logo-header { top: 10px; right: 10px; }
-    .logo-header img { height: 40px; }
 }
 </style>
 
@@ -316,18 +285,26 @@ body {
             </div>
 
             <div class="form-container">
-                <form action="{{ route('pengunjung.updateMultiple') }}" method="POST">
+                {{-- PERBAIKAN: Gunakan nama route yang benar sesuai web.php --}}
+                <form action="{{ route('admin.pengunjung.updateMultiple') }}" method="POST">
                     @csrf
 
                     @foreach($items as $item)
                     <div class="edit-card">
-                        {{-- Header kecil untuk membedakan setiap pengunjung --}}
-                        <span class="card-header-label">Data Pengunjung: {{ $item->nama_nip }}</span>
+                        <span class="card-header-label">Data #{{ $loop->iteration }} - {{ $item->nama_nip }}</span>
 
+                        {{-- Hidden ID untuk identifikasi baris --}}
                         <input type="hidden" name="pengunjung[{{ $item->id }}][id]" value="{{ $item->id }}">
 
                         <label>Tanggal</label>
-                        <input type="date" name="pengunjung[{{ $item->id }}][tanggal]" value="{{ $item->tanggal }}">
+                        {{-- Gunakan type="text" agar format string dari Google Sheets (misal: 25/11/2024) tidak hilang. --}}
+                        {{-- onfocus mengubahnya jadi datepicker saat diklik user --}}
+                        <input type="text" 
+                               name="pengunjung[{{ $item->id }}][tanggal]" 
+                               value="{{ $item->tanggal }}" 
+                               placeholder="Format: YYYY-MM-DD atau sesuai Sheet"
+                               onfocus="(this.type='date')"
+                               onblur="(this.type='text')">
 
                         <label>Nama / NIP</label>
                         <input type="text" name="pengunjung[{{ $item->id }}][nama_nip]" value="{{ $item->nama_nip }}">
@@ -346,7 +323,7 @@ body {
                     </div>
                     @endforeach
 
-                    <button type="submit" class="btn-simpan-semua">Simpan Semua</button>
+                    <button type="submit" class="btn-simpan-semua">Simpan Semua Perubahan</button>
                 </form>
             </div>
         </div>

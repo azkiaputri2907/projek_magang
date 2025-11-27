@@ -2,66 +2,203 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pengunjung;
 use Illuminate\Http\Request;
 use Google\Client;
 use Google\Service\Sheets;
+use Illuminate\Support\Facades\Config;
 
 class AdminPengunjungController extends Controller
 {
+    private $sheetId;
+    private $sheetName = 'BukuTamu'; // Pastikan sesuai nama Tab di Google Sheet
+
+    public function __construct()
+    {
+        // Ambil ID dari Config atau ENV
+        $this->sheetId = Config::get('app.google_sheet_id_tamu', env('GOOGLE_SHEET_ID_TAMU'));
+    }
+
+    // ==========================================
+    // READ (INDEX) - TAMPILKAN SEMUA DATA
+    // ==========================================
     public function index()
     {
-        $pengunjung = Pengunjung::latest()->get();
+        try {
+            $service = $this->getGoogleSheetsService();
+            // Ambil data dari baris ke-2 (asumsi baris 1 header) sampai kolom G
+            $range = $this->sheetName . '!A2:G'; 
+            $response = $service->spreadsheets_values->get($this->sheetId, $range);
+            $rows = $response->getValues();
+
+            $data = [];
+            if (!empty($rows)) {
+                foreach ($rows as $index => $row) {
+                    // ID = Index Array + 2 (karena Excel mulai baris 1, dan data mulai baris 2)
+                    // ID ini digunakan untuk referensi Hapus/Edit nanti
+                    $rowIndex = $index + 2; 
+
+                    $data[] = (object) [
+                        'id' => $rowIndex,
+                        'tanggal' => $row[6] ?? ($row[0] ?? '-'), // Ambil Waktu Input (index 6 / Kolom G)
+                        'nama_nip' => $row[1] ?? '-',
+                        'instansi' => $row[2] ?? '-',
+                        'layanan' => $row[3] ?? '-',
+                        'keperluan' => $row[4] ?? '-',
+                        'no_hp' => $row[5] ?? '-',
+                        'created_at' => $row[6] ?? '-', // created_at tetap Waktu Input
+                    ];
+                }
+            }
+
+            // Urutkan data terbaru (baris paling bawah di sheet) ke atas
+            $data = array_reverse($data);
+
+            // Ubah ke Collection agar mudah dihitung di Blade (tanpa pagination)
+            $pengunjung = collect($data);
+
+        } catch (\Exception $e) {
+            $pengunjung = collect([]);
+            session()->flash('error', 'Gagal koneksi ke Google Sheets: ' . $e->getMessage());
+        }
+
         return view('admin.data_pengunjung', compact('pengunjung'));
     }
 
+    // ==========================================
+    // DELETE (BATCH DELETE)
+    // ==========================================
     public function batchDelete(Request $request)
     {
-        $ids = $request->ids;
+        $ids = $request->ids; // Array nomor baris (misal: [5, 3, 10])
 
-        if ($ids) {
-            Pengunjung::whereIn('id', $ids)->delete();
-
-            // 🔁 Sinkronkan ulang ke Google Sheets
-            $this->syncToGoogleSheets();
-
-            return back()->with('success', 'Data berhasil dihapus dan disinkronkan ke Google Sheets.');
+        if (!$ids) {
+            return back()->with('error', 'Tidak ada data yang dipilih.');
         }
 
-        return back()->with('error', 'Tidak ada data yang dipilih.');
+        try {
+            $service = $this->getGoogleSheetsService();
+            
+            // Dapatkan SheetId (GID) numeric
+            $sheetIdNumeric = $this->getSheetIdByName($service, $this->sheetName);
+
+            // PENTING: Urutkan ID dari BESAR ke KECIL.
+            // Jika hapus baris 3, baris 4 naik jadi 3. Hapus dari bawah aman.
+            rsort($ids);
+
+            $requests = [];
+            foreach ($ids as $rowIndex) {
+                $startIndex = $rowIndex - 1; // API index 0-based
+
+                $requests[] = new \Google\Service\Sheets\Request([
+                    'deleteDimension' => [
+                        'range' => [
+                            'sheetId' => $sheetIdNumeric,
+                            'dimension' => 'ROWS',
+                            'startIndex' => $startIndex,
+                            'endIndex' => $startIndex + 1
+                        ]
+                    ]
+                ]);
+            }
+
+            $batchUpdateRequest = new \Google\Service\Sheets\BatchUpdateSpreadsheetRequest([
+                'requests' => $requests
+            ]);
+
+            $service->spreadsheets->batchUpdate($this->sheetId, $batchUpdateRequest);
+
+            return back()->with('success', 'Data berhasil dihapus dari Google Sheets.');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menghapus: ' . $e->getMessage());
+        }
     }
 
+    // ==========================================
+    // EDIT (FORM)
+    // ==========================================
     public function editMultiple(Request $request)
     {
         $ids = explode(',', $request->ids);
-        $items = Pengunjung::whereIn('id', $ids)->get();
+        
+        $service = $this->getGoogleSheetsService();
+        $items = [];
+
+        // Fetch data spesifik berdasarkan nomor baris untuk diedit
+        foreach ($ids as $rowIndex) {
+            $range = $this->sheetName . "!A{$rowIndex}:G{$rowIndex}";
+            $response = $service->spreadsheets_values->get($this->sheetId, $range);
+            $row = $response->getValues()[0] ?? [];
+
+            if (!empty($row)) {
+                $items[] = (object) [
+                    'id'        => $rowIndex,
+                    'tanggal'   => $row[0] ?? '',
+                    'nama_nip'  => $row[1] ?? '',
+                    'instansi'  => $row[2] ?? '',
+                    'layanan'   => $row[3] ?? '',
+                    'keperluan' => $row[4] ?? '',
+                    'no_hp'     => $row[5] ?? '',
+                ];
+            }
+        }
+
         return view('admin.edit', compact('items'));
     }
 
+    // ==========================================
+    // UPDATE (ACTION)
+    // ==========================================
     public function updateMultiple(Request $request)
     {
         $data = $request->input('pengunjung', []);
+        
+        try {
+            $service = $this->getGoogleSheetsService();
+            $params = ['valueInputOption' => 'USER_ENTERED'];
 
-        foreach ($data as $id => $fields) {
-            Pengunjung::where('id', $id)->update($fields);
+            foreach ($data as $rowIndex => $fields) {
+                // Construct array sesuai urutan kolom sheet
+                $values = [
+                    [
+                        $fields['tanggal'],
+                        $fields['nama_nip'],
+                        $fields['instansi'],
+                        $fields['layanan'],
+                        $fields['keperluan'],
+                        $fields['no_hp'],
+                        // created_at tidak diubah, jadi tidak dimasukkan ke array update
+                    ]
+                ];
+
+                // Update range spesifik (Kolom A s/d F)
+                $range = $this->sheetName . "!A{$rowIndex}:F{$rowIndex}";
+                $body = new \Google\Service\Sheets\ValueRange(['values' => $values]);
+                
+                $service->spreadsheets_values->update($this->sheetId, $range, $body, $params);
+            }
+
+            return redirect()->route('admin.pengunjung')->with('success', 'Data Google Sheets berhasil diperbarui.');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal update: ' . $e->getMessage());
         }
-
-        // 🔁 Sinkronkan ulang ke Google Sheets
-        $this->syncToGoogleSheets();
-
-        return redirect()->route('admin.pengunjung')->with('success', 'Data berhasil diperbarui dan disinkronkan ke Google Sheets.');
     }
 
-    // ================= GOOGLE SHEETS ==================
-
+    // ==========================================
+    // HELPER / SERVICE
+    // ==========================================
     private function getGoogleSheetsService()
     {
         $client = new Client();
-
-        $credentialPath = storage_path('app/' . env('GOOGLE_SERVICE_ACCOUNT_CREDENTIALS'));
+        // Cek file credentials
+        $credentialFile = env('GOOGLE_SERVICE_ACCOUNT_CREDENTIALS', 'credentials.json');
+        $credentialPath = storage_path('app/' . $credentialFile);
 
         if (!file_exists($credentialPath)) {
-            throw new \Exception("File credentials tidak ditemukan di: " . $credentialPath);
+             // Coba path root jika di storage tidak ada
+             $credentialPath = base_path($credentialFile);
+             if(!file_exists($credentialPath)) throw new \Exception("File credentials tidak ditemukan.");
         }
 
         $client->setAuthConfig($credentialPath);
@@ -70,52 +207,14 @@ class AdminPengunjungController extends Controller
         return new Sheets($client);
     }
 
-    private function syncToGoogleSheets()
+    private function getSheetIdByName($service, $sheetName)
     {
-        try {
-            $service = $this->getGoogleSheetsService();
-            $spreadsheetId = env('GOOGLE_SHEET_ID_TAMU');
-            $range = 'BukuTamu!A1';
-
-            $pengunjung = Pengunjung::select(
-                'tanggal',
-                'nama_nip',
-                'instansi',
-                'layanan',
-                'keperluan',
-                'no_hp',
-                'created_at'
-            )->get();
-
-            // Header
-            $values = [
-                ['Tanggal', 'Nama/NIP', 'Instansi', 'Layanan', 'Keperluan', 'No. HP', 'Waktu Input']
-            ];
-
-            foreach ($pengunjung as $item) {
-                $values[] = [
-                    $item->tanggal,
-                    $item->nama_nip,
-                    $item->instansi,
-                    $item->layanan,
-                    $item->keperluan,
-                    $item->no_hp,
-                    $item->created_at
-                ];
+        $spreadsheet = $service->spreadsheets->get($this->sheetId);
+        foreach ($spreadsheet->getSheets() as $sheet) {
+            if ($sheet->getProperties()->getTitle() === $sheetName) {
+                return $sheet->getProperties()->getSheetId();
             }
-
-            // Kosongkan data lama
-            $clearRequest = new \Google\Service\Sheets\ClearValuesRequest();
-            $service->spreadsheets_values->clear($spreadsheetId, $range, $clearRequest);
-
-            // Update data baru
-            $body = new \Google\Service\Sheets\ValueRange(['values' => $values]);
-            $params = ['valueInputOption' => 'USER_ENTERED'];
-
-            $service->spreadsheets_values->update($spreadsheetId, $range, $body, $params);
-        } catch (\Throwable $e) {
-            // Aman tanpa Log facade, langsung echo ke error log bawaan PHP
-            error_log('Gagal sinkron ke Google Sheets: ' . $e->getMessage());
         }
+        return 0;
     }
 }

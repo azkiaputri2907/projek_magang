@@ -7,10 +7,10 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminPengunjungController;
 use App\Http\Controllers\AdminSkmController;
 
+// ====================================================
+// RUTE PENGUNJUNG (FRONT END)
+// ====================================================
 
-// --- Rute Pengunjung (Sesuai Blade yang Dibuat) ---
-
-// Halaman Awal
 Route::get('/', [PengunjungController::class, 'onboard'])->name('onboard');
 
 // Buku Tamu
@@ -25,54 +25,58 @@ Route::prefix('buku-tamu')->group(function () {
 Route::prefix('survey')->group(function () {
     Route::get('/ajakan', [SurveyController::class, 'ajakan'])->name('survey.ajakan');
     Route::get('/data-diri', [SurveyController::class, 'showDataDiriForm'])->name('survey.data-diri');
-    Route::get('/layanan', [SurveyController::class, 'showLayananForm'])->name('survey.layanan'); // Form Bagian 2
-    Route::get('/petugas', [SurveyController::class, 'showPetugasForm'])->name('survey.petugas'); // Form Bagian 3
+    Route::get('/layanan', [SurveyController::class, 'showLayananForm'])->name('survey.layanan'); 
+    Route::get('/petugas', [SurveyController::class, 'showPetugasForm'])->name('survey.petugas'); 
     Route::post('/selesai', [SurveyController::class, 'store'])->name('survey.store');
     Route::get('/selesai', [SurveyController::class, 'thankYou'])->name('survey.thank-you');
 });
 
 
-// --- Rute Admin ---
+// ====================================================
+// RUTE ADMIN (BACK END)
+// ====================================================
+
 Route::prefix('admin')->group(function () {
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/pengunjung', [AdminPengunjungController::class, 'index'])->name('admin.pengunjung');
-
-        // Batch actions
-        Route::post('/pengunjung/batch-delete', [AdminPengunjungController::class, 'batchDelete'])->name('pengunjung.batchDelete');
-        Route::get('/pengunjung/edit-multiple', [AdminPengunjungController::class, 'editMultiple'])->name('pengunjung.editMultiple');
-        Route::post('/pengunjung/update-multiple', [AdminPengunjungController::class, 'updateMultiple'])->name('pengunjung.updateMultiple');
-    });
-
+    
+    // Auth Routes
     Route::get('/login', [AdminController::class, 'showLoginForm'])->name('admin.login');
     Route::post('/login', [AdminController::class, 'login']);
     Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
 
-    // Group Rute yang memerlukan autentikasi
+    // Group Middleware Auth
     Route::middleware(['auth'])->group(function () {
+        
+        // --- DASHBOARD UTAMA ---
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
-        Route::get('/pengunjung', [AdminController::class, 'dataPengunjung'])->name('admin.pengunjung');
+        // --- MANAJEMEN PENGUNJUNG ---
+        Route::get('/pengunjung', [AdminPengunjungController::class, 'index'])->name('admin.pengunjung');
+        Route::post('/pengunjung/batch-delete', [AdminPengunjungController::class, 'batchDelete'])->name('admin.pengunjung.batchDelete');
+        Route::get('/pengunjung/edit-multiple', [AdminPengunjungController::class, 'editMultiple'])->name('admin.pengunjung.editMultiple');
+        Route::post('/pengunjung/update-multiple', [AdminPengunjungController::class, 'updateMultiple'])->name('admin.pengunjung.updateMultiple');
 
+        // --- MANAJEMEN SKM (READ - AdminController) ---
+        // 1. Tampilan Data Demografi
         Route::get('/skm', [AdminController::class, 'dataSkmDemografi'])->name('admin.skm');
+        // 2. Tampilan Data Jawaban/Pertanyaan
         Route::get('/skm/pertanyaan', [AdminController::class, 'dataSkmPertanyaan'])->name('admin.skm.pertanyaan');
 
-// === DATA SKM: EDIT & DELETE (Menggunakan AdminSkmController) ===
-        // Untuk Edit/Update
+        // --- MANAJEMEN SKM (CRUD - AdminSkmController) ---
+        
+        // A. CRUD dari Halaman Demografi (Default)
         Route::get('/skm/{id}/edit', [AdminSkmController::class, 'edit'])->name('admin.skm.edit'); 
         Route::put('/skm/{id}', [AdminSkmController::class, 'update'])->name('admin.skm.update');
-        // Untuk Hapus
         Route::delete('/skm/{id}', [AdminSkmController::class, 'destroy'])->name('admin.skm.delete');
         
-        // Anda juga perlu mengarahkan rute edit/delete di dataSkmPertanyaan ke controller baru ini:
+        // B. CRUD dari Halaman Jawaban/Pertanyaan (Agar URL rapi)
+        // Controller tetap sama, hanya URL dan Name yang membedakan agar JS di View berfungsi
         Route::get('/skm/jawaban/{id}/edit', [AdminSkmController::class, 'edit'])->name('admin.skm.jawaban.edit'); 
         Route::put('/skm/jawaban/{id}', [AdminSkmController::class, 'update'])->name('admin.skm.jawaban.update'); 
         Route::delete('/skm/jawaban/{id}', [AdminSkmController::class, 'destroy'])->name('admin.skm.jawaban.delete');
 
+        // --- LAPORAN & DOWNLOAD ---
         Route::get('/laporan', [AdminController::class, 'laporan'])->name('admin.laporan');
-        // DOWNLOAD GOOGLE SHEETS
-        Route::get('/laporan/download-pengunjung', [AdminController::class, 'downloadPengunjung'])
-            ->name('laporan.download_pengunjung');
-
-        Route::get('/laporan/download-skm', [AdminController::class, 'downloadSkm'])
-            ->name('laporan.download_skm');    });
+        Route::get('/laporan/download-pengunjung', [AdminController::class, 'downloadPengunjung'])->name('laporan.download_pengunjung');
+        Route::get('/laporan/download-skm', [AdminController::class, 'downloadSkm'])->name('laporan.download_skm');
+    });
 });

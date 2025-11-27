@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Data Pengunjung | Disdik Kab.Banjar')
+@section('title', 'Data Pengunjung | Admin')
 
 @section('content')
 <style>
@@ -33,7 +33,6 @@ body {
     z-index: 100;
     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
-
 .logo-header img { height: 50px; }
 
 /* === DASHBOARD CONTENT (EFEK 3D CARD) === */
@@ -54,7 +53,7 @@ body {
     background-color: #fff;
     border-radius: 20px;
     overflow: hidden;
-    height: 620px; /* Sedikit lebih tinggi untuk tabel */
+    height: 620px; 
     width: 100%;
     
     /* EFEK TIMBUL: Shadow Berlapis & Border Tebal Bawah */
@@ -77,8 +76,6 @@ body {
     flex-direction: column;
     position: relative;
     padding: 80px 40px 40px;
-    
-    /* Bayangan pemisah */
     box-shadow: 5px 0 15px rgba(0,0,0,0.1); 
     z-index: 2;
 }
@@ -102,7 +99,6 @@ body {
     text-shadow: 0 4px 8px rgba(0,0,0,0.6);
     text-align: center;
 }
-
 .dashboard-left-image h1 span { color: #30E3BC; }
 
 /* ================= RIGHT PANEL (KONTEN) ================= */
@@ -128,7 +124,6 @@ body {
     gap: 15px;
     text-shadow: 0 2px 3px rgba(0,0,0,0.05);
 }
-
 .title-card span { color: #30E3BC; }
 
 .menu-icon {
@@ -151,6 +146,8 @@ body {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    /* Pastikan tidak overflow keluar card utama */
+    min-height: 0; 
 }
 
 /* DATA CARD (Container Tabel) */
@@ -161,9 +158,7 @@ body {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    overflow: hidden;
-
-    /* Efek Timbul Inset Halus */
+    overflow: hidden; /* Penting untuk scroll dalam card */
     box-shadow: 
         0 4px 6px rgba(0,0,0,0.02),
         inset 0 0 0 1px #e0e6ed;
@@ -174,11 +169,16 @@ body {
     display: flex;
     padding: 12px 10px;
     font-weight: 700;
-    background: linear-gradient(to right, #007BFF, #0056b3); /* Gradient Biru */
+    background: linear-gradient(to right, #007BFF, #0056b3);
     color: #fff;
     font-size: .9rem;
     box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
-    z-index: 2;
+    /* Sticky Header Properties */
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    /* Min-width agar header ikut lebar container saat di-scroll */
+    min-width: 1200px; /* <--- Diperlebar agar memicu scroll horizontal */
 }
 
 .data-table-row {
@@ -188,12 +188,10 @@ body {
     color: #444;
     font-size: .85rem;
     transition: background 0.2s;
+    /* Min-width agar row ikut lebar container saat di-scroll */
+    min-width: 1200px; /* <--- Diperlebar sama dengan header */
 }
-
-.data-table-row:hover {
-    background-color: #f0f7ff;
-}
-
+.data-table-row:hover { background-color: #f0f7ff; }
 .data-table-row:last-child { border-bottom: none; }
 
 /* Column Flex Properties */
@@ -203,7 +201,6 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
 .checkbox-col { flex: 0.1; min-width: 30px; display: flex; align-items: center; }
 .col-tanggal { flex: 1; min-width: 80px;} 
 .col-nama { flex: 2; min-width: 150px; font-weight: 600; color: #333; }
@@ -223,19 +220,45 @@ input[type="checkbox"] {
 /* Scroll Container */
 .tabel-container {
     flex-grow: 1;
-    overflow-y: auto;
-    padding-right: 6px;
+    /* Ubah ke auto agar bisa scroll X dan Y */
+    overflow: auto; 
+    padding-right: 0px; /* Reset padding right agar scrollbar rapi */
     background-color: #fff;
+    /* Custom Scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #f1f1f1;
 }
+
+.tabel-container::-webkit-scrollbar { width: 8px; height: 8px; }
+.tabel-container::-webkit-scrollbar-track { background: #f1f1f1; }
+.tabel-container::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
 
 /* Action Buttons (3D Push Buttons) */
 .action-buttons {
     padding: 15px 20px;
     display: flex;
-    justify-content: flex-end;
+    /* justify-content: space-between untuk memisahkan teks total dan tombol */
+    justify-content: space-between; 
+    align-items: center;
     gap: 15px;
     border-top: 1px solid #eee;
     background-color: #fafbfc;
+    min-height: 70px; /* Tinggi fix untuk tombol */
+    /* Z-index agar shadow header tidak tertutup saat scroll paling bawah (opsional) */
+    position: relative;
+    z-index: 11;
+}
+
+/* Total Data Text */
+.total-data-text {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.btn-group {
+    display: flex;
+    gap: 15px;
 }
 
 .btn-action {
@@ -270,79 +293,65 @@ input[type="checkbox"] {
 .btn-hapus:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #991b1b, 0 8px 15px rgba(239, 68, 68, 0.4); }
 .btn-hapus:active { top: 4px; box-shadow: 0 0 0 #991b1b, 0 2px 5px rgba(239, 68, 68, 0.3); }
 
-/* Tombol Keluar Sidebar (Merah) */
-.btn-keluar {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    background: linear-gradient(135deg, #EF4444 0%, #b91c1c 100%);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 0 #991b1b;
-    transition: all 0.1s;
-}
-.btn-keluar:active { transform: translateY(4px); box-shadow: none; }
-
-/* ================= RESPONSIVE MODE ==================== */
+/* Responsive */
 @media (max-width: 992px) {
     .dashboard-card { flex-direction: column; height: auto; }
-    
     .dashboard-left-image { 
-        order: 1;
-        height: 260px; 
-        padding-top: 40px; 
-        border-radius: 20px 20px 0 0; 
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        order: 1; height: 260px; padding-top: 40px; 
+        border-radius: 20px 20px 0 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
-    .dashboard-left-image h1 { font-size: 1.8rem; margin-top: 10px; }
-    
     .dashboard-right-content { order: 2; padding: 30px 20px; }
     .title-card { font-size: 1.8rem; }
     .container-dashboard { margin-top: 10px; }
     .logo-header { top: 10px; right: 10px; }
     .logo-header img { height: 40px; }
 }
-
 @media (max-width: 600px) {
-    .dashboard-left-image h1 { font-size: 1.5rem; }
-    .title-card { font-size: 1.5rem; }
-    
-    /* Header tabel responsif - sembunyikan kolom kurang penting */
-    .col-hp, .col-keperluan { display: none; } 
+    /* Di mobile, kita biarkan scroll horizontal bekerja, jadi tidak perlu display:none untuk kolom */
+    /* .col-hp, .col-keperluan { display: none; } */ 
     
     .data-table-header span, .data-table-row span { font-size: .75rem; }
-    .action-buttons { padding: 15px; gap: 10px; flex-direction: column; }
-    .btn-action { width: 100%; }
-    
-    .dashboard-card { border-radius: 15px; }
-    .dashboard-left-image { border-radius: 15px 15px 0 0; }
+    .action-buttons { flex-direction: row; justify-content: space-between; align-items: center; } 
+    .btn-action { padding: 10px 15px; font-size: 0.7rem; }
+    .btn-group { gap: 10px; }
 }
 </style>
 
+{{-- === HEADER LOGO === --}}
 <div class="logo-header">
     <img src="{{ asset('images/LOGO_KEMENTRIAN.png') }}" alt="Logo Kementrian">
     <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
 </div>
 
-{{-- === PANGGIL SIDEBAR DARI COMPONENT === --}}
+{{-- === SIDEBAR === --}}
 @include('components._sidebar')
 
-{{-- KONTEN UTAMA --}}
+{{-- === KONTEN UTAMA === --}}
 <div class="container-dashboard">
     <div class="dashboard-card">
         
+        {{-- PANEL KIRI --}}
         <div class="dashboard-left-image">
             <h1>Data <span>Pengunjung</span> Admin</h1>
         </div>
 
+        {{-- PANEL KANAN --}}
         <div class="dashboard-right-content">
             
+            {{-- ALERT NOTIFIKASI --}}
+            @if(session('success'))
+            <div style="background: #d1e7dd; color: #0f5132; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 0.9rem;">
+                {{ session('success') }}
+            </div>
+            @endif
+            @if(session('error'))
+            <div style="background: #f8d7da; color: #842029; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 0.9rem;">
+                {{ session('error') }}
+            </div>
+            @endif
+
             <div class="title-card">
+                {{-- ID menuToggle untuk trigger sidebar mobile --}}
                 <div class="menu-icon" id="menuToggle"><span></span><span></span><span></span></div>
                 Data <span>Pengunjung</span>
             </div>
@@ -350,35 +359,62 @@ input[type="checkbox"] {
             <div class="data-table-section">
                 
                 <div class="data-card">
-                    <div class="data-table-header">
-                        <span class="checkbox-col"><input type="checkbox" id="checkAll"></span>
-                        <span class="col-tanggal">Tanggal</span>
-                        <span class="col-nama">Nama / NIP</span>
-                        <span class="col-instansi">Instansi</span>
-                        <span class="col-layanan">Layanan</span>
-                        <span class="col-keperluan">Keperluan</span>
-                        <span class="col-hp">No. Hp</span>
-                    </div>
-
+                    
+                    {{-- FORM BATCH ACTION --}}
+                    {{-- Form moved to wrap entire content including header for logic consistency --}}
                     <form id="batchForm" method="POST" action="" style="display:flex; flex-direction:column; flex-grow:1; overflow:hidden;">
                         @csrf
+                        
+                        {{-- TABEL CONTAINER (Handles X and Y Scroll) --}}
                         <div class="tabel-container">
-                            @foreach($pengunjung as $item)
-                            <div class="data-table-row">
-                                <span class="checkbox-col"><input type="checkbox" name="ids[]" value="{{ $item->id }}"></span>
-                                <span class="col-tanggal">{{ $item->tanggal }}</span>
-                                <span class="col-nama">{{ $item->nama_nip }}</span>
-                                <span class="col-instansi">{{ $item->instansi }}</span>
-                                <span class="col-layanan">{{ $item->layanan }}</span>
-                                <span class="col-keperluan">{{ $item->keperluan }}</span>
-                                <span class="col-hp">{{ $item->no_hp }}</span>
+                            
+                            {{-- HEADER TABLE (Moved Inside Container & Made Sticky) --}}
+                            <div class="data-table-header">
+                                <span class="checkbox-col"><input type="checkbox" id="checkAll"></span>
+                                <span class="col-tanggal">Tanggal</span>
+                                <span class="col-nama">Nama / NIP</span>
+                                <span class="col-instansi">Instansi</span>
+                                <span class="col-layanan">Layanan</span>
+                                <span class="col-keperluan">Keperluan</span>
+                                <span class="col-hp">No. Hp</span>
                             </div>
-                            @endforeach
+
+                            {{-- DATA ROWS --}}
+                            @if($pengunjung->count() > 0)
+                                @foreach($pengunjung as $item)
+                                <div class="data-table-row">
+                                    {{-- Value checkbox = ID Baris Sheet (misal: 2, 5, 100) --}}
+                                    <span class="checkbox-col">
+                                        <input type="checkbox" name="ids[]" value="{{ $item->id }}">
+                                    </span>
+                                    
+                                    <span class="col-tanggal">{{ $item->tanggal }}</span>
+                                    <span class="col-nama">{{ $item->nama_nip }}</span>
+                                    <span class="col-instansi">{{ $item->instansi }}</span>
+                                    <span class="col-layanan">{{ $item->layanan }}</span>
+                                    <span class="col-keperluan">{{ $item->keperluan }}</span>
+                                    <span class="col-hp">{{ $item->no_hp }}</span>
+                                </div>
+                                @endforeach
+                            @else
+                                <div style="padding: 20px; text-align: center; color: #888; min-width: 1200px;">
+                                    <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 10px; color: #ddd;"></i>
+                                    <p>Data tidak ditemukan di Google Sheets.</p>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="action-buttons">
-                            <button type="button" class="btn-action btn-edit" id="batchEdit">Edit</button>
-                            <button type="button" class="btn-action btn-hapus" id="batchDelete">Hapus</button>
+                            {{-- Info Total Data (Pengganti Pagination) --}}
+                            <div class="total-data-text">
+                                Total: {{ $pengunjung->count() }} Data
+                            </div>
+
+                            {{-- BUTTONS --}}
+                            <div class="btn-group">
+                                <button type="button" class="btn-action btn-edit" id="batchEdit">Edit</button>
+                                <button type="button" class="btn-action btn-hapus" id="batchDelete">Hapus</button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -413,22 +449,21 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             batchEdit.style.pointerEvents = "none";
             batchDelete.style.pointerEvents = "none";
-            batchEdit.style.opacity = "0.6"; // Sedikit lebih terang dari 0.5
+            batchEdit.style.opacity = "0.6"; 
             batchDelete.style.opacity = "0.6";
             batchEdit.style.cursor = "not-allowed";
             batchDelete.style.cursor = "not-allowed";
-            // Hilangkan shadow saat disabled agar terlihat flat
             batchEdit.style.boxShadow = "none";
             batchDelete.style.boxShadow = "none";
         }
         
-        // Kembalikan shadow jika enabled (reset inline style)
         if(anyChecked) {
             batchEdit.style.boxShadow = "";
             batchDelete.style.boxShadow = "";
         }
     }
 
+    // Init state
     updateButtonState();
 
     checkAll.addEventListener('change', () => {
@@ -440,19 +475,27 @@ document.addEventListener('DOMContentLoaded', function() {
         cb.addEventListener('change', updateButtonState);
     });
 
+    // === ACTION HANDLERS ===
+    
+    // HAPUS
     batchDelete.addEventListener('click', () => {
         const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
         if(selected.length === 0) return alert('Pilih data dulu!');
-        if(confirm('Yakin mau hapus data yang dipilih?')) {
-            batchForm.action = "{{ route('pengunjung.batchDelete') }}";
+        
+        if(confirm('Yakin mau hapus ' + selected.length + ' data yang dipilih dari Google Sheets?')) {
+            // Arahkan form ke route batchDelete
+            batchForm.action = "{{ route('admin.pengunjung.batchDelete') }}"; 
             batchForm.submit();
         }
     });
 
+    // EDIT
     batchEdit.addEventListener('click', () => {
         const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
         if(selected.length === 0) return alert('Pilih data dulu!');
-        window.location.href = "{{ route('pengunjung.editMultiple') }}?ids=" + selected.join(',');
+        
+        // Redirect ke halaman edit dengan query string IDs
+        window.location.href = "{{ route('admin.pengunjung.editMultiple') }}?ids=" + selected.join(',');
     });
 });
 </script>

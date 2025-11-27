@@ -38,10 +38,6 @@ body {
 }
 .logo-header img { height: 50px; }
 
-/* CATATAN: CSS Sidebar dihapus dari sini karena sudah ada 
-   di dalam file components/_sidebar.blade.php 
-*/
-
 /* ================= DASHBOARD MAIN (3D CARD) ================= */
 .container-dashboard {
     display: flex;
@@ -332,7 +328,6 @@ body {
         {{-- KIRI (KONTEN) --}}
         <div class="dashboard-left">
             <div class="title-card">
-                {{-- ID menuToggle wajib ada agar script di sidebar berfungsi --}}
                 <div class="menu-icon" id="menuToggle">
                     <span></span><span></span><span></span>
                 </div>
@@ -354,6 +349,7 @@ body {
                         </div>
                     </div>
                     
+                    {{-- Link Unduh Excel Langsung dari Google Sheets --}}
                     <a href="https://docs.google.com/spreadsheets/d/1XKirvKDNNnwcauLTxHebHCcHbAdEHLZdL5caoB3HiVE/export?format=xlsx" 
                     class="btn-unduh" target="_blank">
                     <i class="fas fa-download" style="margin-right:5px;"></i> Unduh Excel
@@ -373,6 +369,7 @@ body {
                         </div>
                     </div>
                     
+                    {{-- Link Unduh Excel Langsung dari Google Sheets --}}
                     <a href="https://docs.google.com/spreadsheets/d/1iTmYnrKDmx3lmoIjoEqeAkSlHE0aePXF56SGFqfl6J0/export?format=xlsx" 
                     class="btn-unduh" target="_blank">
                     <i class="fas fa-download" style="margin-right:5px;"></i> Unduh Excel
@@ -396,9 +393,10 @@ body {
 // KONFIGURASI CHART.JS
 const donutColors = ['#30AADD', '#00917C', '#F9D923', '#F05454'];
 
-// Mengambil data dari controller, default ke 0 jika kosong
-const totalPengunjung = {{ $totalPengunjung ?? 0 }};
-const totalSkm = {{ $totalSkm ?? 0 }};
+// Mengambil data dari controller yang sudah dihitung dari Sheets
+// FIX: Gunakan tanda kutip dan Number() untuk menghindari Syntax Error jika Blade tidak dirender
+const totalPengunjung = Number("{{ $totalPengunjung ?? 0 }}");
+const totalSkm = Number("{{ $totalSkm ?? 0 }}");
 
 // Chart Pengunjung
 new Chart(document.getElementById('chartPengunjung'), {
