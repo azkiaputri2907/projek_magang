@@ -37,7 +37,7 @@ class AdminSkmController extends Controller
             // Asumsi Kolom:
             // A=Usia, B=JK, C=Pendidikan, D=Pekerjaan, E=Layanan
             // F-N = Q1-Q9, O=Saran
-            $range = $this->sheetName . "!B{$id}:O{$id}";
+            $range = $this->sheetName . "!A{$id}:P{$id}";
             $response = $service->spreadsheets_values->get($this->spreadsheetId, $range);
             $values = $response->getValues();
 
@@ -49,28 +49,29 @@ class AdminSkmController extends Controller
 
             // Mapping Array Sheet ke Object (agar View Blade tidak error saat panggil $skm->usia)
             $skm = (object) [
-                'id'                      => $id, // ID sekarang adalah nomor baris
-                
-                // DATA SURVEY (Bergeser 1 kolom ke kanan)
-                'usia'                    => $row[1] ?? '', // Kolom B
-                'jenis_kelamin'           => $row[2] ?? '', // Kolom C
-                'pendidikan_terakhir'     => $row[3] ?? '', // Kolom D
-                'pekerjaan'               => $row[4] ?? '', // Kolom E
-                'jenis_layanan_diterima'  => $row[5] ?? '', // Kolom F
-                
-                // Nilai Survey (Q1-Q9) - Mulai dari index 6
-                'q1_persyaratan'          => $row[6] ?? '', // Kolom G
-                'q2_prosedur'             => $row[7] ?? '', // Kolom H
-                'q3_waktu'                => $row[8] ?? '', // Kolom I
-                'q4_biaya'                => $row[9] ?? '', // Kolom J
-                'q5_produk'               => $row[10] ?? '', // Kolom K
-                'q6_kompetensi_petugas'   => $row[11] ?? '', // Kolom L
-                'q7_perilaku_petugas'     => $row[12] ?? '', // Kolom M
-                'q8_penanganan_pengaduan' => $row[13] ?? '', // Kolom N
-                'q9_sarana'               => $row[14] ?? '', // Kolom O
-                
-                'saran_masukan'           => $row[15] ?? '', // Kolom P
-            ];
+            'id'                      => $id, // ID sekarang adalah nomor baris
+            
+            // DATA SURVEY (Bergeser 1 kolom ke kanan)
+            'timestamp'               => $row[0] ?? '', // Kolom A
+            'usia'                    => $row[1] ?? '', // Kolom B
+            'jenis_kelamin'           => $row[2] ?? '', // Kolom C
+            'pendidikan_terakhir'     => $row[3] ?? '', // Kolom D
+            'pekerjaan'               => $row[4] ?? '', // Kolom E
+            'jenis_layanan_diterima'  => $row[5] ?? '', // Kolom F
+            
+            // Nilai Survey (Q1-Q9) - Mulai dari index 6
+            'q1_persyaratan'          => $row[6] ?? '', // Kolom G
+            'q2_prosedur'             => $row[7] ?? '', // Kolom H
+            'q3_waktu'                => $row[8] ?? '', // Kolom I
+            'q4_biaya'                => $row[9] ?? '', // Kolom J
+            'q5_produk'               => $row[10] ?? '', // Kolom K
+            'q6_kompetensi_petugas'   => $row[11] ?? '', // Kolom L
+            'q7_perilaku_petugas'     => $row[12] ?? '', // Kolom M
+            'q8_penanganan_pengaduan' => $row[13] ?? '', // Kolom N
+            'q9_sarana'               => $row[14] ?? '', // Kolom O
+            
+            'saran_masukan'           => $row[15] ?? '', // Kolom P
+        ];
 
             return view('admin.skm.edit_skm', compact('skm'));
 
@@ -127,7 +128,7 @@ class AdminSkmController extends Controller
             ];
 
             // Tentukan Range: Update baris ke-$id, kolom A sampai O
-            $range = $this->sheetName . "!B{$id}:O{$id}";
+            $range = $this->sheetName . "!A{$id}:P{$id}";
             
             $body = new \Google\Service\Sheets\ValueRange([
                 'values' => [$updateRow]
