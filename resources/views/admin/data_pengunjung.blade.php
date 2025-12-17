@@ -4,7 +4,7 @@
 
 @section('content')
 <style>
-/* ======================== GLOBAL ======================== */
+/* ======================== GLOBAL STYLE (Sesuai Referensi SKM) ======================== */
 body {
     background-color: #DFEDFE;
     background-image: 
@@ -35,7 +35,7 @@ body {
 }
 .logo-header img { height: 50px; }
 
-/* === DASHBOARD CONTENT (EFEK 3D CARD) === */
+/* ================= DASHBOARD CONTENT (3D CARD) ================= */
 .container-dashboard {
     display: flex;
     justify-content: center;
@@ -53,71 +53,38 @@ body {
     background-color: #fff;
     border-radius: 20px;
     overflow: hidden;
-    height: 620px; 
-    width: 100%;
     
-    /* EFEK TIMBUL: Shadow Berlapis & Border Tebal Bawah */
+    /* EFEK TIMBUL 3D */
     box-shadow: 
         0 20px 50px rgba(0, 0, 0, 0.15),
         0 5px 15px rgba(0,0,0,0.05);
     border: 1px solid rgba(255,255,255,0.6);
     border-bottom: 6px solid #e1e8f0;
+    
+    min-height: 620px;
+    width: 100%;
 }
 
-/* ================= LEFT PANEL (GAMBAR) ================= */
-.dashboard-left-image {
-    flex: 0.9;
-    background-image: url('{{ asset("images/admin1.jpg") }}');
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-direction: column;
-    position: relative;
-    padding: 80px 40px 40px;
-    box-shadow: 5px 0 15px rgba(0,0,0,0.1); 
-    z-index: 2;
-}
-
-.dashboard-left-image::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.35) 10%, transparent 60%);
-    z-index: 1;
-}
-
-.dashboard-left-image h1 {
-    position: relative;
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: #fff;
-    margin-top: 40px;
-    margin-bottom: 30px;
-    z-index: 2;
-    text-shadow: 0 4px 8px rgba(0,0,0,0.6);
-    text-align: center;
-}
-.dashboard-left-image h1 span { color: #30E3BC; }
-
-/* ================= RIGHT PANEL (KONTEN) ================= */
-.dashboard-right-content {
-    flex: 2.1;
-    padding: 40px 50px;
+/* ================= LEFT PANEL (CONTENT) - Posisi di KIRI sesuai SKM ================= */
+.dashboard-left {
+    flex: 0.9; 
+    padding: 40px 40px;
     display: flex;
     flex-direction: column;
     position: relative;
     gap: 20px;
-    background-color: #F8FBFF;
+    background-color: #F8FBFF; /* Background konten */
     z-index: 1;
 }
 
 /* Title Card */
 .title-card {
-    font-size: 2rem;
+    background: transparent; 
+    border-radius: 0; 
+    padding: 0; 
+    font-size: 2rem; 
     font-weight: 800;
-    color: #003366;
+    color: #003366; 
     margin-bottom: 5px; 
     display: flex;
     align-items: center;
@@ -141,30 +108,38 @@ body {
     border-radius: 2px;
 }
 
-/* === TABLE SECTION (Data Card) === */
-.data-table-section {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    /* Pastikan tidak overflow keluar card utama */
-    min-height: 0; 
-}
-
-/* DATA CARD (Container Tabel) */
+/* === DATA CARD (TABLE CONTAINER) === */
 .data-card {
     background: #fff;
     border-radius: 15px;
-    padding: 0;
+    padding: 0; 
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    overflow: hidden; /* Penting untuk scroll dalam card */
+    overflow: hidden;
+
+    /* Efek Timbul Inset Halus */
     box-shadow: 
         0 4px 6px rgba(0,0,0,0.02),
         inset 0 0 0 1px #e0e6ed;
 }
 
-/* TABLE HEADER (Style Bar Timbul) */
+.data-card h3 {
+    margin: 15px 20px 5px 20px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #003366;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.total-data {
+    font-size: 0.8rem;
+    color: #888;
+    font-weight: 500;
+}
+
+/* HEADER TABEL (Style Bar Timbul) */
 .data-table-header {
     display: flex;
     padding: 12px 10px;
@@ -173,12 +148,12 @@ body {
     color: #fff;
     font-size: .9rem;
     box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
-    /* Sticky Header Properties */
+    z-index: 2;
+    align-items: center;
+    /* Sticky */
     position: sticky;
     top: 0;
-    z-index: 10;
-    /* Min-width agar header ikut lebar container saat di-scroll */
-    min-width: 1200px; /* <--- Diperlebar agar memicu scroll horizontal */
+    min-width: 1000px; /* Trigger scroll X jika layar kecil */
 }
 
 .data-table-row {
@@ -188,28 +163,31 @@ body {
     color: #444;
     font-size: .85rem;
     transition: background 0.2s;
-    /* Min-width agar row ikut lebar container saat di-scroll */
-    min-width: 1200px; /* <--- Diperlebar sama dengan header */
+    align-items: center;
+    min-width: 1000px; /* Trigger scroll X jika layar kecil */
 }
 .data-table-row:hover { background-color: #f0f7ff; }
 .data-table-row:last-child { border-bottom: none; }
 
-/* Column Flex Properties */
+/* Column Flex Properties (Disesuaikan untuk Data Pengunjung) */
 .data-table-header > span, .data-table-row > span {
-    text-align: left;
+    text-align: left; 
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: nowrap; 
+    padding-right: 5px;
 }
-.checkbox-col { flex: 0.1; min-width: 30px; display: flex; align-items: center; }
-.col-tanggal { flex: 1; min-width: 80px;} 
-.col-nama { flex: 2; min-width: 150px; font-weight: 600; color: #333; }
-.col-instansi { flex: 1.5; min-width: 100px; }
-.col-layanan { flex: 2.5; min-width: 150px; }
-.col-keperluan { flex: 3; min-width: 200px; }
-.col-hp { flex: 1.2; min-width: 90px; }
 
-/* Checkbox Style */
+/* Definisikan Lebar Kolom Pengunjung */
+.checkbox-col   { flex: 0.1; min-width: 40px; display: flex; align-items: center; justify-content: center; }
+.col-tanggal    { flex: 0.8; min-width: 90px; }
+.col-nama       { flex: 1.5; min-width: 140px; font-weight: 600; color: #003366; }
+.col-instansi   { flex: 1.2; min-width: 120px; }
+.col-layanan    { flex: 1.2; min-width: 120px; }
+.col-keperluan  { flex: 2.0; min-width: 180px; }
+.col-hp         { flex: 0.8; min-width: 90px; }
+
+/* Checkbox */
 input[type="checkbox"] {
     accent-color: #30E3BC;
     cursor: pointer;
@@ -220,59 +198,42 @@ input[type="checkbox"] {
 /* Scroll Container */
 .tabel-container {
     flex-grow: 1;
-    /* Ubah ke auto agar bisa scroll X dan Y */
-    overflow: auto; 
-    padding-right: 0px; /* Reset padding right agar scrollbar rapi */
-    background-color: #fff;
-    /* Custom Scrollbar */
+    overflow: auto; /* Enable X and Y scroll */
+    padding-right: 0px;
+    margin-top: 0;
     scrollbar-width: thin;
-    scrollbar-color: #ccc #f1f1f1;
 }
-
 .tabel-container::-webkit-scrollbar { width: 8px; height: 8px; }
 .tabel-container::-webkit-scrollbar-track { background: #f1f1f1; }
 .tabel-container::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
 
-/* Action Buttons (3D Push Buttons) */
+/* === BUTTON ACTION (3D PUSH BUTTONS) === */
 .action-buttons {
     padding: 15px 20px;
     display: flex;
-    /* justify-content: space-between untuk memisahkan teks total dan tombol */
-    justify-content: space-between; 
-    align-items: center;
+    justify-content: flex-end; /* Tombol rata kanan */
     gap: 15px;
     border-top: 1px solid #eee;
     background-color: #fafbfc;
-    min-height: 70px; /* Tinggi fix untuk tombol */
-    /* Z-index agar shadow header tidak tertutup saat scroll paling bawah (opsional) */
-    position: relative;
-    z-index: 11;
-}
-
-/* Total Data Text */
-.total-data-text {
-    font-size: 0.85rem;
-    color: #666;
-    font-weight: 500;
-}
-
-.btn-group {
-    display: flex;
-    gap: 15px;
+    z-index: 5;
 }
 
 .btn-action {
     padding: 10px 25px;
-    border: none;
     border-radius: 50px;
+    border: none;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     text-transform: uppercase;
     font-size: 0.8rem;
     letter-spacing: 0.5px;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     top: 0;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Edit Button (Green) */
@@ -293,210 +254,280 @@ input[type="checkbox"] {
 .btn-hapus:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #991b1b, 0 8px 15px rgba(239, 68, 68, 0.4); }
 .btn-hapus:active { top: 4px; box-shadow: 0 0 0 #991b1b, 0 2px 5px rgba(239, 68, 68, 0.3); }
 
-/* Responsive */
+/* Disabled State */
+.disabled {
+    background: #ccc !important;
+    box-shadow: none !important;
+    color: #666 !important;
+    transform: none !important;
+    top: 0 !important;
+    cursor: not-allowed !important;
+}
+
+/* ================= RIGHT PANEL (IMAGE) - Posisi di KANAN sesuai SKM ================= */
+.dashboard-right {
+    flex: 1.1;
+    background-color: #C9E1FF;
+    /* Pastikan gambar ada */
+    background-image: url('{{ asset("images/admin1.jpg") }}');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 60px 5px 20px; 
+    position: relative;
+    
+    /* Bayangan pemisah */
+    box-shadow: inset 15px 0 20px -10px rgba(0,0,0,0.15);
+    z-index: 2;
+}
+
+.dashboard-right::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.35) 10%, transparent 60%);
+    z-index: 1;
+}
+.dashboard-right h1 {
+    position: relative;
+    z-index: 2;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-top: 40px;
+    text-shadow: 0 4px 8px rgba(0,0,0,0.6);
+    text-align: center;
+}
+.dashboard-right h1 span { color: #30E3BC; }
+
+
+/* ================= RESPONSIVE MODE ==================== */
 @media (max-width: 992px) {
-    .dashboard-card { flex-direction: column; height: auto; }
-    .dashboard-left-image { 
-        order: 1; height: 260px; padding-top: 40px; 
-        border-radius: 20px 20px 0 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    .dashboard-card { flex-direction: column; min-height: auto; }
+
+    /* Mobile: Image on Top */
+    .dashboard-right { 
+        order: 1;
+        height: 260px; 
+        padding-top: 40px; 
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
-    .dashboard-right-content { order: 2; padding: 30px 20px; }
+    .dashboard-right h1 { font-size: 1.8rem; margin-top: 10px; }
+    
+    .dashboard-left { order: 2; padding: 30px 20px; }
     .title-card { font-size: 1.8rem; }
     .container-dashboard { margin-top: 10px; }
     .logo-header { top: 10px; right: 10px; }
     .logo-header img { height: 40px; }
 }
+
 @media (max-width: 600px) {
-    /* Di mobile, kita biarkan scroll horizontal bekerja, jadi tidak perlu display:none untuk kolom */
-    /* .col-hp, .col-keperluan { display: none; } */ 
-    
-    .data-table-header span, .data-table-row span { font-size: .75rem; }
-    .action-buttons { flex-direction: row; justify-content: space-between; align-items: center; } 
-    .btn-action { padding: 10px 15px; font-size: 0.7rem; }
-    .btn-group { gap: 10px; }
+    .action-buttons { flex-direction: column; gap: 10px; padding: 15px; }
+    .btn-action { width: 100%; }
 }
 </style>
 
-{{-- === HEADER LOGO === --}}
+{{-- === LOGO === --}}
 <div class="logo-header">
     <img src="{{ asset('images/LOGO_KEMENTRIAN.png') }}" alt="Logo Kementrian">
     <img src="{{ asset('images/LOGO_PEMKAB_BANJAR.png') }}" alt="Logo Kab. Banjar">
 </div>
 
-{{-- === SIDEBAR === --}}
+{{-- === PANGGIL SIDEBAR === --}}
 @include('components._sidebar')
 
-{{-- === KONTEN UTAMA === --}}
 <div class="container-dashboard">
     <div class="dashboard-card">
-        
-        {{-- PANEL KIRI --}}
-        <div class="dashboard-left-image">
-            <h1>Data <span>Pengunjung</span> Admin</h1>
-        </div>
 
-        {{-- PANEL KANAN --}}
-        <div class="dashboard-right-content">
+        {{-- === PANEL KIRI: KONTEN (Sesuai Layout SKM) === --}}
+        <div class="dashboard-left">
             
-            {{-- ALERT NOTIFIKASI --}}
+            {{-- Flash Message --}}
             @if(session('success'))
-            <div style="background: #d1e7dd; color: #0f5132; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 0.9rem;">
-                {{ session('success') }}
-            </div>
+                <div style="background: #d1e7dd; color: #0f5132; padding: 10px; border-radius: 8px; font-size: 0.9rem;">
+                    {{ session('success') }}
+                </div>
             @endif
             @if(session('error'))
-            <div style="background: #f8d7da; color: #842029; padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 0.9rem;">
-                {{ session('error') }}
-            </div>
+                <div style="background: #f8d7da; color: #842029; padding: 10px; border-radius: 8px; font-size: 0.9rem;">
+                    {{ session('error') }}
+                </div>
             @endif
 
             <div class="title-card">
-                {{-- ID menuToggle untuk trigger sidebar mobile --}}
-                <div class="menu-icon" id="menuToggle"><span></span><span></span><span></span></div>
+                <div class="menu-icon" id="menuToggle">
+                    <span></span><span></span><span></span>
+                </div>
                 Data <span>Pengunjung</span>
             </div>
 
-            <div class="data-table-section">
-                
-                <div class="data-card">
+            <div class="data-card">
+                <h3>
+                    📊 Daftar Tamu / Pengunjung
+                    <span class="total-data">Total: {{ $pengunjung->count() }}</span>
+                </h3>
+
+                {{-- FORM UNTUK BATCH ACTION (Dibungkus agar Edit/Hapus Multiple Berjalan) --}}
+                <form id="batchForm" method="POST" action="" style="display:flex; flex-direction:column; flex-grow:1; overflow:hidden;">
+                    @csrf
                     
-                    {{-- FORM BATCH ACTION --}}
-                    {{-- Form moved to wrap entire content including header for logic consistency --}}
-                    <form id="batchForm" method="POST" action="" style="display:flex; flex-direction:column; flex-grow:1; overflow:hidden;">
-                        @csrf
+                    {{-- TABEL CONTAINER --}}
+                    <div class="tabel-container">
+                        <div class="data-table-header">
+                            <span class="checkbox-col">
+                                <input type="checkbox" id="checkAll">
+                            </span>
+                            <span class="col-tanggal">Tanggal</span>
+                            <span class="col-nama">Nama / NIP</span>
+                            <span class="col-instansi">Instansi</span>
+                            <span class="col-layanan">Layanan</span>
+                            <span class="col-keperluan">Keperluan</span>
+                            <span class="col-hp">No. Hp</span>
+                        </div>
+
+                        {{-- DATA ROWS --}}
+                        @if($pengunjung->count() > 0)
+                            @foreach($pengunjung as $item)
+                            <div class="data-table-row">
+                                <span class="checkbox-col">
+                                    {{-- Menggunakan array ids[] untuk support multiple delete --}}
+                                    <input type="checkbox" name="ids[]" class="row-check" value="{{ $item->id }}">
+                                </span>
+                                <span class="col-tanggal">{{ $item->tanggal }}</span>
+                                <span class="col-nama">{{ $item->nama_nip }}</span>
+                                <span class="col-instansi">{{ $item->instansi }}</span>
+                                <span class="col-layanan">{{ $item->layanan }}</span>
+                                <span class="col-keperluan">{{ $item->keperluan }}</span>
+                                <span class="col-hp">{{ $item->no_hp }}</span>
+                            </div>
+                            @endforeach
+                        @else
+                            <div style="padding: 30px; text-align: center; color: #888; min-width: 1000px;">
+                                <p>Tidak ada data pengunjung.</p>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- ACTION BUTTONS (Style 3D SKM) --}}
+                    <div class="action-buttons">
                         
-                        {{-- TABEL CONTAINER (Handles X and Y Scroll) --}}
-                        <div class="tabel-container">
-                            
-                            {{-- HEADER TABLE (Moved Inside Container & Made Sticky) --}}
-                            <div class="data-table-header">
-                                <span class="checkbox-col"><input type="checkbox" id="checkAll"></span>
-                                <span class="col-tanggal">Tanggal</span>
-                                <span class="col-nama">Nama / NIP</span>
-                                <span class="col-instansi">Instansi</span>
-                                <span class="col-layanan">Layanan</span>
-                                <span class="col-keperluan">Keperluan</span>
-                                <span class="col-hp">No. Hp</span>
-                            </div>
+                        {{-- Tombol Edit Multiple --}}
+                        <button type="button" id="batchEdit" class="btn-action btn-edit disabled" style="pointer-events:none; opacity:0.5;">
+                            Edit
+                        </button>
 
-                            {{-- DATA ROWS --}}
-                            @if($pengunjung->count() > 0)
-                                @foreach($pengunjung as $item)
-                                <div class="data-table-row">
-                                    {{-- Value checkbox = ID Baris Sheet (misal: 2, 5, 100) --}}
-                                    <span class="checkbox-col">
-                                        <input type="checkbox" name="ids[]" value="{{ $item->id }}">
-                                    </span>
-                                    
-                                    <span class="col-tanggal">{{ $item->tanggal }}</span>
-                                    <span class="col-nama">{{ $item->nama_nip }}</span>
-                                    <span class="col-instansi">{{ $item->instansi }}</span>
-                                    <span class="col-layanan">{{ $item->layanan }}</span>
-                                    <span class="col-keperluan">{{ $item->keperluan }}</span>
-                                    <span class="col-hp">{{ $item->no_hp }}</span>
-                                </div>
-                                @endforeach
-                            @else
-                                <div style="padding: 20px; text-align: center; color: #888; min-width: 1200px;">
-                                    <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 10px; color: #ddd;"></i>
-                                    <p>Data tidak ditemukan di Google Sheets.</p>
-                                </div>
-                            @endif
-                        </div>
+                        {{-- Tombol Hapus Multiple --}}
+                        <button type="button" id="batchDelete" class="btn-action btn-hapus disabled" style="pointer-events:none; opacity:0.5;">
+                            Hapus
+                        </button>
 
-                        <div class="action-buttons">
-                            {{-- Info Total Data (Pengganti Pagination) --}}
-                            <div class="total-data-text">
-                                Total: {{ $pengunjung->count() }} Data
-                            </div>
+                    </div>
+                </form>
 
-                            {{-- BUTTONS --}}
-                            <div class="btn-group">
-                                <button type="button" class="btn-action btn-edit" id="batchEdit">Edit</button>
-                                <button type="button" class="btn-action btn-hapus" id="batchDelete">Hapus</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
             </div>
-            
         </div>
+
+        {{-- === PANEL KANAN: GAMBAR (Sesuai Layout SKM) === --}}
+        <div class="dashboard-right">
+            <h1>Data <span>Pengunjung</span></h1>
+        </div>
+
     </div>
 </div>
 
 @include('components._footer')
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function(){
 
-    // === CHECKBOX & BUTTON LOGIC ===
+    // LOGIC CHECKBOX MULTIPLE / BATCH
     const checkAll = document.getElementById('checkAll');
-    const checkboxes = document.querySelectorAll('input[name="ids[]"]');
-    const batchForm = document.getElementById('batchForm');
+    const checkboxes = document.querySelectorAll('.row-check');
     const batchEdit = document.getElementById('batchEdit');
     const batchDelete = document.getElementById('batchDelete');
+    const batchForm = document.getElementById('batchForm');
 
     function updateButtonState() {
+        // Cek apakah ada setidaknya satu checkbox yang dicentang
         const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
 
         if (anyChecked) {
+            // Aktifkan Tombol (Hapus class disabled & style opacity)
             batchEdit.style.pointerEvents = "auto";
             batchDelete.style.pointerEvents = "auto";
             batchEdit.style.opacity = "1";
             batchDelete.style.opacity = "1";
-            batchEdit.style.cursor = "pointer";
-            batchDelete.style.cursor = "pointer";
+            batchEdit.classList.remove("disabled");
+            batchDelete.classList.remove("disabled");
+            
+            // Restore Shadow
+            batchEdit.style.boxShadow = "";
+            batchDelete.style.boxShadow = "";
         } else {
+            // Nonaktifkan Tombol
             batchEdit.style.pointerEvents = "none";
             batchDelete.style.pointerEvents = "none";
-            batchEdit.style.opacity = "0.6"; 
-            batchDelete.style.opacity = "0.6";
-            batchEdit.style.cursor = "not-allowed";
-            batchDelete.style.cursor = "not-allowed";
+            batchEdit.style.opacity = "0.5";
+            batchDelete.style.opacity = "0.5";
+            batchEdit.classList.add("disabled");
+            batchDelete.classList.add("disabled");
+
             batchEdit.style.boxShadow = "none";
             batchDelete.style.boxShadow = "none";
         }
-        
-        if(anyChecked) {
-            batchEdit.style.boxShadow = "";
-            batchDelete.style.boxShadow = "";
-        }
     }
 
-    // Init state
-    updateButtonState();
+    // Event Listener Check All
+    if(checkAll){
+        checkAll.addEventListener('change', function() {
+            checkboxes.forEach(cb => cb.checked = checkAll.checked);
+            updateButtonState();
+        });
+    }
 
-    checkAll.addEventListener('change', () => {
-        checkboxes.forEach(cb => cb.checked = checkAll.checked);
-        updateButtonState();
-    });
-
+    // Event Listener Individual Checkbox
     checkboxes.forEach(cb => {
         cb.addEventListener('change', updateButtonState);
     });
 
-    // === ACTION HANDLERS ===
-    
-    // HAPUS
-    batchDelete.addEventListener('click', () => {
-        const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-        if(selected.length === 0) return alert('Pilih data dulu!');
-        
-        if(confirm('Yakin mau hapus ' + selected.length + ' data yang dipilih dari Google Sheets?')) {
-            // Arahkan form ke route batchDelete
-            batchForm.action = "{{ route('admin.pengunjung.batchDelete') }}"; 
-            batchForm.submit();
-        }
-    });
+    // Inisialisasi awal
+    updateButtonState();
 
-    // EDIT
-    batchEdit.addEventListener('click', () => {
-        const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-        if(selected.length === 0) return alert('Pilih data dulu!');
-        
-        // Redirect ke halaman edit dengan query string IDs
-        window.location.href = "{{ route('admin.pengunjung.editMultiple') }}?ids=" + selected.join(',');
-    });
+    // === ACTION HANDLER ===
+    
+    // HAPUS BATCH
+    if(batchDelete){
+        batchDelete.addEventListener('click', function() {
+            const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            if(selectedCount === 0) return;
+
+            if(confirm('Yakin mau hapus ' + selectedCount + ' data pengunjung yang dipilih?')) {
+                // Set action form ke route delete batch
+                // Pastikan route ini ada di web.php Anda
+                batchForm.action = "{{ route('admin.pengunjung.batchDelete') }}";
+                batchForm.submit();
+            }
+        });
+    }
+
+    // EDIT BATCH
+    if(batchEdit){
+        batchEdit.addEventListener('click', function() {
+            const selectedIds = Array.from(checkboxes)
+                                    .filter(cb => cb.checked)
+                                    .map(cb => cb.value);
+            
+            if(selectedIds.length === 0) return;
+
+            // Redirect ke halaman edit dengan query string IDs
+            // Pastikan route ini ada di web.php Anda
+            window.location.href = "{{ route('admin.pengunjung.editMultiple') }}?ids=" + selectedIds.join(',');
+        });
+    }
 });
 </script>
 @endsection

@@ -81,7 +81,7 @@
         /* 3D Button Effect */
         box-shadow: 
             3px 3px 8px rgba(0,0,0,0.05), 
-            -2px -2px 6px rgba(255,255,255,0.8),
+            -2px -2px 6px rgba(1, 1, 1, 0.8),
             0 2px 0 rgba(0,0,0,0.05); /* Tebal bawah */
         border: 1px solid #fff;
     }
