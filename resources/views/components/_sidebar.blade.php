@@ -192,10 +192,6 @@
         <i class="fas fa-file-signature"></i> 
         <span>Data SKM</span>
     </a>
-    <a href="{{ url('/admin/skm/pertanyaan') }}" class="sidebar-link {{ Request::is('admin/skm/pertanyaan*') ? 'active' : '' }}">
-        <i class="fas fa-clipboard-list"></i> 
-        <span>Pertanyaan SKM</span>
-    </a>
 
     <div class="menu-label" style="margin-top: 20px;">Lainnya</div>
 
