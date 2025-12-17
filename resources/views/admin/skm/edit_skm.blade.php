@@ -344,16 +344,17 @@ body {
                                 9=>'sarana'
                             ][$i] }}"
                             value="{{ $skm->{'q'.$i.'_'.[
-                                1=>'persyaratan',
-                                2=>'prosedur',
-                                3=>'waktu',
-                                4=>'biaya',
-                                5=>'produk',
-                                6=>'kompetensi_petugas',
-                                7=>'perilaku_petugas',
-                                8=>'penanganan_pengaduan',
-                                9=>'sarana'
-                            ][$i]} }}"
+                                1 => 'persyaratan',
+                                2 => 'prosedur',
+                                3 => 'waktu',
+                                4 => 'biaya',
+                                5 => 'produk',
+                                6 => 'kompetensi_petugas',
+                                7 => 'perilaku_petugas',
+                                8 => 'penanganan_pengaduan',
+                                9 => 'sarana'
+                            ][$i]} ?? '' }}"
+
                             min="1" max="4"
                             required>
                     </div>
@@ -361,7 +362,7 @@ body {
 
                     <div class="edit-card">
                         <label>Saran Masukan</label>
-                        <textarea name="saran_masukan" rows="4">{{ $skm->saran_masukan }}</textarea>
+                        <textarea name="saran_masukan" rows="4">{{ $skm->saran_masukan ?? '' }}</textarea>
                     </div>
 
                     <button type="submit" class="btn-simpan-semua">Simpan Perubahan</button>
