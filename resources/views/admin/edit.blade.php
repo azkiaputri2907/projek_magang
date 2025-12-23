@@ -296,28 +296,65 @@ body {
                         {{-- Hidden ID untuk identifikasi baris --}}
                         <input type="hidden" name="pengunjung[{{ $item->id }}][id]" value="{{ $item->id }}">
 
+                        {{-- TANGGAL --}}
                         <label>Tanggal</label>
-                        {{-- Gunakan type="text" agar format string dari Google Sheets (misal: 25/11/2024) tidak hilang. --}}
-                        {{-- onfocus mengubahnya jadi datepicker saat diklik user --}}
                         <input type="text" 
-                               name="pengunjung[{{ $item->id }}][tanggal]" 
-                               value="{{ $item->tanggal }}" 
-                               placeholder="Format: YYYY-MM-DD atau sesuai Sheet"
-                               onfocus="(this.type='date')"
-                               onblur="(this.type='text')">
+                            name="pengunjung[{{ $item->id }}][tanggal]" 
+                            value="{{ $item->tanggal }}" 
+                            placeholder="Format: YYYY-MM-DD atau sesuai Sheet"
+                            onfocus="(this.type='date')"
+                            onblur="(this.type='text')">
 
+                        {{-- NAMA / NIP --}}
                         <label>Nama / NIP</label>
                         <input type="text" name="pengunjung[{{ $item->id }}][nama_nip]" value="{{ $item->nama_nip }}">
 
+                        {{-- INSTANSI --}}
                         <label>Instansi</label>
                         <input type="text" name="pengunjung[{{ $item->id }}][instansi]" value="{{ $item->instansi }}">
 
+                        {{-- LAYANAN (DROPDOWN) --}}
                         <label>Layanan</label>
-                        <input type="text" name="pengunjung[{{ $item->id }}][layanan]" value="{{ $item->layanan }}">
+                        <select name="pengunjung[{{ $item->id }}][layanan]" class="form-control" style="width: 100%; padding: 8px;">
+                            <option value="" disabled {{ empty($item->layanan) ? 'selected' : '' }}>Pilih Layanan</option>
+                            
+                            <option value="Rekomendasi Mutasi" {{ $item->layanan == 'Rekomendasi Mutasi' ? 'selected' : '' }}>
+                                Rekomendasi Mutasi
+                            </option>
+                            <option value="Rekomendasi Mutasi Siswa" {{ $item->layanan == 'Rekomendasi Mutasi Siswa' ? 'selected' : '' }}>
+                                Rekomendasi Mutasi Siswa
+                            </option>
+                            <option value="Surat Keterangan Pengganti Ijazah" {{ $item->layanan == 'Surat Keterangan Pengganti Ijazah' ? 'selected' : '' }}>
+                                Surat Keterangan Pengganti Ijazah
+                            </option>
+                            <option value="Legalisir Ijazah" {{ $item->layanan == 'Legalisir Ijazah' ? 'selected' : '' }}>
+                                Legalisir Ijazah
+                            </option>
+                            <option value="Magang / Penelitian" {{ $item->layanan == 'Magang / Penelitian' ? 'selected' : '' }}>
+                                Magang / Penelitian
+                            </option>
+                            <option value="NPSN" {{ $item->layanan == 'NPSN' ? 'selected' : '' }}>
+                                NPSN
+                            </option>
+                            <option value="Rekomendasi Izin Pendirian Satuan Pendidikan" {{ $item->layanan == 'Rekomendasi Izin Pendirian Satuan Pendidikan' ? 'selected' : '' }}>
+                                Rekomendasi Izin Pendirian Satuan Pendidikan
+                            </option>
+                            <option value="Rekomendasi Pendirian Satuan Pendidikan" {{ $item->layanan == 'Rekomendasi Pendirian Satuan Pendidikan' ? 'selected' : '' }}>
+                                Rekomendasi Pendirian Satuan Pendidikan
+                            </option>
+                            <option value="Rekomendasi Operasional Satuan Pendidikan" {{ $item->layanan == 'Rekomendasi Operasional Satuan Pendidikan' ? 'selected' : '' }}>
+                                Rekomendasi Operasional Satuan Pendidikan
+                            </option>
+                            <option value="Konsultasi Lainnya" {{ $item->layanan == 'Konsultasi Lainnya' ? 'selected' : '' }}>
+                                Konsultasi Lainnya
+                            </option>
+                        </select>
 
+                        {{-- KEPERLUAN --}}
                         <label>Keperluan</label>
                         <input type="text" name="pengunjung[{{ $item->id }}][keperluan]" value="{{ $item->keperluan }}">
 
+                        {{-- NO HP --}}
                         <label>No. HP</label>
                         <input type="text" name="pengunjung[{{ $item->id }}][no_hp]" value="{{ $item->no_hp }}">
                     </div>
