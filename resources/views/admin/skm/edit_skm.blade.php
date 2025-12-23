@@ -302,152 +302,175 @@ body {
                 Edit Data <span>SKM</span>
             </div>
 
-            <div class="form-container">
+<div class="form-container">
                 <form action="{{ route('admin.skm.update', $skm->id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
                     <div class="edit-card">
                         <label>Usia</label>
-                        <input type="number" name="usia" value="{{ $skm->usia }}" required>
+                        <input type="number" name="usia" value="{{ old('usia', $skm->usia) }}" required>
+                        @error('usia') <span class="text-danger">{{ $message }}</span> @enderror
 
                         <label>Jenis Kelamin</label>
                         <select name="jenis_kelamin" required>
-                            <option value="Laki-laki" {{ $skm->jenis_kelamin == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
-                            <option value="Perempuan" {{ $skm->jenis_kelamin == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                            <option value="Laki-laki" {{ old('jenis_kelamin', $skm->jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                            <option value="Perempuan" {{ old('jenis_kelamin', $skm->jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
                         </select>
+                        @error('jenis_kelamin') <span class="text-danger">{{ $message }}</span> @enderror
 
                         <label>Pendidikan Terakhir</label>
                         <select name="pendidikan_terakhir" required>
-                            <option value="SD" {{ $skm->pendidikan_terakhir == 'SD' ? 'selected' : '' }}>SD</option>
-                            <option value="SLTP" {{ $skm->pendidikan_terakhir == 'SLTP' ? 'selected' : '' }}>SLTP (SMP/MTs/Sederajat)</option>
-                            <option value="SLTA" {{ $skm->pendidikan_terakhir == 'SLTA' ? 'selected' : '' }}>SLTA (SMA/SMK/MA/Sederajat)</option>
-                            <option value="D1_D3" {{ $skm->pendidikan_terakhir == 'D1_D3' ? 'selected' : '' }}>Diploma 1-3</option>
-                            <option value="S1_D4" {{ $skm->pendidikan_terakhir == 'S1_D4' ? 'selected' : '' }}>S1 / D4</option>
-                            <option value="S2" {{ $skm->pendidikan_terakhir == 'S2' ? 'selected' : '' }}>S2</option>
-                            <option value="S3" {{ $skm->pendidikan_terakhir == 'S3' ? 'selected' : '' }}>S3</option>
+                            <option value="SD" {{ old('pendidikan_terakhir', $skm->pendidikan_terakhir) == 'SD' ? 'selected' : '' }}>SD</option>
+                            <option value="SLTP" {{ old('pendidikan_terakhir', $skm->pendidikan_terakhir) == 'SLTP' ? 'selected' : '' }}>SLTP (SMP/MTs/Sederajat)</option>
+                            <option value="SLTA" {{ old('pendidikan_terakhir', $skm->pendidikan_terakhir) == 'SLTA' ? 'selected' : '' }}>SLTA (SMA/SMK/MA/Sederajat)</option>
+                            <option value="D1_D3" {{ old('pendidikan_terakhir', $skm->pendidikan_terakhir) == 'D1_D3' ? 'selected' : '' }}>Diploma 1-3</option>
+                            <option value="S1_D4" {{ old('pendidikan_terakhir', $skm->pendidikan_terakhir) == 'S1_D4' ? 'selected' : '' }}>S1 / D4</option>
+                            <option value="S2" {{ old('pendidikan_terakhir', $skm->pendidikan_terakhir) == 'S2' ? 'selected' : '' }}>S2</option>
+                            <option value="S3" {{ old('pendidikan_terakhir', $skm->pendidikan_terakhir) == 'S3' ? 'selected' : '' }}>S3</option>
                         </select>
+                        @error('pendidikan_terakhir') <span class="text-danger">{{ $message }}</span> @enderror
 
                         <label>Pekerjaan</label>
                         <select name="pekerjaan" required>
-                            <option value="PNS/TNI/Polri" {{ $skm->pekerjaan == 'PNS/TNI/Polri' ? 'selected' : '' }}>PNS/TNI/Polri</option>
-                            <option value="Swasta" {{ $skm->pekerjaan == 'Swasta' ? 'selected' : '' }}>Pegawai Swasta</option>
-                            <option value="Wiraswasta" {{ $skm->pekerjaan == 'Wiraswasta' ? 'selected' : '' }}>Wiraswasta</option>
-                            <option value="Pelajar/Mahasiswa" {{ $skm->pekerjaan == 'Pelajar/Mahasiswa' ? 'selected' : '' }}>Pelajar/Mahasiswa</option>
-                            <option value="Lainnya" {{ $skm->pekerjaan == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                            <option value="PNS/TNI/Polri" {{ old('pekerjaan', $skm->pekerjaan) == 'PNS/TNI/Polri' ? 'selected' : '' }}>PNS/TNI/Polri</option>
+                            <option value="Swasta" {{ old('pekerjaan', $skm->pekerjaan) == 'Swasta' ? 'selected' : '' }}>Pegawai Swasta</option>
+                            <option value="Wiraswasta" {{ old('pekerjaan', $skm->pekerjaan) == 'Wiraswasta' ? 'selected' : '' }}>Wiraswasta</option>
+                            <option value="Pelajar/Mahasiswa" {{ old('pekerjaan', $skm->pekerjaan) == 'Pelajar/Mahasiswa' ? 'selected' : '' }}>Pelajar/Mahasiswa</option>
+                            <option value="Lainnya" {{ old('pekerjaan', $skm->pekerjaan) == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                         </select>
+                        @error('pekerjaan') <span class="text-danger">{{ $message }}</span> @enderror
 
                         <label>Jenis Layanan Diterima</label>
                         <select name="jenis_layanan_diterima" required>
-                            <option value="Rekomendasi Mutasi" {{ $skm->jenis_layanan_diterima == 'Rekomendasi Mutasi' ? 'selected' : '' }}>Rekomendasi Mutasi</option>
-                            <option value="Rekomendasi Mutasi Siswa" {{ $skm->jenis_layanan_diterima == 'Rekomendasi Mutasi Siswa' ? 'selected' : '' }}>Rekomendasi Mutasi Siswa</option>
-                            <option value="Surat Keterangan Pengganti Ijazah" {{ $skm->jenis_layanan_diterima == 'Surat Keterangan Pengganti Ijazah' ? 'selected' : '' }}>Surat Keterangan Pengganti Ijazah</option>
-                            <option value="Legalisir Ijazah" {{ $skm->jenis_layanan_diterima == 'Legalisir Ijazah' ? 'selected' : '' }}>Legalisir Ijazah</option>
-                            <option value="Magang / Penelitian" {{ $skm->jenis_layanan_diterima == 'Magang / Penelitian' ? 'selected' : '' }}>Magang / Penelitian</option>
-                            <option value="NPSN" {{ $skm->jenis_layanan_diterima == 'NPSN' ? 'selected' : '' }}>NPSN</option>
-                            <option value="Rekomendasi Izin Pendirian Satuan Pendidikan" {{ $skm->jenis_layanan_diterima == 'Rekomendasi Izin Pendirian Satuan Pendidikan' ? 'selected' : '' }}>Rekomendasi Izin Pendirian Satuan Pendidikan</option>
-                            <option value="Rekomendasi Pendirian Satuan Pendidikan" {{ $skm->jenis_layanan_diterima == 'Rekomendasi Pendirian Satuan Pendidikan' ? 'selected' : '' }}>Rekomendasi Pendirian Satuan Pendidikan</option>
-                            <option value="Rekomendasi Operasional Satuan Pendidikan" {{ $skm->jenis_layanan_diterima == 'Rekomendasi Operasional Satuan Pendidikan' ? 'selected' : '' }}>Rekomendasi Operasional Satuan Pendidikan</option>
-                            <option value="Konsultasi Lainnya" {{ $skm->jenis_layanan_diterima == 'Konsultasi Lainnya' ? 'selected' : '' }}>Konsultasi Lainnya</option>
+                            <option value="Rekomendasi Mutasi" {{ old('jenis_layanan_diterima', $skm->jenis_layanan_diterima) == 'Rekomendasi Mutasi' ? 'selected' : '' }}>Rekomendasi Mutasi</option>
+                            <option value="Rekomendasi Mutasi Siswa" {{ old('jenis_layanan_diterima', $skm->jenis_layanan_diterima) == 'Rekomendasi Mutasi Siswa' ? 'selected' : '' }}>Rekomendasi Mutasi Siswa</option>
+                            <option value="Surat Keterangan Pengganti Ijazah" {{ old('jenis_layanan_diterima', $skm->jenis_layanan_diterima) == 'Surat Keterangan Pengganti Ijazah' ? 'selected' : '' }}>Surat Keterangan Pengganti Ijazah</option>
+                            <option value="Legalisir Ijazah" {{ old('jenis_layanan_diterima', $skm->jenis_layanan_diterima) == 'Legalisir Ijazah' ? 'selected' : '' }}>Legalisir Ijazah</option>
+                            <option value="Magang / Penelitian" {{ old('jenis_layanan_diterima', $skm->jenis_layanan_diterima) == 'Magang / Penelitian' ? 'selected' : '' }}>Magang / Penelitian</option>
+                            <option value="NPSN" {{ old('jenis_layanan_diterima', $skm->jenis_layanan_diterima) == 'NPSN' ? 'selected' : '' }}>NPSN</option>
+                            <option value="Rekomendasi Izin Pendirian Satuan Pendidikan" {{ old('jenis_layanan_diterima', $skm->jenis_layanan_diterima) == 'Rekomendasi Izin Pendirian Satuan Pendidikan' ? 'selected' : '' }}>Rekomendasi Izin Pendirian Satuan Pendidikan</option>
+                            <option value="Rekomendasi Pendirian Satuan Pendidikan" {{ old('jenis_layanan_diterima', $skm->jenis_layanan_diterima) == 'Rekomendasi Pendirian Satuan Pendidikan' ? 'selected' : '' }}>Rekomendasi Pendirian Satuan Pendidikan</option>
+                            <option value="Rekomendasi Operasional Satuan Pendidikan" {{ old('jenis_layanan_diterima', $skm->jenis_layanan_diterima) == 'Rekomendasi Operasional Satuan Pendidikan' ? 'selected' : '' }}>Rekomendasi Operasional Satuan Pendidikan</option>
+                            <option value="Konsultasi Lainnya" {{ old('jenis_layanan_diterima', $skm->jenis_layanan_diterima) == 'Konsultasi Lainnya' ? 'selected' : '' }}>Konsultasi Lainnya</option>
                         </select>
+                        @error('jenis_layanan_diterima') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
 
-                    {{-- Q1 - Q9 (Dibuat Manual agar Label Pilihan Sesuai Konteks) --}}
+                    {{-- SURVEY SKM (Q1 - Q9) : NAMA DISESUAIKAN DENGAN FORMAT PANJANG --}}
                     
-{{-- Q1 - Q9 (Mode Aman: Menggunakan tanda '??' agar tidak error jika kolom tidak ditemukan) --}}
-        
-        <div class="edit-card">
-            <label>Q1 - Persyaratan Pelayanan</label>
-            <select name="q1_persyaratan" required>
-                <option value="4" {{ ($skm->q1 ?? 0) == 4 ? 'selected' : '' }}>Sangat Sesuai</option>
-                <option value="3" {{ ($skm->q1 ?? 0) == 3 ? 'selected' : '' }}>Sesuai</option>
-                <option value="2" {{ ($skm->q1 ?? 0) == 2 ? 'selected' : '' }}>Kurang Sesuai</option>
-                <option value="1" {{ ($skm->q1 ?? 0) == 1 ? 'selected' : '' }}>Tidak Sesuai</option>
-            </select>
-        </div>
+                    <div class="edit-card">
+                        <label>Q1 - Persyaratan Pelayanan</label>
+                        {{-- Menggunakan name q1_persyaratan --}}
+                        <select name="q1_persyaratan" required>
+                            <option value="4" {{ old('q1_persyaratan', $skm->q1_persyaratan ?? $skm->q1 ?? 0) == 4 ? 'selected' : '' }}>Sangat Sesuai</option>
+                            <option value="3" {{ old('q1_persyaratan', $skm->q1_persyaratan ?? $skm->q1 ?? 0) == 3 ? 'selected' : '' }}>Sesuai</option>
+                            <option value="2" {{ old('q1_persyaratan', $skm->q1_persyaratan ?? $skm->q1 ?? 0) == 2 ? 'selected' : '' }}>Kurang Sesuai</option>
+                            <option value="1" {{ old('q1_persyaratan', $skm->q1_persyaratan ?? $skm->q1 ?? 0) == 1 ? 'selected' : '' }}>Tidak Sesuai</option>
+                        </select>
+                        @error('q1_persyaratan') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
 
-        <div class="edit-card">
-            <label>Q2 - Kemudahan Prosedur</label>
-            <select name="q2_prosedur" required>
-                <option value="4" {{ ($skm->q2 ?? 0) == 4 ? 'selected' : '' }}>Sangat Mudah</option>
-                <option value="3" {{ ($skm->q2 ?? 0) == 3 ? 'selected' : '' }}>Mudah</option>
-                <option value="2" {{ ($skm->q2 ?? 0) == 2 ? 'selected' : '' }}>Cukup Sulit</option>
-                <option value="1" {{ ($skm->q2 ?? 0) == 1 ? 'selected' : '' }}>Sangat Sulit</option>
-            </select>
-        </div>
+                    <div class="edit-card">
+                        <label>Q2 - Kemudahan Prosedur</label>
+                        {{-- Menggunakan name q2_prosedur --}}
+                        <select name="q2_prosedur" required>
+                            <option value="4" {{ old('q2_prosedur', $skm->q2_prosedur ?? $skm->q2 ?? 0) == 4 ? 'selected' : '' }}>Sangat Mudah</option>
+                            <option value="3" {{ old('q2_prosedur', $skm->q2_prosedur ?? $skm->q2 ?? 0) == 3 ? 'selected' : '' }}>Mudah</option>
+                            <option value="2" {{ old('q2_prosedur', $skm->q2_prosedur ?? $skm->q2 ?? 0) == 2 ? 'selected' : '' }}>Cukup Sulit</option>
+                            <option value="1" {{ old('q2_prosedur', $skm->q2_prosedur ?? $skm->q2 ?? 0) == 1 ? 'selected' : '' }}>Sangat Sulit</option>
+                        </select>
+                        @error('q2_prosedur') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
 
-        <div class="edit-card">
-            <label>Q3 - Kecepatan Waktu</label>
-            <select name="q3_waktu" required>
-                <option value="4" {{ ($skm->q3 ?? 0) == 4 ? 'selected' : '' }}>Sangat Sesuai</option>
-                <option value="3" {{ ($skm->q3 ?? 0) == 3 ? 'selected' : '' }}>Sesuai</option>
-                <option value="2" {{ ($skm->q3 ?? 0) == 2 ? 'selected' : '' }}>Kurang Sesuai</option>
-                <option value="1" {{ ($skm->q3 ?? 0) == 1 ? 'selected' : '' }}>Tidak Sesuai</option>
-            </select>
-        </div>
+                    <div class="edit-card">
+                        <label>Q3 - Kecepatan Waktu</label>
+                        {{-- Menggunakan name q3_waktu --}}
+                        <select name="q3_waktu" required>
+                            <option value="4" {{ old('q3_waktu', $skm->q3_waktu ?? $skm->q3 ?? 0) == 4 ? 'selected' : '' }}>Sangat Sesuai</option>
+                            <option value="3" {{ old('q3_waktu', $skm->q3_waktu ?? $skm->q3 ?? 0) == 3 ? 'selected' : '' }}>Sesuai</option>
+                            <option value="2" {{ old('q3_waktu', $skm->q3_waktu ?? $skm->q3 ?? 0) == 2 ? 'selected' : '' }}>Kurang Sesuai</option>
+                            <option value="1" {{ old('q3_waktu', $skm->q3_waktu ?? $skm->q3 ?? 0) == 1 ? 'selected' : '' }}>Tidak Sesuai</option>
+                        </select>
+                        @error('q3_waktu') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
 
-        <div class="edit-card">
-            <label>Q4 - Kewajaran Biaya</label>
-            <select name="q4_biaya" required>
-                <option value="4" {{ ($skm->q4 ?? 0) == 4 ? 'selected' : '' }}>Sangat Sesuai</option>
-                <option value="3" {{ ($skm->q4 ?? 0) == 3 ? 'selected' : '' }}>Sesuai</option>
-                <option value="2" {{ ($skm->q4 ?? 0) == 2 ? 'selected' : '' }}>Kurang Sesuai</option>
-                <option value="1" {{ ($skm->q4 ?? 0) == 1 ? 'selected' : '' }}>Tidak Sesuai</option>
-            </select>
-        </div>
+                    <div class="edit-card">
+                        <label>Q4 - Kewajaran Biaya</label>
+                        {{-- Menggunakan name q4_biaya --}}
+                        <select name="q4_biaya" required>
+                            <option value="4" {{ old('q4_biaya', $skm->q4_biaya ?? $skm->q4 ?? 0) == 4 ? 'selected' : '' }}>Sangat Sesuai</option>
+                            <option value="3" {{ old('q4_biaya', $skm->q4_biaya ?? $skm->q4 ?? 0) == 3 ? 'selected' : '' }}>Sesuai</option>
+                            <option value="2" {{ old('q4_biaya', $skm->q4_biaya ?? $skm->q4 ?? 0) == 2 ? 'selected' : '' }}>Kurang Sesuai</option>
+                            <option value="1" {{ old('q4_biaya', $skm->q4_biaya ?? $skm->q4 ?? 0) == 1 ? 'selected' : '' }}>Tidak Sesuai</option>
+                        </select>
+                        @error('q4_biaya') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
 
-        <div class="edit-card">
-            <label>Q5 - Kesesuaian Produk</label>
-            <select name="q5_produk" required>
-                <option value="4" {{ ($skm->q5 ?? 0) == 4 ? 'selected' : '' }}>Sangat Sesuai</option>
-                <option value="3" {{ ($skm->q5 ?? 0) == 3 ? 'selected' : '' }}>Sesuai</option>
-                <option value="2" {{ ($skm->q5 ?? 0) == 2 ? 'selected' : '' }}>Kurang Sesuai</option>
-                <option value="1" {{ ($skm->q5 ?? 0) == 1 ? 'selected' : '' }}>Tidak Sesuai</option>
-            </select>
-        </div>
+                    <div class="edit-card">
+                        <label>Q5 - Kesesuaian Produk</label>
+                        {{-- Menggunakan name q5_produk --}}
+                        <select name="q5_produk" required>
+                            <option value="4" {{ old('q5_produk', $skm->q5_produk ?? $skm->q5 ?? 0) == 4 ? 'selected' : '' }}>Sangat Sesuai</option>
+                            <option value="3" {{ old('q5_produk', $skm->q5_produk ?? $skm->q5 ?? 0) == 3 ? 'selected' : '' }}>Sesuai</option>
+                            <option value="2" {{ old('q5_produk', $skm->q5_produk ?? $skm->q5 ?? 0) == 2 ? 'selected' : '' }}>Kurang Sesuai</option>
+                            <option value="1" {{ old('q5_produk', $skm->q5_produk ?? $skm->q5 ?? 0) == 1 ? 'selected' : '' }}>Tidak Sesuai</option>
+                        </select>
+                        @error('q5_produk') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
 
-        <div class="edit-card">
-            <label>Q6 - Kompetensi Petugas</label>
-            <select name="q6_kompetensi_petugas" required>
-                <option value="4" {{ ($skm->q6 ?? 0) == 4 ? 'selected' : '' }}>Sangat Baik</option>
-                <option value="3" {{ ($skm->q6 ?? 0) == 3 ? 'selected' : '' }}>Baik</option>
-                <option value="2" {{ ($skm->q6 ?? 0) == 2 ? 'selected' : '' }}>Kurang Baik</option>
-                <option value="1" {{ ($skm->q6 ?? 0) == 1 ? 'selected' : '' }}>Tidak Baik</option>
-            </select>
-        </div>
+                    <div class="edit-card">
+                        <label>Q6 - Kompetensi Petugas</label>
+                        {{-- Menggunakan name q6_kompetensi_petugas --}}
+                        <select name="q6_kompetensi_petugas" required>
+                            <option value="4" {{ old('q6_kompetensi_petugas', $skm->q6_kompetensi_petugas ?? $skm->q6 ?? 0) == 4 ? 'selected' : '' }}>Sangat Baik</option>
+                            <option value="3" {{ old('q6_kompetensi_petugas', $skm->q6_kompetensi_petugas ?? $skm->q6 ?? 0) == 3 ? 'selected' : '' }}>Baik</option>
+                            <option value="2" {{ old('q6_kompetensi_petugas', $skm->q6_kompetensi_petugas ?? $skm->q6 ?? 0) == 2 ? 'selected' : '' }}>Kurang Baik</option>
+                            <option value="1" {{ old('q6_kompetensi_petugas', $skm->q6_kompetensi_petugas ?? $skm->q6 ?? 0) == 1 ? 'selected' : '' }}>Tidak Baik</option>
+                        </select>
+                        @error('q6_kompetensi_petugas') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
 
-        <div class="edit-card">
-            <label>Q7 - Perilaku Petugas</label>
-            <select name="q7_perilaku_petugas" required>
-                <option value="4" {{ ($skm->q7 ?? 0) == 4 ? 'selected' : '' }}>Sangat Baik</option>
-                <option value="3" {{ ($skm->q7 ?? 0) == 3 ? 'selected' : '' }}>Baik</option>
-                <option value="2" {{ ($skm->q7 ?? 0) == 2 ? 'selected' : '' }}>Kurang Baik</option>
-                <option value="1" {{ ($skm->q7 ?? 0) == 1 ? 'selected' : '' }}>Tidak Baik</option>
-            </select>
-        </div>
+                    <div class="edit-card">
+                        <label>Q7 - Perilaku Petugas</label>
+                        {{-- Menggunakan name q7_perilaku_petugas --}}
+                        <select name="q7_perilaku_petugas" required>
+                            <option value="4" {{ old('q7_perilaku_petugas', $skm->q7_perilaku_petugas ?? $skm->q7 ?? 0) == 4 ? 'selected' : '' }}>Sangat Baik</option>
+                            <option value="3" {{ old('q7_perilaku_petugas', $skm->q7_perilaku_petugas ?? $skm->q7 ?? 0) == 3 ? 'selected' : '' }}>Baik</option>
+                            <option value="2" {{ old('q7_perilaku_petugas', $skm->q7_perilaku_petugas ?? $skm->q7 ?? 0) == 2 ? 'selected' : '' }}>Kurang Baik</option>
+                            <option value="1" {{ old('q7_perilaku_petugas', $skm->q7_perilaku_petugas ?? $skm->q7 ?? 0) == 1 ? 'selected' : '' }}>Tidak Baik</option>
+                        </select>
+                        @error('q7_perilaku_petugas') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
 
-        <div class="edit-card">
-            <label>Q8 - Penanganan Pengaduan</label>
-            <select name="q8_penanganan_pengaduan" required>
-                <option value="4" {{ ($skm->q8 ?? 0) == 4 ? 'selected' : '' }}>Sangat Baik</option>
-                <option value="3" {{ ($skm->q8 ?? 0) == 3 ? 'selected' : '' }}>Baik</option>
-                <option value="2" {{ ($skm->q8 ?? 0) == 2 ? 'selected' : '' }}>Kurang Baik</option>
-                <option value="1" {{ ($skm->q8 ?? 0) == 1 ? 'selected' : '' }}>Tidak Ada</option>
-            </select>
-        </div>
+                    <div class="edit-card">
+                        <label>Q8 - Penanganan Pengaduan</label>
+                        {{-- Menggunakan name q8_penanganan_pengaduan --}}
+                        <select name="q8_penanganan_pengaduan" required>
+                            <option value="4" {{ old('q8_penanganan_pengaduan', $skm->q8_penanganan_pengaduan ?? $skm->q8 ?? 0) == 4 ? 'selected' : '' }}>Sangat Baik</option>
+                            <option value="3" {{ old('q8_penanganan_pengaduan', $skm->q8_penanganan_pengaduan ?? $skm->q8 ?? 0) == 3 ? 'selected' : '' }}>Baik</option>
+                            <option value="2" {{ old('q8_penanganan_pengaduan', $skm->q8_penanganan_pengaduan ?? $skm->q8 ?? 0) == 2 ? 'selected' : '' }}>Kurang Baik</option>
+                            <option value="1" {{ old('q8_penanganan_pengaduan', $skm->q8_penanganan_pengaduan ?? $skm->q8 ?? 0) == 1 ? 'selected' : '' }}>Tidak Ada</option>
+                        </select>
+                        @error('q8_penanganan_pengaduan') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
 
-        <div class="edit-card">
-            <label>Q9 - Kualitas Sarana</label>
-            <select name="q9_sarana" required>
-                <option value="4" {{ ($skm->q9 ?? 0) == 4 ? 'selected' : '' }}>Sangat Baik</option>
-                <option value="3" {{ ($skm->q9 ?? 0) == 3 ? 'selected' : '' }}>Baik</option>
-                <option value="2" {{ ($skm->q9 ?? 0) == 2 ? 'selected' : '' }}>Kurang Baik</option>
-                <option value="1" {{ ($skm->q9 ?? 0) == 1 ? 'selected' : '' }}>Tidak Baik</option>
-            </select>
-        </div>
+                    <div class="edit-card">
+                        <label>Q9 - Kualitas Sarana</label>
+                        {{-- Menggunakan name q9_sarana --}}
+                        <select name="q9_sarana" required>
+                            <option value="4" {{ old('q9_sarana', $skm->q9_sarana ?? $skm->q9 ?? 0) == 4 ? 'selected' : '' }}>Sangat Baik</option>
+                            <option value="3" {{ old('q9_sarana', $skm->q9_sarana ?? $skm->q9 ?? 0) == 3 ? 'selected' : '' }}>Baik</option>
+                            <option value="2" {{ old('q9_sarana', $skm->q9_sarana ?? $skm->q9 ?? 0) == 2 ? 'selected' : '' }}>Kurang Baik</option>
+                            <option value="1" {{ old('q9_sarana', $skm->q9_sarana ?? $skm->q9 ?? 0) == 1 ? 'selected' : '' }}>Tidak Baik</option>
+                        </select>
+                        @error('q9_sarana') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
+
                     <div class="edit-card">
                         <label>Saran Masukan</label>
-                        <textarea name="saran_masukan" rows="4">{{ $skm->saran_masukan ?? '' }}</textarea>
+                        <textarea name="saran_masukan" rows="4">{{ old('saran_masukan', $skm->saran_masukan ?? '') }}</textarea>
+                        @error('saran_masukan') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
 
                     <button type="submit" class="btn-simpan-semua">Simpan Perubahan</button>

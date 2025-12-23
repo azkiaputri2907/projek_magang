@@ -27,7 +27,7 @@ class AdminSkmController extends Controller
         try {
             $service = $this->getGoogleSheetsService();
             // Ambil data dari baris ke-2 (setelah header) sampai baris terakhir, kolom B sampai F (Usia, JK, Pendidikan, Pekerjaan, Layanan)
-            $range = $this->sheetName . '!B2:F';
+            $range = $this->sheetName . '!B2:P';
             $response = $service->spreadsheets_values->get($this->spreadsheetId, $range);
             $values = $response->getValues();
 
@@ -108,7 +108,7 @@ class AdminSkmController extends Controller
             $service = $this->getGoogleSheetsService();
             
             // Range dibatasi hanya B sampai F (Data Responden)
-            $range = $this->sheetName . "!B{$id}:F{$id}";
+            $range = $this->sheetName . "!B{$id}:P{$id}";
             $response = $service->spreadsheets_values->get($this->spreadsheetId, $range);
             $values = $response->getValues();
 
@@ -127,6 +127,17 @@ class AdminSkmController extends Controller
                 'pendidikan_terakhir' => $row[2] ?? '',    // Kolom D
                 'pekerjaan' => $row[3] ?? '',              // Kolom E
                 'jenis_layanan_diterima' => $row[4] ?? '', // Kolom F
+                // Data Jawaban (Wajib diambil agar form terisi)
+                'q1_persyaratan'        => $row[5] ?? '', // G
+                'q2_prosedur'           => $row[6] ?? '', // H
+                'q3_waktu'              => $row[7] ?? '', // I
+                'q4_biaya'              => $row[8] ?? '', // J
+                'q5_produk'             => $row[9] ?? '', // K
+                'q6_kompetensi_petugas' => $row[10]?? '', // L
+                'q7_perilaku_petugas'   => $row[11]?? '', // M
+                'q8_penanganan_pengaduan'=> $row[12]?? '',// N
+                'q9_sarana'             => $row[13]?? '', // O
+                'saran_masukan'         => $row[14]?? '', // P
             ];
 
             // Anda harus menyediakan view edit_skm.blade.php
@@ -149,6 +160,18 @@ class AdminSkmController extends Controller
             'pendidikan_terakhir' => 'required|string',
             'pekerjaan' => 'required|string',
             'jenis_layanan_diterima' => 'required|string',
+
+            // Tambahkan Validasi untuk Nilai Survey
+            'q1_persyaratan'            => 'required',
+            'q2_prosedur'               => 'required',
+            'q3_waktu'                  => 'required',
+            'q4_biaya'                  => 'required',
+            'q5_produk'                 => 'required',
+            'q6_kompetensi_petugas'     => 'required',
+            'q7_perilaku_petugas'       => 'required',
+            'q8_penanganan_pengaduan'   => 'required',
+            'q9_sarana'                 => 'required',
+            'saran_masukan'             => 'nullable',
         ]);
 
         try {
@@ -161,10 +184,21 @@ class AdminSkmController extends Controller
                 $request->pendidikan_terakhir,   // Kolom D
                 $request->pekerjaan,             // Kolom E
                 $request->jenis_layanan_diterima,// Kolom F
+                // Tambahan Data Survey (Sebelumnya hilang)
+                $request->q1_persyaratan,               // Kolom G
+                $request->q2_prosedur,                  // Kolom H
+                $request->q3_waktu,                     // Kolom I
+                $request->q4_biaya,                     // Kolom J
+                $request->q5_produk,                    // Kolom K
+                $request->q6_kompetensi_petugas,        // Kolom L
+                $request->q7_perilaku_petugas,          // Kolom M
+                $request->q8_penanganan_pengaduan,      // Kolom N
+                $request->q9_sarana,                    // Kolom O
+                $request->saran_masukan ?? '-'          // Kolom P
             ];
 
             // Tentukan Range: Update baris ke-$id, kolom B sampai F
-            $range = $this->sheetName . "!B{$id}:F{$id}";
+            $range = $this->sheetName . "!B{$id}:P{$id}";
             
             $body = new \Google\Service\Sheets\ValueRange([
                 'values' => [$updateRow]
