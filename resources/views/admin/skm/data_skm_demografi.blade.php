@@ -423,7 +423,7 @@ input[type="checkbox"] {
                     {{-- Disesuaikan agar data yang ditampilkan sesuai dengan urutan Kolom A-E di Google Sheet --}}
                     @foreach($skm as $index => $item)
                     <div class="data-table-row">
-                        <span class="checkbox-col" data-label="Responden #{{ $index + 1 }}">
+                        <span class="checkbox-col" data-label="Responden #{{ $index + 2 }}">
                             <input type="checkbox" class="row-check" value="{{ $item->id }}">
                         </span>
                         <span class="col-usia" data-label="Usia">{{ $item->usia }}</span>

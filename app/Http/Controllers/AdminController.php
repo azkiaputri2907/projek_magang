@@ -85,7 +85,7 @@ class AdminController extends Controller
             }
 
             // --- Hitung SKM dari Sheet ---
-            $rangeS = $this->sheetNameSkm . '!A:A'; 
+            $rangeS = $this->sheetNameSkm . '!C:C'; 
             $responseS = $service->spreadsheets_values->get($this->sheetIdSkm, $rangeS);
             $valuesS = $responseS->getValues();
             if ($valuesS) {
@@ -163,7 +163,7 @@ class AdminController extends Controller
         try {
             $service = $this->getGoogleSheetsService();
             // Ambil kolom A sampai E (Demografi)
-            $range = $this->sheetNameSkm . '!B2:F'; // <-- Ubah Range di sini
+            $range = $this->sheetNameSkm . '!C2:F'; // <-- Ubah Range di sini
 
             $response = $service->spreadsheets_values->get($this->sheetIdSkm, $range);
             $rows = $response->getValues();
@@ -326,7 +326,7 @@ class AdminController extends Controller
             $spreadsheetId = $this->sheetIdSkm;
 
             // Ambil SEMUA data dari Sheet (termasuk header)
-            $range = $this->sheetNameSkm . '!A:P'; // A-P mencakup semua data SKM
+            $range = $this->sheetNameSkm . '!A:Q'; // A-Q mencakup semua data SKM
             $response = $service->spreadsheets_values->get($spreadsheetId, $range);
             $data = $response->getValues();
 

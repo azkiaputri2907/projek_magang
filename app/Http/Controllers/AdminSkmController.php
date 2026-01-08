@@ -27,7 +27,7 @@ class AdminSkmController extends Controller
         try {
             $service = $this->getGoogleSheetsService();
             // Ambil data dari baris ke-2 (setelah header) sampai baris terakhir, kolom B sampai F (Usia, JK, Pendidikan, Pekerjaan, Layanan)
-            $range = $this->sheetName . '!B2:P';
+            $range = $this->sheetName . '!C2:P';
             $response = $service->spreadsheets_values->get($this->spreadsheetId, $range);
             $values = $response->getValues();
 
