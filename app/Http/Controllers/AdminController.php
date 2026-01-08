@@ -198,7 +198,7 @@ class AdminController extends Controller
         try {
             $service = $this->getGoogleSheetsService();
             // Ambil kolom A sampai O (termasuk Saran/Masukan)
-            $range = $this->sheetNameSkm . '!A2:O'; 
+            $range = $this->sheetNameSkm . '!H2:Q'; 
             $response = $service->spreadsheets_values->get($this->sheetIdSkm, $range);
             $rows = $response->getValues();
 
