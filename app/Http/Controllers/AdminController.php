@@ -253,7 +253,7 @@ class AdminController extends Controller
             if ($valuesP) $totalPengunjung = max(0, count($valuesP) - 1);
 
             // Hitung SKM
-            $rangeS = $this->sheetNameSkm . '!A:A'; 
+            $rangeS = $this->sheetNameSkm . '!C:C'; 
             $valuesS = $service->spreadsheets_values->get($this->sheetIdSkm, $rangeS)->getValues();
             if ($valuesS) $totalSkm = max(0, count($valuesS) - 1);
 
